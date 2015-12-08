@@ -139,9 +139,11 @@ class Toko_model extends CI_Model {
     }
 
     function laporan_spg($awal = FALSE, $akhir = FALSE, $IDToko = FALSE) {
-        $sql = " SELECT ";        
-        $sql .= " SUM(laporan_barang_mt.jumlah) as total_jumlah, laporan_barang_mt.*, sales_mt.*, laporan_penjualan_mt.tanggal FROM laporan_barang_mt INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT ";
-
+        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as total_jumlah, barang_mt.nama
+                FROM laporan_barang_mt
+                INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT 
+                INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
+                INNER JOIN barang_mt on barang_mt.IDBarangMT = laporan_barang_mt.IDBarangMT ";
         if ($awal && $akhir) {
             $sql.=" WHERE laporan_penjualan_mt.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
         } else {
@@ -151,8 +153,12 @@ class Toko_model extends CI_Model {
         if ($IDToko) {
             $sql .= " AND laporan_penjualan_mt.IDTokoMT = " . $IDToko;
         }
+        
+        if($this->session->userdata('Level') != 0 ){
+            $sql .= " AND sales_mt.IDCabang = ".$this->session->userdata('IDCabang');
+        }
 
-        $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, IDBarangMT";
+        $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, barang_mt.IDBarangMT";
         return $this->db->query($sql)->result();
     }
 
@@ -184,7 +190,7 @@ class Toko_model extends CI_Model {
                     'jumlah' => $items['qty']
                 );
                 $this->db->insert('laporan_barang_mt', $data);
-                
+
                 $dataX = array(
                     "rowid" => $items["rowid"],
                     "qty" => 0

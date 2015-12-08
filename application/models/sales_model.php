@@ -410,11 +410,19 @@ class Sales_model extends CI_Model {
     function ganti_komisi($IDSales, $arrBarang) {
         $counter = 1;
         foreach ($arrBarang as $barang) {
-            $data = array('komisi' => $this->input->post('KomisiBarang' . $counter));
+            if ($this->db->get_where('komisi', array('IDBarang' => $barang->IDBarang, 'IDSales' => $IDSales))->num_rows() == 0) {
+                $data = array(
+                    "IDBarang" => $barang->IDBarang,
+                    "IDSales" => $IDSales,
+                    'komisi' => $this->input->post('KomisiBarang' . $counter)
+                );
+                $this->db->insert('komisi', $data);
+            } else {
+                $this->db->where('IDBarang', $barang->IDBarang);
+                $this->db->where('IDSales', $IDSales);
+                $this->db->update('komisi', array('komisi' => $this->input->post('KomisiBarang' . $counter)));
+            }
             $counter++;
-            $this->db->where('IDBarang', $barang->IDBarang);
-            $this->db->where('IDSales', $IDSales);
-            $this->db->update('komisi', $data);
         }
     }
 
