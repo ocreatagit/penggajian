@@ -5,12 +5,11 @@
     }
 </style>  
 <div class="container" style="margin-top: 80px; height: 100%; padding: 0px; margin-bottom: 50px;">
-
     <div class="row" style="">
         <div class="col-lg-12">
-            <h2 class="page-header" style="margin-top: 0px;">Penjualan SPG</h2>
+            <h2 class="page-header" style="margin-top: 0px;">Kehadiran SPG</h2>
             <ol class="breadcrumb" style="background-color: white; margin-top: 00px;">
-                <li class="active"><i class="fa fa-home"></i> Penjualan SPG</li>
+                <li class="active"><i class="fa fa-home"></i> Kehadiran SPG</li>
             </ol>
         </div>
     </div>
@@ -65,7 +64,7 @@
                 <div class="panel-heading siku">
                     <div class="panel-title row">
                         <div class="col-md-10">                            
-                            <h2 style="margin-top: 0px;">Daftar Sales <?php if ($periode != "Laporan Bulan Ini") {
+                            <h2 style="margin-top: 0px;">Daftar Kehadiran Sales <?php if ($periode != "Laporan Bulan Ini") {
                             ?>
                                     Periode <?php echo $periode ?>
                                     <?php

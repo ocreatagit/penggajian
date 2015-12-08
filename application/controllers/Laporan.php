@@ -102,6 +102,9 @@ class Laporan extends CI_Controller {
                     );
                     $this->cart->insert($data);
                     $this->session->set_flashdata("status_2", "Data telah ditambahkan!");
+                    
+                    $this->session->set_userdata("cbo_team", $this->input->post('team_leader'));
+                    $this->session->set_userdata("cbo_lokasi", $this->input->post('lokasi'));
                 } else {
                     $this->session->set_flashdata("status", "Data sudah pernah diinputkan!");
                 }

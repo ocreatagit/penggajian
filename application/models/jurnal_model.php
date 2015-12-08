@@ -56,16 +56,15 @@ class Jurnal_model extends CI_Model {
             $sql = "SELECT j.IDJurnal, j.keterangan, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 " . ($awal && $akhir ? "WHERE j.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'" : "") . "
-                GROUP BY j.IDJurnal, j.IDCabang;";
+                GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
         } else {
             $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
             $sql = "SELECT j.IDJurnal, j.keterangan, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 INNER JOIN cabang c ON c.IDCabang = j.IDCabang 
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = " . $this->session->userdata("Level") . ") " . ($awal && $akhir ? "AND j.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'" : "" ) .
-                    " GROUP BY j.IDJurnal, j.IDCabang;";
+                    " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
         }
-//        echo $sql; exit;
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -77,14 +76,14 @@ class Jurnal_model extends CI_Model {
             $sql = "SELECT j.IDJurnal, j.keterangan, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 WHERE j.keterangan IN (SELECT t1.keterangan FROM transaksi t1 WHERE t1.level = 0) " . ($awal && $akhir ? "AND j.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'" : "" ) .
-                    " GROUP BY j.IDJurnal, j.IDCabang;";
+                    " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
         } else {
             $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
             $sql = "SELECT j.IDJurnal, j.keterangan, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 INNER JOIN cabang c ON c.IDCabang = j.IDCabang 
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = 0) " . ($awal && $akhir ? "AND j.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'" : "" ) .
-                    " GROUP BY j.IDJurnal, j.IDCabang;";
+                    " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
         }
 
         $query = $this->db->query($sql);
@@ -108,9 +107,14 @@ class Jurnal_model extends CI_Model {
                 WHERE t.keterangan = '$jenis_transaksi';";
         $result = $this->db->query($sql)->result();
 
+        $date = date("Y-m-d H:i:s");
+        if(date("Y-m-d") < date("Y-m-d", strtotime($penjualan->tanggal))){
+            $date = date("Y-m-d H:i:s", strtotime($penjualan->tanggal));
+        }
+        
         $data = array(
             'IDCabang' => $IDCabang,
-            'tanggal' => date('Y-m-d H:i:s'),
+            'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $totalPenjualan,
             'keterangan' => $jenis_transaksi."|".$penjualan->IDPenjualan."|".$penjualan->tanggal
@@ -153,9 +157,14 @@ class Jurnal_model extends CI_Model {
         $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi';";
         $transaksi = $this->db->query($SQL)->row();
 
+        $date = date("Y-m-d H:i:s");
+        if(date("Y-m-d", strtotime($tanggal) > date("Y-m-d"))){
+            $date = date("Y-m-d H:i:s", strtotime($penjualan->tanggal));
+        }
+        
         $data = array(
             'IDCabang' => $IDCabang,
-            'tanggal' => date('Y-m-d H:i:s'),
+            'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $totalPenjualan,
             'keterangan' => $jenis_transaksi."|".$noBukti."|".$tanggal

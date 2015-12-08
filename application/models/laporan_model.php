@@ -376,5 +376,40 @@ class Laporan_model extends CI_Model {
 //        print_r($sql); exit;
         return $this->db->query($sql)->result();
     }
+    
+    function select_pengeluaran_kas($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+        $sql = "SELECT * 
+                from ((
+                        SELECT laporan_pengeluaran.IDCabang as IDCabang,laporan_pengeluaran.tanggal, detail_pengeluaran.keterangan as keterangan, SUM(detail_pengeluaran.total_pengeluaran) as jumlah, detail_pengeluaran.keterangan_lanjut, admin.username
+                        FROM detail_pengeluaran 
+                        INNER JOIN laporan_pengeluaran on laporan_pengeluaran.IDPengeluaran = detail_pengeluaran.IDPengeluaran 
+                        INNER JOIN cabang on cabang.IDCabang = laporan_pengeluaran.IDCabang 
+                        INNER JOIN admin on admin.IDAdmin = cabang.IDAdmin_kantor 
+                        GROUP BY keterangan, keterangan_lanjut, tanggal) 
+                        UNION (
+                        SELECT laporan_penggajian.IDCabang as IDCabang, detail_penggajian.Tanggal, CONCAT(laporan_penggajian.keterangan,' ', sales.nama) as keterangan, detail_penggajian.total_gaji as jumlah, '' as keterangan_lanjut, admin.username
+                        FROM detail_penggajian 
+                        INNER JOIN sales on sales.IDSales = detail_penggajian.IDSales 
+                        INNER JOIN laporan_penggajian ON laporan_penggajian.IDPenggajian = detail_penggajian.IDPenggajian
+                        INNER JOIN cabang on cabang.IDCabang = laporan_penggajian.IDCabang 
+                        INNER JOIN admin on admin.IDAdmin = cabang.IDAdmin_kantor) 
+                        ORDER BY tanggal DESC) as table1 ";
+        if ($awal && $akhir) {
+            $sql.=" WHERE table1.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else if ($bulan) {
+            $sql.=" WHERE month(table1.tanggal) = $bulan AND year(table1.tanggal) = year(now()) ";
+        } else {
+            $sql.=" WHERE month(table1.tanggal) = month(now()) AND year(table1.tanggal) = year(now()) ";
+        }
+        if ($this->input->post("cabang")) {
+            if ($this->input->post("cabang") != 0) {
+                $sql.=" AND table1.IDCabang = " . $this->input->post("cabang");
+            }
+        } else if ($this->session->userdata('Level') != 0) {
+            $sql.=" AND table1.IDCabang = " . $this->session->userdata('IDCabang') . " ";
+        }
+//        print_r($sql);exit;                
+        return $this->db->query($sql)->result();
+    }
 
 }

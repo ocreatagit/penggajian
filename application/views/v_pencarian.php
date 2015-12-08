@@ -84,7 +84,7 @@
                     <th>Admin</th>
                     <th>Total Penjualan</th>
                     <th>Keterangan</th>
-                    <th>Aksi</th>
+                    <!--<th>Aksi</th>-->
                 </tr>
             </thead>
             <tbody>
@@ -99,28 +99,56 @@
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
                         <td><?php echo $laporan->username; ?></td>
-                        <td><?php echo $laporan->keterangan; ?></td>
                         <td>Rp <?php echo number_format($laporan->totalPenjualan, 0, ",", ".") ?>.- </td>
+                        <td><?php echo $laporan->keterangan; ?></td>
     <!--                        <td>Rp <?php echo number_format($laporan->totalKomisi, 0, ",", ".") ?>.- </td>
                         <td>Rp <?php echo number_format($laporan->saldoTerakhir, 0, ",", ".") ?>.- </td>-->
-                        <td style="width: 180px; text-align: center;">
-                            <a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>
+                        <!--<td style="width: 180px; text-align: center;">-->
+                            <!--<a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>-->
                             <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-primary siku"><i class="fa fa-pencil"></i></a>-->
                             <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" id="delgrup" class="btn btn-sm btn-danger siku"><i class="fa fa-trash-o"></i></a>-->
-                        </td>
+                        <!--</td>-->
                     </tr>
 
                 <?php endforeach; ?>
             </tbody>
 
             <tr>
-                <td colspan="4" style="text-align: right;">Total Penjualan</td>
+                <td colspan="3" style="text-align: right;">Total Penjualan</td>
                 <td colspan="2"><strong>Rp <?php echo number_format($total_penjualan, 0, ",", ".") ?>,-</strong></td>
             </tr>
+            <?php if (count($pengeluarans) > 0) { ?>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <!--<td></td>-->
+                </tr>
+                <?php
+            }
+            $total_biaya_keluar = 0;
+            foreach ($pengeluarans as $pengeluaran) {
+                ?>
+                <tr>
+                    <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
+                    <td><?php echo $pengeluaran->username; ?></td>
+                    <td>Rp <?php echo number_format($laporan->jumlah, 0, ",", ".") ?>.- </td>
+                    <td><?php echo $laporan->keterangan; ?></td>
+                    <!--<td style="width: 180px; text-align: center;">-->
+                        <!--<a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>-->
+                        <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-primary siku"><i class="fa fa-pencil"></i></a>-->
+                        <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" id="delgrup" class="btn btn-sm btn-danger siku"><i class="fa fa-trash-o"></i></a>-->
+                    <!--</td>-->
+                </tr>
+            <?php 
+            $total_biaya_keluar += $laporan->jumlah;
+            }
+            ?>
 
             <tr>
-                <td colspan="4" style="text-align: right;">Total Bayar Komisi</td>
-                <td colspan="2"><strong>Rp <?php echo number_format($total_komisi, 0, ",", ".") ?>,-</strong></td>
+                <td colspan="3" style="text-align: right;">Total Pengeluaran</td>
+                <td colspan="2"><strong>Rp <?php echo number_format($total_biaya_keluar, 0, ",", ".") ?>,-</strong></td>
             </tr>
         </table>
     </div>

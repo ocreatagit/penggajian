@@ -65,7 +65,8 @@
             <thead>
                 <tr>
                     <!--<th style="display: none;">ID</th>-->
-                    <th>Tanggal</th>
+                    <th>Tanggal Mutasi</th>
+                    <th>Tanggal Nota Dibuat</th>
                     <th>Keterangan</th>
                     <th>Kas Masuk</th>
                     <th>Kas Keluar</th>
@@ -75,10 +76,12 @@
             <tbody>
                 <?php
                 foreach ($jurnals as $laporan):
+                     $ket = explode('|', $laporan->keterangan);
                     ?>
                     <tr>
-                        <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
-                        <td><?php echo $laporan->keterangan; ?></td>
+                        <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
+                        <td><?php echo strftime("%d-%m-%Y", strtotime($ket[2])); ?></td>
+                        <td><?php echo $ket[0]; ?></td>
                         <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                         <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                         <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>
@@ -130,7 +133,8 @@
         $('#list_laporan').DataTable({
             "order": [[0, "asc"]],
             "aoColumnDefs": [
-                {"sType": "date-dmy", "aTargets": [0]}]
+                {"sType": "date-dmy", "aTargets": [0]}
+            ]
         });
     });
 </script>

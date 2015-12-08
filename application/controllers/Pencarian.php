@@ -39,13 +39,17 @@ class Pencarian extends CI_Controller {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
         $data['laporans'] = $this->Laporan_model->select_laporan();
+        $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
         $data["periode"] = "Laporan Bulan Ini";
         if ($this->input->post("btn_pilih")) {
             if ($awal != "" && $akhir != "") {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode($awal, $akhir);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
+                
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
             } else {
                 $data['laporans'] = $this->Laporan_model->select_laporan();
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
             }
         }
         if ($this->input->post("btn_export")) {

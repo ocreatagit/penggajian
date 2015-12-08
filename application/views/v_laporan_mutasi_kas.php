@@ -65,8 +65,8 @@
             <thead>
                 <tr>
                     <!--<th style="display: none;">ID</th>-->
-                    <th>Tanggal</th>
-                    <th>Tanggal Nota</th>
+                    <th>Tanggal Mutasi</th>
+                    <th style="background-color: #2B669A">Tanggal Buat Nota</th>
                     <th>Keterangan</th>
                     <th>Kas Masuk</th>
                     <th>Kas Keluar</th>
@@ -79,7 +79,7 @@
                     $ket = explode('|', $laporan->keterangan);
                     ?>
                     <tr>
-                        <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                        <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                         <td><?php
                             if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
                                 echo strftime("%d-%m-%Y", strtotime($ket[2]));
@@ -137,9 +137,11 @@
         $("#nama_produk").val('');
 
         $('#list_laporan').DataTable({
-            "order": [[0, "asc"]],
+            "order": [[0, "ASC"]],
             "aoColumnDefs": [
-                {"sType": "date-dmy", "aTargets": [0]}]
+                {"sType": "date-dmy", "aTargets": [0]}
+//                {"bSortable": false, "aTargets": [ 0 ]}
+            ],
         });
     });
 </script>
