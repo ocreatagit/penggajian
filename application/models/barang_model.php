@@ -110,7 +110,7 @@ class Barang_model extends CI_Model {
     }
 
     function get_barang() {
-        return $this->db->get("barang")->result();
+        return $this->db->order_by('IDBarang ASC')->get("barang")->result();
     }
 
     function get_barang_cabang($IDCabang) {

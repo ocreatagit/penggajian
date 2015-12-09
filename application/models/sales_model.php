@@ -351,8 +351,8 @@ class Sales_model extends CI_Model {
         $this->db->insert_batch('komisi', $data);
     }
 
-    function select_komisi($IDSales) {
-        return $this->db->get_where('komisi', array('IDSales' => $IDSales))->result();
+    function select_komisi($IDSales) {         
+        return $this->db->order_by('IDSales ASC, IDBarang ASC')->get_where('komisi', array('IDSales' => $IDSales))->result();
     }
 
     function update_sales($id) {

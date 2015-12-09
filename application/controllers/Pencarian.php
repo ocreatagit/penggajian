@@ -176,19 +176,10 @@ class Pencarian extends CI_Controller {
         //print_r($data['admincabang']);exit;
         $data['data'] = "BULAN INI";
         if ($this->input->post('submit')) {
-            if ($this->input->post('kategori') == 'Periode') {
-                $awal = $this->input->post('tanggal_awal');
-                $akhir = $this->input->post('tanggal_akhir');
-                $data['topbarangs'] = $this->Barang_model->select_top_barang($awal, $akhir);
-                $data['data'] = "Periode $awal sampai $akhir";
-            } else {
-                $BulanIndo = array("Januari", "Februari", "Maret",
-                    "April", "Mei", "Juni",
-                    "Juli", "Agustus", "September",
-                    "Oktober", "November", "Desember");
-                $data['topbarangs'] = $this->Barang_model->select_top_barang(false, false, $this->input->post('monthly'));
-                $data['data'] = "Periode Bulan " . $BulanIndo[(int) $this->input->post('monthly') - 1];
-            }
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['topbarangs'] = $this->Barang_model->select_top_barang($awal, $akhir);
+            $data['data'] = "Periode $awal sampai $akhir";
         }
 
         $this->load->view('v_head');
@@ -219,30 +210,15 @@ class Pencarian extends CI_Controller {
         $data['modalbarang'] = $this->Barang_model->select_top_lokasi_barang($IDLokasi);
 //        }
         if ($this->input->post('submit')) {
-            if ($this->input->post('kategori') == 'Periode') {
-                $awal = $this->input->post('tanggal_awal');
-                $akhir = $this->input->post('tanggal_akhir');
-                $data['topbarangs'] = $this->Barang_model->select_top_lokasi($awal, $akhir);
-                $data['data'] = "Periode $awal sampai $akhir";
-                foreach ($data['topbarangs'] as $lokasi) {
-                    array_push($IDLokasi, $lokasi->IDLokasi);
-                }
-                if (count($IDLokasi) > 0) {
-                    $data['modalbarang'] = $this->Barang_model->select_top_lokasi_barang($IDLokasi, $awal, $akhir);
-                }
-            } else {
-                $BulanIndo = array("Januari", "Februari", "Maret",
-                    "April", "Mei", "Juni",
-                    "Juli", "Agustus", "September",
-                    "Oktober", "November", "Desember");
-                $data['topbarangs'] = $this->Barang_model->select_top_lokasi(false, false, $this->input->post('monthly'));
-                $data['data'] = "Periode Bulan " . $BulanIndo[(int) $this->input->post('monthly') - 1];
-                foreach ($data['topbarangs'] as $lokasi) {
-                    array_push($IDLokasi, $lokasi->IDLokasi);
-                }
-                if (count($IDLokasi) > 0) {
-                    $data['modalbarang'] = $this->Barang_model->select_top_lokasi_barang($IDLokasi, false, false, $this->input->post('monthly'));
-                }
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['topbarangs'] = $this->Barang_model->select_top_lokasi($awal, $akhir);
+            $data['data'] = "Periode $awal sampai $akhir";
+            foreach ($data['topbarangs'] as $lokasi) {
+                array_push($IDLokasi, $lokasi->IDLokasi);
+            }
+            if (count($IDLokasi) > 0) {
+                $data['modalbarang'] = $this->Barang_model->select_top_lokasi_barang($IDLokasi, $awal, $akhir);
             }
         }
 
@@ -274,26 +250,13 @@ class Pencarian extends CI_Controller {
         $data['data'] = "BULAN INI";
         $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales);
         if ($this->input->post('submit')) {
-            if ($this->input->post('kategori') == 'Periode') {
                 $awal = $this->input->post('tanggal_awal');
                 $akhir = $this->input->post('tanggal_akhir');
                 $data['topbarangs'] = $this->Barang_model->select_top_seles($awal, $akhir);
                 $data['data'] = "Periode $awal sampai $akhir";
                 if (count($IDSales) > 0) {
                     $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales, $awal, $akhir);
-                }
-            } else {
-                $BulanIndo = array("Januari", "Februari", "Maret",
-                    "April", "Mei", "Juni",
-                    "Juli", "Agustus", "September",
-                    "Oktober", "November", "Desember");
-                $data['topbarangs'] = $this->Barang_model->select_top_seles(false, false, $this->input->post('monthly'));
-                $data['data'] = "Periode Bulan " . $BulanIndo[(int) $this->input->post('monthly') - 1];
-                if (count($IDSales) > 0) {
-                    $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales, false, false, $this->input->post('monthly'));
-                }
-            }
-//            print_r(($data["modalsales"]));exit;
+                }            
         }
 
         $this->load->view('v_head');

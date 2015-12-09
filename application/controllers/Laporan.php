@@ -983,7 +983,6 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post('submit') || $this->input->post('btn_convert')) {
             $data['searchby'] = $this->input->post('jenis_pengeluaran');
-            if ($this->input->post('kategori') == 'Periode') {
                 $awal = $this->input->post('tanggal_awal');
                 $akhir = $this->input->post('tanggal_akhir');
                 if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
@@ -1001,29 +1000,7 @@ class Laporan extends CI_Controller {
                     $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
                     $data['kolom'] = true;
                 }
-                $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
-            } else {
-                $BulanIndo = array("Januari", "Februari", "Maret",
-                    "April", "Mei", "Juni",
-                    "Juli", "Agustus", "September",
-                    "Oktober", "November", "Desember");
-                $data['data'] = "Bulan " . $BulanIndo[(int) $this->input->post('monthly') - 1];
-                if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
-                    if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
-                        $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), false, false, $this->input->post('monthly'));
-                        $data['kolom'] = true;
-                    } else {
-                        $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), false, false, $this->input->post('monthly'));
-                        $data['kolom'] = false;
-                    }
-                } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
-                    $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran(false, false, $this->input->post('monthly'));
-                    $data['kolom'] = true;
-                } else {
-                    $data['isi_tabel'] = $this->Laporan_model->select_lain_lain(false, false, $this->input->post('monthly'));
-                    $data['kolom'] = true;
-                }
-            }
+                $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");            
             if ($this->input->post('btn_convert')) {
                 $this->excel_pengeluaran($data);
             }

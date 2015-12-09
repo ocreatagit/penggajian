@@ -45,11 +45,11 @@
                                 </select>                                
                             </div>
                         </div>
-                        <div class="form-group">
+<!--                        <div class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
                             <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
                             <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
-                        </div>
+                        </div>-->
                         <div id="periode" class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Dari</label>
                             <div class="col-lg-3">
@@ -65,7 +65,7 @@
 
                             </div>
                         </div>
-                        <div id="monthly" class="form-group">
+<!--                        <div id="monthly" class="form-group">
                             <label class="col-lg-2 control-label">Bulan</label>
                             <div class="col-lg-3">
                                 <select class="form-control siku" name="monthly">
@@ -88,7 +88,7 @@
                                 <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
                                 <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
                             </div>
-                        </div>
+                        </div>-->
                     </form>
                 </div>
             </div>
