@@ -51,9 +51,13 @@ class Barang extends CI_Controller {
         $data['harga_satuan'] = $this->barang_model->get_harga_satuan();
         $data['konv_satuan'] = $this->barang_model->get_satuan();
         $data['status'] = $this->session->flashdata("status");
+        $data['refresh'] = $this->session->flashdata("status_refresh");
+        $this->load->model("Laporan_model");
+        $data["stok_cabang"] = $this->Laporan_model->get_stok_cabang($data['username']);
+        
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
-        $this->load->view('v_tambah_barang');
+        $this->load->view('v_tambah_barang', $data);
         $this->load->view('v_foot');
     }
 
@@ -101,11 +105,12 @@ class Barang extends CI_Controller {
                         $response = $this->upload->data();
                     }
                     $this->session->set_flashdata("status", "Barang telah diubah!");
+                    $this->session->set_flashdata("status_refresh", "Please Refresh Page!");
                 }
                 redirect("barang/tambah_barang");
             }
         }
-        
+
         $data["gambar_barang"] = "";
 
         $gambar = get_filenames("./barangs");
@@ -114,8 +119,8 @@ class Barang extends CI_Controller {
                 $data["gambar_barang"] = $value;
                 break;
             }
-        }        
-        
+        }
+
         $data["status_barang"] = $this->barang_model->get_status($IDBarang);
         $data["barang"] = $this->barang_model->get_detail_barang($IDBarang);
         $data['status'] = $this->session->flashdata("status");
@@ -136,18 +141,22 @@ class Barang extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-
-        $this->load->helper("file");
-        $array = get_filenames("./barangs");
-        foreach ($array as $key => $value) {
-            if (strpos($value, $IDBarang) !== FALSE) {
-                if (!unlink("./barangs/" . $value)) {
-                    echo "gagal";
+        
+        if ($this->barang_model->get_status_barang($IDBarang) == 1) {
+            $this->load->helper("file");
+            $array = get_filenames("./barangs");
+            foreach ($array as $key => $value) {
+                if (strpos($value, $IDBarang) !== FALSE) {
+                    if (!unlink("./barangs/" . $value)) {
+                        echo "gagal";
+                    }
+                    break;
                 }
-                break;
             }
+            $this->barang_model->delete_barang($IDBarang);
+        } else {
+            $this->session->set_flashdata("status", "<b>Barang Tidak Dapat DiHapus! </b> Barang ini sudah digunakan Laporan Harian");
         }
-        $this->barang_model->delete_barang($IDBarang);
         redirect("barang/tambah_barang");
     }
 
@@ -209,16 +218,16 @@ class Barang extends CI_Controller {
 
     public function harga_satuan($IDBarang = FALSE) {
         if ($IDBarang) {
-            if($this->input->post('btn')) {
+            if ($this->input->post('btn')) {
                 $this->barang_model->insert_harga_satuan($IDBarang);
                 redirect('Barang/tambah_barang');
             }
         }
     }
-    
-    public function konversi_satuan($IDBarang = FALSE){
-        if($IDBarang){
-            if($this->input->post('btnSimpan')){
+
+    public function konversi_satuan($IDBarang = FALSE) {
+        if ($IDBarang) {
+            if ($this->input->post('btnSimpan')) {
                 $this->barang_model->insert_satuan($IDBarang);
                 redirect('Barang/tambah_barang');
             }

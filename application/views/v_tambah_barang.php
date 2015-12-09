@@ -15,6 +15,9 @@
                 </div>
                 <div class="panel-body siku">
                     <div class="row">
+                        <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
+                            <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
+                        </div>
                         <div class="col-lg-12">
                             <?php if ($status != "") {
                                 ?>
@@ -125,7 +128,7 @@
                                 <h3>Satuan</h3>
                                 <label class="col-sm-3 text-right">1 Karton :</label>
                                 <div class="input-group col-sm-5">
-                                    <input type="number" min="0" class="form-control siku text-right" name="satuan" placeholder="Satuan" value="<?php if(count($konv_satuan)>$c_satuan) echo $konv_satuan[$c_satuan++]->total_konversi ?>">
+                                    <input type="number" min="0" class="form-control siku text-right" name="satuan" placeholder="Satuan" value="<?php if (count($konv_satuan) > $c_satuan) echo $konv_satuan[$c_satuan++]->total_konversi ?>">
                                     <div class="input-group-addon siku">Lusin</div>
                                     <button class="btn btn-success form-control siku col-sm-offset-6" type="submit" name="btnSimpan" value="karton">Simpan</button>
                                 </div>
@@ -186,6 +189,42 @@
         <?php endforeach; ?>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModalStok" tabindex="-1" role="dialog" aria-labelledby="myModalLabelStok">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-book"></i> Stok Barang</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Barang</th>
+                                <th>Stok</th>
+                            </tr>
+                        </thead>
+                        <?php
+                        $no = 1;
+                        foreach ($stok_cabang as $stok) {
+                            ?>
+                            <tr>
+                                <td><?php echo $no; ?></td>
+                                <td><?php echo $stok->namaBarang ?></td>
+                                <td><?php echo number_format($stok->jumlah, 0, ",", ".") ?></td>
+                            </tr>
+                            <?php
+                            $no++;
+                        }
+                        ?>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="<?php echo base_url(); ?>bootstrap/js/jquery.js"></script>
     <script src="<?php echo base_url(); ?>bootstrap/js/bootstrap.min.js"></script>
 
@@ -194,6 +233,84 @@
     <script type="text/javascript" src="<?php echo base_url() ?>Datatable/js/jquery.dataTables.js"></script>
     <script>
 
+                                                    alertify.defaults = {
+                                                        // dialogs defaults
+                                                        modal: true,
+                                                        basic: false,
+                                                        frameless: false,
+                                                        movable: true,
+                                                        resizable: true,
+                                                        closable: true,
+                                                        closableByDimmer: true,
+                                                        maximizable: true,
+                                                        startMaximized: false,
+                                                        pinnable: true,
+                                                        pinned: true,
+                                                        padding: true,
+                                                        overflow: true,
+                                                        maintainFocus: true,
+                                                        transition: 'pulse',
+                                                        autoReset: true,
+                                                        // notifier defaults
+                                                        notifier: {
+                                                            // auto-dismiss wait time (in seconds)  
+                                                            delay: 5,
+                                                            // default position
+                                                            position: 'bottom-right'
+                                                        },
+                                                        // language resources 
+                                                        glossary: {
+                                                            // dialogs default title
+                                                            title: 'Konfirmasi',
+                                                            // ok button text
+                                                            ok: 'OK',
+                                                            // cancel button text
+                                                            cancel: 'Cancel'
+                                                        },
+                                                        // theme settings
+                                                        theme: {
+                                                            // class name attached to prompt dialog input textbox.
+                                                            input: 'ajs-input',
+                                                            // class name attached to ok button
+                                                            ok: 'ajs-ok',
+                                                            // class name attached to cancel button 
+                                                            cancel: 'ajs-cancel'
+                                                        }
+                                                    };
+
+                                                    $("#inputCheck").click(function (event) {
+                                                        event.preventDefault();
+                                                        alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
+                                                            if (e) {
+                                                                $("#form_s").submit();
+                                                            } else {
+                                                                //after clicking Cancel
+                                                            }
+                                                        });
+                                                    });
+
+                                                    $("#tbl .inputDelete").click(function (event) {
+                                                        event.preventDefault();
+                                                        var a = this.href;
+                                                        alertify.confirm('Hapus Barang yang diPilih?', function (e) {
+                                                            if (e) {
+                                                                window.location.assign(a);
+                                                            } else {
+                                                                //after clicking Cancel
+                                                            }
+                                                        });
+                                                    });
+
+                                                    $("#datatable").dataTable();
+
+                                                    function delete_barang(btn) {
+                                                        document.preventDefault();
+                                                        alert();
+                                                    }
+                                                    console.log("<?php echo $refresh ?>");
+<?php
+if ($refresh) {
+    ?>
                                                         alertify.defaults = {
                                                             // dialogs defaults
                                                             modal: true,
@@ -222,7 +339,7 @@
                                                             // language resources 
                                                             glossary: {
                                                                 // dialogs default title
-                                                                title: 'Konfirmasi',
+                                                                title: '<i class="fa fa-info-circle"></i> Information',
                                                                 // ok button text
                                                                 ok: 'OK',
                                                                 // cancel button text
@@ -238,36 +355,10 @@
                                                                 cancel: 'ajs-cancel'
                                                             }
                                                         };
-
-                                                        $("#inputCheck").click(function (event) {
-                                                            event.preventDefault();
-                                                            alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
-                                                                if (e) {
-                                                                    $("#form_s").submit();
-                                                                } else {
-                                                                    //after clicking Cancel
-                                                                }
-                                                            });
-                                                        });
-
-                                                        $("#tbl .inputDelete").click(function (event) {
-                                                            event.preventDefault();
-                                                            var a = this.href;
-                                                            alertify.confirm('Hapus Barang yang diPilih?', function (e) {
-                                                                if (e) {
-                                                                    window.location.assign(a);
-                                                                } else {
-                                                                    //after clicking Cancel
-                                                                }
-                                                            });
-                                                        });
-
-                                                        $("#datatable").dataTable();
-
-                                                        function delete_barang(btn) {
-                                                            document.preventDefault();
-                                                            alert();
-                                                        }
+                                                        alertify.alert("<?php echo $refresh; ?>");
+    <?php
+}
+?>
     </script>
 </body>
 </html>

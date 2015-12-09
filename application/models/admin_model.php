@@ -42,6 +42,14 @@ class Admin_model extends CI_Model {
         }
     }
 
+    function delete_admin_set_increment($IDAdmin) {
+        $this->db->where("IDAdmin", $IDAdmin);
+        $this->db->delete("admin");
+
+        $sql = "ALTER TABLE admin AUTO_INCREMENT=" . $IDAdmin;
+        $this->db->query($sql);
+    }
+
     function get_provinsi_kabupaten($username) {
         $query = $this->db->query("SELECT provinsi, kabupaten
                                     FROM cabang c
@@ -68,7 +76,6 @@ class Admin_model extends CI_Model {
             "email" => $this->input->post("email")
         );
         $this->db->insert("admin", $data);
-        $this->session->set_flashdata("status", "Admin Telah Ditambahkan!");
 
         return $this->db->insert_id();
     }
@@ -190,11 +197,11 @@ class Admin_model extends CI_Model {
         return $this->db->insert_id();
     }
 
-    function check_penjualan($tanggal) {
+    function check_penjualan($tanggal, $IDCabang) {
         if ($tanggal == "") {
             $this->session->set_userdata("status_tanggal", "Tanggal Kosong!");
         } else {
-            $res = $this->db->get_where("laporan_penjualan", array("tanggal" => strftime("%Y-%m-%d", strtotime($tanggal))));
+            $res = $this->db->get_where("laporan_penjualan", array("tanggal" => strftime("%Y-%m-%d", strtotime($tanggal)), "IDCabang" => $IDCabang));
 
             if ($res->num_rows() > 0) {
                 return TRUE;
@@ -272,9 +279,9 @@ class Admin_model extends CI_Model {
             $res = $this->db->get_where("laporan_pengeluaran", array("IDPengeluaran" => $IDPengeluaran))->row();
         } else if (strpos($jenis, "Bayar Gaji") !== FALSE || strpos($jenis, "Bayar Komisi") !== FALSE) {
             $res = $this->db->get_where("laporan_penggajian", array("IDPenggajian" => $IDPengeluaran))->row();
-        } else if(strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
+        } else if (strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
             $res = $this->db->get_where("setoran_bank", array("IDSetoran" => $IDPengeluaran))->row();
-        } else if(strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
+        } else if (strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
             $res = $this->db->get_where("tarik_kas_bank", array("IDTarikKas" => $IDPengeluaran))->row();
         }
 //        adassadasd

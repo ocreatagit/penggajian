@@ -30,7 +30,7 @@ class Admin extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        $data['status'] = $this->session->flashdata('status');
+        $data['status_admin'] = $this->session->flashdata('status_admin');
         $data['admins'] = $this->Admin_model->select_admin();
 
         $this->load->view('v_head', $data);
@@ -47,7 +47,7 @@ class Admin extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        $data['status'] = $this->session->flashdata('status');
+        
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
 
@@ -58,11 +58,7 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'required');
 
         if ($this->input->post("btn_submit")) {
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('v_head');
-                $this->load->view('v_navigation');
-                $this->load->view('v_tambah_admin', $data);
-            } else {
+            if ($this->form_validation->run() == TRUE) {
                 $this->load->model("Admin_model");
                 $id = $this->Admin_model->insert_admin();
 
@@ -73,19 +69,21 @@ class Admin extends CI_Controller {
                 $this->load->library('upload', $config);
 
                 if (!$this->upload->do_upload("foto_admin")) {
-                    echo $response = $this->upload->display_errors();
-                    exit;
+                    $response = $this->upload->display_errors();
+                    $this->Admin_model->delete_admin_set_increment($id);
+                    $this->session->set_flashdata("status_admin", "Tidak Terdapat Foto yang Di Upload!");
                 } else {
                     $response = $this->upload->data();
-                    redirect("Admin/daftar_admin");
+                    $this->session->set_flashdata("status_admin", "Admin Telah Ditambahkan!");
                 }
+                redirect("Admin/tambah_admin");
             }
-        } else {
-            $data['status'] = "";
-            $this->load->view('v_head');
-            $this->load->view('v_navigation', $data);
-            $this->load->view('v_tambah_admin', $data);
         }
+        
+        $data['status_admin'] = $this->session->flashdata('status_admin');
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_tambah_admin', $data);
     }
 
     public function GVlg7Mq9vc6y0LyijfKx() {

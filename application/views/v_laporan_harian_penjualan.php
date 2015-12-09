@@ -34,9 +34,10 @@
             <div class="col-lg-7">
                 <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
                     <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
-<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                            ?>,-</span>-->
+<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                             ?>,-</span>-->
                     <input type="hidden" name="saldo" id="saldo" value="<?php echo $saldo; ?>"/>
                     <input type="hidden" name="idcabang" id="idcabang" value="<?php echo $cabang; ?>"/>
+                    <input type="hidden" name="current_url" id="current_url" value="<?php echo current_url(); ?>"/>
                 </div>
             </div>
         </div>
@@ -59,13 +60,13 @@
                                                 echo "selected";
                                             }
                                             ?>><?php echo $info_lokasi->desa; ?></option>
-                                    <?php endforeach; ?>
+                                                <?php endforeach; ?>
                                     </select>
                                     <?php if (form_error("lokasi")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("lokasi") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-top: -12px;">
@@ -115,17 +116,17 @@
                                     <select class="form-control siku" id='team_leader' name="team_leader">
                                         <?php foreach ($info_team_leaders as $value): ?>
                                             <option value='<?php echo $value->id_sales; ?>' <?php
-                                                    if ($this->session->userdata("cbo_team") == $value->id_sales) {
-                                                        echo "selected";
-                                                    }
-                                                    ?>><?php echo $value->nama; ?></option>
-                                    <?php endforeach; ?>
+                                            if ($this->session->userdata("cbo_team") == $value->id_sales) {
+                                                echo "selected";
+                                            }
+                                            ?>><?php echo $value->nama; ?></option>
+                                                <?php endforeach; ?>
                                     </select>
                                     <?php if (form_error("team_leader")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("team_leader") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -137,28 +138,28 @@
                                         foreach ($info_saleses as $value):
                                             ?>
                                             <option <?php if ($ke++ == 0) echo "selected" ?> value='<?php echo $value->id_sales; ?>'><?php echo $value->nama; ?></option>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
                                     </select>
                                     <?php if (form_error("salesnya_admin")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("salesnya_admin") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputPassword" class="col-sm-3 control-label">Nama Barang: </label>
                                 <div class="col-sm-5">
                                     <select class="form-control siku" id='nama_produk' name="nama_produk">
-                                    <?php foreach ($info_barang as $value): ?>
+                                        <?php foreach ($info_barang as $value): ?>
                                             <option value='<?php echo $value->IDBarang; ?>'><?php echo $value->namaBarang; ?></option>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
                                     </select>
                                     <?php if (form_error("nama_produk")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("nama_produk") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -169,8 +170,8 @@
                                     <?php if (form_error("jumlah")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("jumlah") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                     <input type="hidden" name="index_combo" value="" id="index_combo"/>
                                 </div>                            
                             </div>
@@ -184,8 +185,8 @@
                                     <?php if (form_error("pendapatan_SPG")) {
                                         ?>
                                         <span class='warna' id='lokasi_error'><?php echo form_error("pendapatan_SPG") ?></span>
-<?php }
-?>
+                                    <?php }
+                                    ?>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -374,10 +375,10 @@
                                             <td align="right" id="tengah"><?php echo $items["Jumlah"] ?></td>
                                             <td align="right" id="tengah">Rp <?php echo number_format($items["Subtotal"], 0, ',', '.'); ?>,-</td>
                                         </tr>
-        <?php
-    endforeach;
-}
-?>
+                                        <?php
+                                    endforeach;
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -529,19 +530,19 @@
                             <th>Stok</th>
                         </tr>
                     </thead>
-<?php
-$no = 1;
-foreach ($stok_cabang as $stok) {
-    ?>
+                    <?php
+                    $no = 1;
+                    foreach ($stok_cabang as $stok) {
+                        ?>
                         <tr>
                             <td><?php echo $no; ?></td>
                             <td><?php echo $stok->namaBarang ?></td>
                             <td><?php echo number_format($stok->jumlah, 0, ",", ".") ?></td>
                         </tr>
-    <?php
-    $no++;
-}
-?>
+                        <?php
+                        $no++;
+                    }
+                    ?>
                 </table>
             </div>
         </div>
@@ -565,27 +566,27 @@ foreach ($stok_cabang as $stok) {
 </script>
 <script>
     var arrSatuan = [<?php
-$temp = "";
-for ($i = 0; $i < count($konversi_satuan); $i++) {
-    if ($i == 0) {
-        $temp .= "" . $konversi_satuan[$i]->total_konversi;
-    } else {
-        $temp .= ", " . $konversi_satuan[$i]->total_konversi;
-    }
-}
-echo $temp;
-?>];
+                    $temp = "";
+                    for ($i = 0; $i < count($konversi_satuan); $i++) {
+                        if ($i == 0) {
+                            $temp .= "" . $konversi_satuan[$i]->total_konversi;
+                        } else {
+                            $temp .= ", " . $konversi_satuan[$i]->total_konversi;
+                        }
+                    }
+                    echo $temp;
+                    ?>];
     var arrharga = [<?php
-$temp = "";
-for ($i = 0; $i < count($harga_satuan); $i++) {
-    if ($i == 0) {
-        $temp .= "" . $harga_satuan[$i]->harga_konversi;
-    } else {
-        $temp .= ", " . $harga_satuan[$i]->harga_konversi;
-    }
-}
-echo $temp;
-?>];
+                    $temp = "";
+                    for ($i = 0; $i < count($harga_satuan); $i++) {
+                        if ($i == 0) {
+                            $temp .= "" . $harga_satuan[$i]->harga_konversi;
+                        } else {
+                            $temp .= ", " . $harga_satuan[$i]->harga_konversi;
+                        }
+                    }
+                    echo $temp;
+                    ?>];
     $('#konversi').hide();
     var idx = 0;
     $('#nama_produk').change(function () {

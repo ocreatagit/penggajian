@@ -8,9 +8,9 @@
                 <div class="panel-body siku">
                     <div class="row">
                         <div class="col-lg-12">
-                            <?php if ($status != "") {
+                            <?php if ($status_admin != "") {
                                 ?>
-                                <div class="alert alert-info"><i class="glyphicon glyphicon-info-sign"></i> <?php echo $status ?></div>
+                                <div class="alert alert-info"><i class="glyphicon glyphicon-info-sign"></i> <?php echo $status_admin ?></div>
                             <?php }
                             ?>
 
@@ -80,6 +80,11 @@
 <script src="<?php echo base_url(); ?>bootstrap/js/bootstrap.min.js"></script>
 
 <script src="<?php echo base_url(); ?>jquery-ui/jquery-ui.js"></script>
+<script type="text/javascript" src="<?php echo base_url() ?>Datatable/js/jquery.dataTables.js"></script>
+<script src="<?php echo base_url(); ?>alertify/alertify.min.js"></script>
+<script>
+    alertify.error('<i class="fa fa-warning"></i> Mohon Tambahkan Data Lokasi Untuk Admin yang Baru Di Tambahkan!', 0);
+</script>
 
 </body>
 </html>

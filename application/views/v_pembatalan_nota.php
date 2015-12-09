@@ -7,7 +7,7 @@
             </ol>
         </div>
     </div>
-    
+
     <div style="background-color: white; height: 120px;">
         <div class="col-md-12" style="margin-top: 17px;">
             <form class="form-inline" method="post" action="<?php
@@ -47,7 +47,7 @@
                 <a href="<?php echo base_url() ?>index.php/laporan/cetak_laporan_pembatalan" class="btn btn-info siku" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-print"></i> Print</a>
             </div>
         </div>
-        <?php }
+    <?php }
     ?>
 
     <div class="col-md-12" style="background-color: white;">
@@ -71,7 +71,7 @@
             <tbody>
                 <?php
                 foreach ($laporans as $laporan):
-                ?>
+                    ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal_jual)); ?></td>
@@ -142,7 +142,7 @@
         $(".kas_keluar").val('');
         $("#bayar_gaji").hide();
     });
-    
+
     $("#datepicker1").datepicker({
         inline: true,
         dateFormat: "dd-mm-yy",

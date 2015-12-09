@@ -1,4 +1,5 @@
 var base_url = $("#base_url").val();
+var current_url = $("#current_url").val();
 var saldo = $("#saldo").val();
 var tampSales;
 var tampBarang;
@@ -564,7 +565,8 @@ function tambah_lokasi() {
             $("#kabupaten_input").val("");
             $("#provinsi_input").val("");
 
-            $("#load_lokasi").load(base_url + "index.php/Laporan/get_lokasi");
+            //$("#load_lokasi").load(base_url + "index.php/Laporan/get_lokasi");
+            window.location.href = current_url;
         }, error: function (jqXHR, textStatus, errorThrown) {
             alert(JSON.stringify(jqXHR));
         }

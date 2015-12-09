@@ -133,16 +133,16 @@
                 <tr>
                     <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
                     <td><?php echo $pengeluaran->username; ?></td>
-                    <td>Rp <?php echo number_format($laporan->jumlah, 0, ",", ".") ?>.- </td>
-                    <td><?php echo $laporan->keterangan; ?></td>
+                    <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
+                    <td><?php echo $pengeluaran->keterangan; ?></td>
                     <!--<td style="width: 180px; text-align: center;">-->
                         <!--<a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>-->
                         <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-primary siku"><i class="fa fa-pencil"></i></a>-->
                         <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" id="delgrup" class="btn btn-sm btn-danger siku"><i class="fa fa-trash-o"></i></a>-->
                     <!--</td>-->
                 </tr>
-            <?php 
-            $total_biaya_keluar += $laporan->jumlah;
+                <?php
+                $total_biaya_keluar += $pengeluaran->jumlah;
             }
             ?>
 

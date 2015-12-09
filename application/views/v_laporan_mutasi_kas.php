@@ -18,13 +18,18 @@
                     <label for="exampleInputName2" class="control-label col-lg-2" style=""> Cabang : </label>
                     <div class="col-lg-3">
                         <select name="cabang" class="form-control siku">
-                            <option value="0"> --- Semua Cabang ---</option>
                             <?php
                             foreach ($cabangs as $cabang) {
                                 ?>
-                                <option value="<?php echo $cabang->idcabang ?>"><?php echo $cabang->provinsi . " - " . $cabang->kabupaten ?></option>
+                                <option value="<?php echo $cabang->idcabang ?>" <?php if($status_IDCabang == $cabang->idcabang) echo "selected"; ?>><?php echo $cabang->provinsi . " - " . $cabang->kabupaten ?></option>
                             <?php }
                             ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <select name="jenis" class="form-control siku">
+                            <option value="1" <?php if($status_jenis == 1) echo "selected"; ?>>Admin Lapangan</option>
+                            <option value="2" <?php if($status_jenis == 2) echo "selected"; ?>>Admin Kantor</option>
                         </select>
                     </div>
                 </div>

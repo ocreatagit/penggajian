@@ -52,6 +52,21 @@ class Barang_model extends CI_Model {
         }
     }
 
+    function get_status_barang($IDBarang) {
+        $result = $this->db->query("SELECT * FROM barang WHERE IDBarang = $IDBarang;");
+        if ($result->num_rows() == 0) {
+            return 0;
+        } else {
+            $sql = "SELECT IDBarang FROM cabang_barang WHERE IDBarang = $IDBarang UNION SELECT IDBarang FROM jual WHERE IDBarang = $IDBarang;";
+            $res = $this->db->query($sql);
+            if ($res->num_rows() == 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
     function delete_barang($IDBarang) {
         $result = $this->db->query("SELECT * FROM barang WHERE IDBarang = $IDBarang;");
         if ($result->num_rows() == 0) {

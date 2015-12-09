@@ -27,7 +27,7 @@ class Laporan_model extends CI_Model {
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin 
                 LEFT JOIN laporan_pembatalan_penjualan lb ON lb.IDPenjualan = lp.IDPenjualan WHERE lb.IDPembatalan IS NULL";
-            if ($this->input->post("btn_pilih")) {
+            if ($this->input->post("btn_submit")) {
                 if ($this->input->post("cabang") != 0) {
                     $sql.= " AND c.IDCabang = " . $this->input->post("cabang") . ";";
                 }
@@ -281,15 +281,19 @@ class Laporan_model extends CI_Model {
     function select_all_pengeluaran($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
         $sql = "SELECT * 
                 from ((
-                        SELECT laporan_pengeluaran.IDCabang as IDCabang,laporan_pengeluaran.tanggal, detail_pengeluaran.keterangan as keterangan, SUM(detail_pengeluaran.total_pengeluaran) as jumlah, detail_pengeluaran.keterangan_lanjut
+                        SELECT laporan_pengeluaran.IDCabang as IDCabang,laporan_pengeluaran.tanggal, detail_pengeluaran.keterangan as keterangan, SUM(detail_pengeluaran.total_pengeluaran) as jumlah, detail_pengeluaran.keterangan_lanjut, admin.username
                         FROM detail_pengeluaran 
-                        INNER JOIN laporan_pengeluaran on laporan_pengeluaran.IDPengeluaran = detail_pengeluaran.IDPengeluaran
+                        INNER JOIN laporan_pengeluaran on laporan_pengeluaran.IDPengeluaran = detail_pengeluaran.IDPengeluaran 
+                        INNER JOIN cabang ON cabang.IDCabang = laporan_pengeluaran.IDCabang 
+                        INNER JOIN admin ON admin.IDAdmin = cabang.IDAdmin_kantor 
                         GROUP BY keterangan, keterangan_lanjut, tanggal) 
                         UNION (
-                        SELECT laporan_penggajian.IDCabang as IDCabang, detail_penggajian.Tanggal, CONCAT(laporan_penggajian.keterangan,' ', sales.nama) as keterangan, detail_penggajian.total_gaji as jumlah, '' as keterangan_lanjut
+                        SELECT laporan_penggajian.IDCabang as IDCabang, detail_penggajian.Tanggal, CONCAT(laporan_penggajian.keterangan,' ', sales.nama) as keterangan, detail_penggajian.total_gaji as jumlah, '' as keterangan_lanjut, admin.username
                         FROM detail_penggajian 
                         INNER JOIN sales on sales.IDSales = detail_penggajian.IDSales 
-                        INNER JOIN laporan_penggajian ON laporan_penggajian.IDPenggajian = detail_penggajian.IDPenggajian) 
+                        INNER JOIN laporan_penggajian ON laporan_penggajian.IDPenggajian = detail_penggajian.IDPenggajian
+                        INNER JOIN cabang ON cabang.IDCabang = laporan_penggajian.IDCabang 
+                        INNER JOIN admin ON admin.IDAdmin = cabang.IDAdmin_kantor) 
                         ORDER BY tanggal DESC) as table1 ";
         if ($awal && $akhir) {
             $sql.=" WHERE table1.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
