@@ -12,7 +12,6 @@
         <div class="col-md-12" style="margin-top: 17px;">
             <form class="form-inline" method="post" action="<?php
             echo current_url();
-            $total = array();
             ?>">
                       <?php if ($this->session->userdata("Level") == 0) : ?>
                     <div class="form-group">

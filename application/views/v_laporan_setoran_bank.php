@@ -15,6 +15,27 @@
         </div>
         <?php }
     ?>
+    
+    <div style="height: 75px; background-color: white; padding: 20px 20px;">
+        <form class="form-inline" method="post" action="<?php
+        echo current_url();
+        ?>">
+                  <?php if ($this->session->userdata("Level") == 0) : ?>
+                <div class="form-group">
+                    <label class="">Cabang : </label>
+                    <select class="form-control siku" style="width: 200px" name="cabang">
+                        <option value="0"> --- Semua Cabang ---</option>
+                        <?php foreach ($cabangs as $cabang): ?>
+                            <option value="<?php echo $cabang->idcabang ?>" <?php echo $cabang->idcabang == $selectCabang ? "selected" : "" ?>><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
+                        <?php endforeach; ?>
+                    </select>                 
+                    &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-primary siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>                
+                </div>
+                <br><br>
+            <?php endif; ?>  
+        </form>   
+    </div>
+    <br>
 
     <div class="col-md-12" style="background-color: white;">
         <table class='table table-striped table-hover' id="list_laporan">

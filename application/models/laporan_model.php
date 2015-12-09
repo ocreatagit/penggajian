@@ -104,19 +104,19 @@ class Laporan_model extends CI_Model {
         return $query->result();
     }
 
-    function get_saldo_kantor($IDCabang) {
+    function get_saldo_kantor($IDCabang = FALSE ) {
         $sql = "SELECT s.*, c.provinsi, c.kabupaten
                 FROM setoran_bank s
                 INNER JOIN cabang c ON c.IDCabang = s.IDCabang
-                WHERE c.IDCabang = " . $IDCabang . " AND (s.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                WHERE ". ( $IDCabang ? " c.IDCabang = " . $IDCabang . " AND " : "" )." (s.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
         return $this->db->query($sql)->result();
     }
 
-    function get_saldo_kas_bank($IDCabang) {
+    function get_saldo_kas_bank($IDCabang = FALSE) {
         $sql = "SELECT t.*, c.provinsi, c.kabupaten
                 FROM tarik_kas_bank t
                 INNER JOIN cabang c ON c.IDCabang = t.IDCabang
-                WHERE c.IDCabang = " . $IDCabang . " AND (t.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                WHERE ". ($IDCabang ? "c.IDCabang = " . $IDCabang . " AND " : "" ) . " (t.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
         return $this->db->query($sql)->result();
     }
 

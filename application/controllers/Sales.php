@@ -105,7 +105,6 @@ class Sales extends CI_Controller {
             $this->load->model("Sales_model");
             $data['data_sales'] = $this->Sales_model->select_sales($IDSales);
             $data['komisi_sales'] = $this->Sales_model->select_komisi($IDSales);                       
-            
             if ($this->input->post("btn_submit")) {
                 
                 $this->load->model("Sales_model");

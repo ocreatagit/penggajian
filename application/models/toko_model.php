@@ -139,9 +139,11 @@ class Toko_model extends CI_Model {
     }
 
     function laporan_spg($awal = FALSE, $akhir = FALSE, $IDToko = FALSE) {
-        $sql = " SELECT ";        
-        $sql .= " SUM(laporan_barang_mt.jumlah) as total_jumlah, laporan_barang_mt.*, sales_mt.*, laporan_penjualan_mt.tanggal FROM laporan_barang_mt INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT ";
-
+        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as total_jumlah, barang_mt.nama
+                FROM laporan_barang_mt
+                INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT 
+                INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
+                INNER JOIN barang_mt on barang_mt.IDBarangMT = laporan_barang_mt.IDBarangMT ";
         if ($awal && $akhir) {
             $sql.=" WHERE laporan_penjualan_mt.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
         } else {
@@ -152,7 +154,11 @@ class Toko_model extends CI_Model {
             $sql .= " AND laporan_penjualan_mt.IDTokoMT = " . $IDToko;
         }
 
-        $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, IDBarangMT";
+        if ($this->session->userdata('Level') != 0) {
+            $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
+        }
+
+        $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, barang_mt.IDBarangMT";
         return $this->db->query($sql)->result();
     }
 
@@ -184,7 +190,7 @@ class Toko_model extends CI_Model {
                     'jumlah' => $items['qty']
                 );
                 $this->db->insert('laporan_barang_mt', $data);
-                
+
                 $dataX = array(
                     "rowid" => $items["rowid"],
                     "qty" => 0
@@ -192,6 +198,60 @@ class Toko_model extends CI_Model {
                 $this->cart->update($dataX);
             }
         }
+    }
+
+    function get_laporan_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
+        $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko 
+                FROM laporan_barang_mt
+                INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
+                INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT
+                INNER JOIN barang_mt on barang_mt.IDBarangMT = laporan_barang_mt.IDBarangMT
+                INNER JOIN toko on toko.IDToko = laporan_barang_mt.IDToko";
+        if ($awal && $akhir) {
+            $sql.=" WHERE laporan_penjualan_mt.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else {
+            $sql.=" WHERE month(laporan_penjualan_mt.tanggal) = month(now()) AND year(laporan_penjualan_mt.tanggal) = year(now()) ";
+        }
+        if ($SPG) {
+            $sql .= " AND sales_mt.IDSalesMT = " . $SPG;
+        }
+        if ($barang) {
+            $sql .= " AND barang_mt.IDBarangMT = " . $barang;
+        }
+        if ($toko) {
+            $sql .= " AND toko.IDToko = " . $toko;
+        }
+        if ($IDCabang) {
+            $sql .= " AND toko.IDCabang = " . $IDCabang;
+        }
+        $sql .= " ORDER BY tanggal, toko, barang ";
+        return $this->db->query($sql)->result();
+    }
+
+    function get_total_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
+        $sql = "SELECT barang_mt.nama as barang, sum(laporan_barang_mt.jumlah) as jumlah, toko.nama as toko FROM laporan_barang_mt 
+                INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
+                INNER JOIN barang_mt on barang_mt.IDBarangMT = laporan_barang_mt.IDBarangMT
+                INNER JOIN toko on toko.IDToko = laporan_barang_mt.IDToko";
+        if ($awal && $akhir) {
+            $sql.=" WHERE laporan_penjualan_mt.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else {
+            $sql.=" WHERE month(laporan_penjualan_mt.tanggal) = month(now()) AND year(laporan_penjualan_mt.tanggal) = year(now()) ";
+        }
+        if ($SPG) {
+            $sql .= " AND laporan_barang_mt.IDSalesMT = " . $SPG;
+        }
+        if ($barang) {
+            $sql .= " AND laporan_barang_mt.IDBarangMT = " . $barang;
+        }
+        if ($toko) {
+            $sql .= " AND laporan_barang_mt.IDToko = " . $toko;
+        }
+        if ($IDCabang) {
+            $sql .= " AND toko.IDCabang = " . $IDCabang;
+        }
+        $sql .= " GROUP BY barang_mt.nama ORDER BY barang ";
+        return $this->db->query($sql)->result();
     }
 
 }

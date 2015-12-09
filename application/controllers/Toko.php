@@ -177,15 +177,14 @@ class Toko extends CI_Controller {
         $data['laporan_alls'] = $this->Toko_model->laporan_spg();
         $data['laporans'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
         $data['tokos'] = $this->Toko_model->get_all_toko();
-
         $data['data'] = "SEMUA BARANG BULAN INI";
         if ($this->input->post('btn_pilih')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $IDToko = $this->input->post('filter');
-            $data['laporan_alls'] = $this->Toko_model->laporan_spg( $awal, $akhir, ($IDToko == 0 ? FALSE : $IDToko));
+            $data['laporan_alls'] = $this->Toko_model->laporan_spg($awal, $akhir, ($IDToko == 0 ? FALSE : $IDToko));
             $data['laporans'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
-            $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode $awal sampai $akhir";
+            $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
         }
 
         $this->load->view('v_head', $data);
@@ -319,7 +318,7 @@ class Toko extends CI_Controller {
         $data["tokos"] = $this->Toko_model->get_all_toko($data['IDCabang']);
         $data["spgs"] = $this->Toko_model->get_spg_mt($data['IDCabang']);
         $data["barangs"] = $this->Toko_model->get_all_barang();
-//        print_r($data["tokos"]); exit;
+
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
         $this->load->view('v_penjualan_mt', $data);
@@ -373,7 +372,7 @@ class Toko extends CI_Controller {
                     'tanggal' => $this->input->post("tanggal")
                 )
             );
-            $this->cart->insert($data); 
+            $this->cart->insert($data);
         }
         /*
          * "id": $("#id" + i).val(),
@@ -388,22 +387,97 @@ class Toko extends CI_Controller {
           "combo_index": $("#combo_index" + i).val()
          */
     }
-    
-    function refresh_total(){
+
+    function refresh_total() {
         $total = $this->cart->total_items();
         echo '<td class="" colspan="4" align="right" style="color: white"><h4>Total</h4></td>
-            <td class="" colspan="" style="color: white"><h4>'.$total.'</h4></td>
+            <td class="" colspan="" style="color: white"><h4>' . $total . '</h4></td>
             <td class="" colspan="" align="center"><button class="btn btn-default" id="btn_save" type="button"><i class="fa fa-save"></i> Save</button></td>';
     }
-    
-    function insert_penjualan_mt(){
-        if($this->cart->total_items() > 0){
+
+    function insert_penjualan_mt() {
+        if ($this->cart->total_items() > 0) {
             $this->Toko_model->insert_penjualan_mt();
             $this->session->set_flashdata("status_mt", "Data Telah Disimpan!");
         } else {
             $this->session->set_flashdata("status_mt", "Tidak Terdapat Data yang Diinputkan!");
         }
         redirect("toko/penjualan");
+    }
+
+    function laporan_penjualan() {
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+
+        $data['status'] = $this->session->flashdata('status');
+        $data['tokos'] = $this->Toko_model->get_all_toko();
+        $data['barangs'] = $this->Toko_model->get_all_barang();
+        $data['spgs'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
+        $data['data'] = "SEMUA BARANG BULAN INI";
+        if ($data['level'] == 0) {
+            $data['laporans'] = $this->Toko_model->get_laporan_penjualan();
+            $data['totals'] = $this->Toko_model->get_total_penjualan();
+        }else{
+            $data['laporans'] = $this->Toko_model->get_laporan_penjualan($data['IDCabang']);
+            $data['totals'] = $this->Toko_model->get_total_penjualan($data['IDCabang']);
+        }
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_print')) {
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $IDCabang = $this->input->post('cabang');
+            $IDToko = $this->input->post('filterToko');
+            $IDBarang = $this->input->post('filterBarang');
+            $IDSpg = $this->input->post('filterSPG');
+            $data['laporans'] = $this->Toko_model->get_laporan_penjualan( ($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
+            $data['totals'] = $this->Toko_model->get_total_penjualan( ($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
+            $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
+        }
+        if($this->input->post('btn_print')){
+           $this->xls_penjualan($data);
+        }
+
+        $this->load->view('v_head', $data);
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_laporan_penjualan_spg_mt', $data);
+    }
+    
+    function xls_penjualan($data){
+        $this->load->library('custom_excel');
+        $excel = $this->custom_excel;
+        $excel->declare_excel();
+        $row = 1;
+        /* begin */
+        $excel->add_cell("Laporan Penjualan SPG MT", "A", $row++)->font(20)->merge(array(0, 4))->alignment('center');
+        $row++;
+        $excel->add_cell('Nama Barang', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Jumlah', 'B', $row++)->alignment('center')->border()->autoWidth()->font(16);
+       foreach ($data['totals'] as $laporan):            
+            $excel->add_cell($laporan->barang, "A", $row)->border();
+            $excel->add_cell($laporan->jumlah, "B", $row)->border();            
+            $row++;
+        endforeach;
+        $row++;
+        $excel->add_cell('Tanggal', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Nama SPG', 'B', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Nama Barang', 'C', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Jumlah', 'D', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Nama Toko', 'E', $row++)->alignment('center')->border()->autoWidth()->font(16);
+        
+        foreach ($data['laporans'] as $laporan):
+            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
+            $excel->add_cell($laporan->sales, "B", $row)->border();
+            $excel->add_cell($laporan->barang, "C", $row)->border();
+            $excel->add_cell($laporan->jumlah, "D", $row)->border();
+            $excel->add_cell($laporan->toko, "E", $row)->border();            
+            $row++;
+        endforeach;
+        /* end */
+        $excel->end_excel("laporan penjualan SPG MT");
     }
 
 }

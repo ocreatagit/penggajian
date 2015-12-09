@@ -53,20 +53,26 @@
                                 <hr>
                                 <div class="form-group">
                                     <label>Gaji</label>
-                                    <input type="number" name="gaji" min="0" class="form-control" value="<?php if($data_sales != null) echo $data_sales[0]->gaji ?>">                                    
+                                    <input type="number" name="gaji" min="0" class="form-control" value="<?php if ($data_sales != null) echo $data_sales[0]->gaji ?>">                                    
                                 </div>
                                 <hr> 
                                 <label>Komisi</label>
                                 <div style="border: black 1px solid; padding: 10px; height: 170px; overflow: auto;">
-                                    <?php 
+                                    <?php
 //                                    print_r($komisi_sales); echo "<br>";
-                                    $count = 1; foreach ($barangs as $barang) : ?>
+                                    $count = 1;
+                                    foreach ($barangs as $barang) :
+                                        ?>
                                         <div class="form-group">
-                                            <label><?php echo $barang->namaBarang?></label>
-                                            <input type="hidden" name="IDBarang<?php echo $count ?>" value="<?php echo $barang->IDBarang?>">
-                                            <input type="number" name="KomisiBarang<?php echo $count; ?>" value="<?php if($data_sales != null) echo $komisi_sales[$count-1]->komisi; $count++; ?>" min="0" class="form-control">                                    
+                                            <label><?php echo $barang->namaBarang ?></label>
+                                            <input type="hidden" name="IDBarang<?php echo $count ?>" value="<?php echo $barang->IDBarang ?>">
+                                            <input type="number" name="KomisiBarang<?php echo $count; ?>" value="<?php if ($data_sales != null) if (count($komisi_sales) > $count - 1) {
+                                            echo $komisi_sales[$count - 1]->komisi;
+                                        } else {
+                                            echo 0;
+                                        } $count++; ?>" min="0" class="form-control">                                    
                                         </div>
-                                    <?php endforeach; ?>
+<?php endforeach; ?>
                                 </div>
                                 <br>
                                 <a href="<?php echo base_url() ?>index.php/Sales/daftar_sales" class="btn btn-default siku"><i class='fa fa-backward'></i> Kembali</a>
@@ -96,7 +102,7 @@
         dateFormat: 'dd/mm/yy',
         changeMonth: true
     });
-//    $("#datepicker").datepicker("setDate", "<?php // echo $data_sales != NULL ? date('d/m/Y', strtotime($data_sales[0]->tanggalLahir)) : '1/1/1990' ?>");
+//    $("#datepicker").datepicker("setDate", "<?php // echo $data_sales != NULL ? date('d/m/Y', strtotime($data_sales[0]->tanggalLahir)) : '1/1/1990'  ?>");
 </script>
 
 </body>

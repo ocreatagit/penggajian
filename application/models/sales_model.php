@@ -351,8 +351,8 @@ class Sales_model extends CI_Model {
         $this->db->insert_batch('komisi', $data);
     }
 
-    function select_komisi($IDSales) {
-        return $this->db->get_where('komisi', array('IDSales' => $IDSales))->result();
+    function select_komisi($IDSales) {         
+        return $this->db->order_by('IDSales ASC, IDBarang ASC')->get_where('komisi', array('IDSales' => $IDSales))->result();
     }
 
     function update_sales($id) {
@@ -410,11 +410,19 @@ class Sales_model extends CI_Model {
     function ganti_komisi($IDSales, $arrBarang) {
         $counter = 1;
         foreach ($arrBarang as $barang) {
-            $data = array('komisi' => $this->input->post('KomisiBarang' . $counter));
+            if ($this->db->get_where('komisi', array('IDBarang' => $barang->IDBarang, 'IDSales' => $IDSales))->num_rows() == 0) {
+                $data = array(
+                    "IDBarang" => $barang->IDBarang,
+                    "IDSales" => $IDSales,
+                    'komisi' => $this->input->post('KomisiBarang' . $counter)
+                );
+                $this->db->insert('komisi', $data);
+            } else {
+                $this->db->where('IDBarang', $barang->IDBarang);
+                $this->db->where('IDSales', $IDSales);
+                $this->db->update('komisi', array('komisi' => $this->input->post('KomisiBarang' . $counter)));
+            }
             $counter++;
-            $this->db->where('IDBarang', $barang->IDBarang);
-            $this->db->where('IDSales', $IDSales);
-            $this->db->update('komisi', $data);
         }
     }
 
