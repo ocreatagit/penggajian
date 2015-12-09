@@ -1316,20 +1316,22 @@ class Laporan extends CI_Controller {
 //        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
 //        $excel->add_cell($data['data'], 'B', $row++)->merge(array(0, 1))->alignment('center');
         $row++;
-        $excel->add_cell('Tanggal', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
-        $excel->add_cell('Keterangan', 'B', $row)->alignment('center')->border()->autoWidth()->font(16);
-        $excel->add_cell('Kas Masuk', 'C', $row)->alignment('center')->border()->autoWidth()->font(16);
-        $excel->add_cell('Kas Keluar', 'D', $row)->alignment('center')->border()->autoWidth()->font(16);
-        $excel->add_cell('Saldo Akhir', 'E', $row++)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Tanggal Mutasi', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Tanggal Nota Dibuat', 'B', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Keterangan', 'C', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Kas Masuk', 'D', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Kas Keluar', 'E', $row)->alignment('center')->border()->autoWidth()->font(16);
+        $excel->add_cell('Saldo Akhir', 'F', $row++)->alignment('center')->border()->autoWidth()->font(16);
 
         $saldo_mutasi = 0;
 
         foreach ($data['jurnals'] as $laporan):
             $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
-            $excel->add_cell($laporan->keterangan, "B", $row)->border();
-            $excel->add_cell("Rp. " . number_format($laporan->kasmasuk, 0, ",", ".") . ",-", "C", $row)->border();
-            $excel->add_cell("Rp. " . number_format($laporan->kaskeluar, 0, ",", ".") . ",-", "D", $row)->border();
-            $excel->add_cell("Rp. " . number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.') . ",-", "E", $row)->border();
+            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal1)), "B", $row)->border();
+            $excel->add_cell($laporan->keterangan1, "C", $row)->border();
+            $excel->add_cell("Rp. " . number_format($laporan->kasmasuk, 0, ",", ".") . ",-", "D", $row)->border();
+            $excel->add_cell("Rp. " . number_format($laporan->kaskeluar, 0, ",", ".") . ",-", "E", $row)->border();
+            $excel->add_cell("Rp. " . number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.') . ",-", "F", $row)->border();
             $row++;
         endforeach;
         /* end */

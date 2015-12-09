@@ -18,6 +18,19 @@ class Lokasi_model extends CI_Model {
         );
 
         $this->db->insert('cabang', $data);
+        
+        $IDCabang = $this->db->insert_id();
+        $res = $this->db->get("akun")->result();
+        
+        foreach ($res as $items) {
+            $data = array(
+                "IDAkun" => $items->IDAkun,
+                "IDCabang" => $IDCabang,
+                "nilai_akun" => 0
+            );
+            $this->db->insert("akun_cabang", $data);
+        }
+        
         $this->session->set_flashdata("status", "Cabang Telah Ditambahkan!");
     }
 

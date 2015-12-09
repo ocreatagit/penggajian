@@ -65,7 +65,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">Admin Laporan : </label>
+                                <label class="col-sm-2 control-label">Admin Lapangan : </label>
                                 <div class="col-sm-4">
                                     <?php
                                     if (count($admin) == 0) {
