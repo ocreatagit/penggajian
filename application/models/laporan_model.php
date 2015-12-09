@@ -27,7 +27,7 @@ class Laporan_model extends CI_Model {
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin 
                 LEFT JOIN laporan_pembatalan_penjualan lb ON lb.IDPenjualan = lp.IDPenjualan WHERE lb.IDPembatalan IS NULL";
-            if ($this->input->post("btn_pilih")) {
+            if ($this->input->post("btn_submit")) {
                 if ($this->input->post("cabang") != 0) {
                     $sql.= " AND c.IDCabang = " . $this->input->post("cabang") . ";";
                 }
