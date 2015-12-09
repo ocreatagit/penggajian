@@ -983,24 +983,24 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post('submit') || $this->input->post('btn_convert')) {
             $data['searchby'] = $this->input->post('jenis_pengeluaran');
-                $awal = $this->input->post('tanggal_awal');
-                $akhir = $this->input->post('tanggal_akhir');
-                if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
-                    if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
-                        $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir);
-                        $data['kolom'] = true;
-                    } else {
-                        $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir);
-                        $data['kolom'] = false;
-                    }
-                } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
-                    $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
+                if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
+                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir);
                     $data['kolom'] = true;
                 } else {
-                    $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
-                    $data['kolom'] = true;
+                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['kolom'] = false;
                 }
-                $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");            
+            } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
+                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data['kolom'] = true;
+            } else {
+                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
+                $data['kolom'] = true;
+            }
+            $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
             if ($this->input->post('btn_convert')) {
                 $this->excel_pengeluaran($data);
             }
@@ -1091,7 +1091,15 @@ class Laporan extends CI_Controller {
         }
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->get_saldo_kantor($data['IDCabang']);
-
+        $data['selectCabang'] = 0;
+        $data['selectCabang'] = 0;
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+            if ($this->input->post('btn_pilih')) {
+                $data['selectCabang'] = $this->input->post('cabang');
+                $data["laporans"] = $this->Laporan_model->get_saldo_kantor($data['selectCabang'] == 0 ? FALSE : $data['selectCabang']);
+            }
+        }
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_setoran_bank', $data);
@@ -1110,8 +1118,19 @@ class Laporan extends CI_Controller {
             $this->session->unset_userdata('Username');
             redirect('welcome/index');
         }
+
+
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->get_saldo_kas_bank($data['IDCabang']);
+
+        $data['selectCabang'] = 0;
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+            if ($this->input->post('btn_pilih')) {
+                $data['selectCabang'] = $this->input->post('cabang');
+                $data["laporans"] = $this->Laporan_model->get_saldo_kas_bank($data['selectCabang'] == 0 ? FALSE : $data['selectCabang']);
+            }
+        }
 
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
@@ -1184,15 +1203,16 @@ class Laporan extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->select_laporan_batal();
         $data['periode'] = "Laporan Bulan Ini";
+        $data['selectCabang'] = 0;
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
 
         if ($this->input->post('btn_pilih')) {
+            $data['selectCabang'] = $this->input->post('cabang');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
