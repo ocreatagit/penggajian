@@ -650,6 +650,7 @@ class Laporan extends CI_Controller {
 //                    print_r($temp);exit;
                 }
                 $this->Sales_model->insert_kehadiran($temp);
+                print_r($temp);exit;
 
                 // Jurnal
                 $this->load->model('Jurnal_model');

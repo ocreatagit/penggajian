@@ -130,7 +130,7 @@
                                 <h3>Satuan</h3>
                                 <label class="col-sm-3 text-right">1 Karton :</label>
                                 <div class="input-group col-sm-5">
-                                    <input type="number" min="0" class="form-control siku text-right" name="satuan" placeholder="Satuan" value="<?php if (count($konv_satuan) > $c_satuan) echo $konv_satuan[$c_satuan++]->total_konversi ?>">
+                                    <input type="number" min="1" class="form-control siku text-right" name="satuan" placeholder="Satuan" value="<?php if (count($konv_satuan) > $c_satuan) echo $konv_satuan[$c_satuan++]->total_konversi ?>">
                                     <div class="input-group-addon siku">Lusin</div>
                                     <button class="btn btn-success form-control siku col-sm-offset-6" type="submit" name="btnSimpan" value="karton">Simpan</button>
                                 </div>
