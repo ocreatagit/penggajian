@@ -20,9 +20,9 @@ class Barang_model extends CI_Model {
             //set default konversi lusin ke pcs
             $data = array(
                 'IDBarang' => $kembali,
-                'IDSatuan1' => 1,
-                'IDSatuan2' => 2,
-                'total_konversi' => 12
+                'IDSatuan1' => 2,
+                'IDSatuan2' => 3,
+                'total_konversi' => 1000
             );
             $this->db->insert('satuan_unit', $data);
             $this->session->set_flashdata("status", "Barang Telah Ditambahkan!");

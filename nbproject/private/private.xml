@@ -3,16 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Laporan.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_pencarian.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Sales.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_mutasi_kas.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/admin_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/jurnal_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/komisi.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Pencarian.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_mutasi_kas_bank.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/laporan_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Laporan.php</file>
         </group>
     </open-files>
 </project-private>

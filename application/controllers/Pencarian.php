@@ -45,7 +45,7 @@ class Pencarian extends CI_Controller {
             if ($awal != "" && $akhir != "") {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode($awal, $akhir);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
-                
+
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
             } else {
                 $data['laporans'] = $this->Laporan_model->select_laporan();
@@ -147,7 +147,13 @@ class Pencarian extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-
+        $data["konversi_satuan"] = $this->Barang_model->get_satuan();
+        $jumlah_loop = count($data['konversi_satuan']);
+        for($i = $jumlah_loop-1; $i>=0;$i--){
+            $temp = $data["konversi_satuan"][$i];
+            $data['konversi_satuan'][$temp->IDBarang] = $temp;
+            unset($data["konversi_satuan"][$i]);
+        }
         if ($awal == "" && $akhir == "") {
             $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
         } else {
@@ -254,13 +260,13 @@ class Pencarian extends CI_Controller {
         $data['data'] = "BULAN INI";
         $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales);
         if ($this->input->post('submit')) {
-                $awal = $this->input->post('tanggal_awal');
-                $akhir = $this->input->post('tanggal_akhir');
-                $data['topbarangs'] = $this->Barang_model->select_top_seles($awal, $akhir);
-                $data['data'] = "Periode $awal sampai $akhir";
-                if (count($IDSales) > 0) {
-                    $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales, $awal, $akhir);
-                }            
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['topbarangs'] = $this->Barang_model->select_top_seles($awal, $akhir);
+            $data['data'] = "Periode $awal sampai $akhir";
+            if (count($IDSales) > 0) {
+                $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales, $awal, $akhir);
+            }
         }
 
         $this->load->view('v_head');

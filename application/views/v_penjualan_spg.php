@@ -80,6 +80,7 @@
                     <th>SPG</th>
                     <th>Nama Barang</th>
                     <th>Penjualan(pcs)</th>
+                    <th>Konversi Satuan</th>
                     <th>Lokasi</th>
                 </tr>
             </thead>
@@ -87,30 +88,44 @@
                 <?php
                 foreach ($datapenjualan as $penjualan):
                     $total[$penjualan->IDBarang] += intval($penjualan->jumlah);
+                    $satuan = intval($konversi_satuan[$penjualan->IDBarang]->total_konversi);
+                    $jumlah = intval($penjualan->jumlah);
+                    $karton = floor($jumlah / ($satuan * 12));
+                    $jumlah %= ($satuan * 12);
+                    $lusin = floor($jumlah / 12);
+                    $jumlah %= 12;
                     ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($penjualan->tanggal)) ?></td>
                         <td><?php echo $penjualan->nama ?></td>
                         <td><?php echo $penjualan->namaBarang ?></td>
                         <td><?php echo $penjualan->jumlah ?></td>
+                        <td><?php echo ( $karton == 0 ? "" : $karton . " karton ") . ($lusin == 0 ? "" : $lusin . " lusin ") . $jumlah . " pcs" ?></td>
                         <td><?php echo $penjualan->desa ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
             <tr>
-                <td colspan="5" style="text-align: center; height: 20px;"></td>
+                <td colspan="6" style="text-align: center; height: 20px;"></td>
             </tr>
             <tr>
-                <td colspan="5" style="text-align: center; font-size: medium; background-color: #ccccff"><strong>TOTAL PENJUALAN</strong> </td>
+                <td colspan="6" style="text-align: center; font-size: medium; background-color: #ccccff"><strong>TOTAL PENJUALAN</strong> </td>
             </tr>
 
             <?php
             $counter = 0;
-            foreach ($total as $value) :
+            foreach ($total as $key => $value) :
+                $satuan = intval($konversi_satuan[$key]->total_konversi);
+                $jumlah = intval($value);
+                $karton = floor($jumlah / ($satuan * 12));
+                $jumlah %= ($satuan * 12);
+                $lusin = floor($jumlah / 12);
+                $jumlah %= 12;
                 ?>
                 <tr>
                     <td colspan="3" style="text-align: right;"><?php echo $barangs[$counter++]->namaBarang ?> :</td>
                     <td><?php echo $value ?></td>
+                    <td><?php echo ( $karton == 0 ? "" : $karton . " karton ") . ($lusin == 0 ? "" : $lusin . " lusin ") . $jumlah . " pcs" ?></td>
                     <td></td>
                 </tr>
             <?php endforeach; ?>            
