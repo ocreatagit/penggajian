@@ -38,7 +38,7 @@ class Pencarian extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        $data['laporans'] = $this->Laporan_model->select_laporan();
+        $data['laporans'] = $this->Laporan_model->select_laporan_periode();
         $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
         $data["periode"] = "Laporan Bulan Ini";
         if ($this->input->post("btn_pilih")) {

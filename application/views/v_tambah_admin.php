@@ -83,7 +83,11 @@
 <script type="text/javascript" src="<?php echo base_url() ?>Datatable/js/jquery.dataTables.js"></script>
 <script src="<?php echo base_url(); ?>alertify/alertify.min.js"></script>
 <script>
-    alertify.error('<i class="fa fa-warning"></i> Mohon Tambahkan Data Lokasi Untuk Admin yang Baru Di Tambahkan!', 0);
+    var canDismiss = false;
+    var notification = alertify.error('<i class="fa fa-warning"></i> Mohon Tambahkan Data Lokasi Untuk Admin yang Baru Di Tambahkan!');
+    notification.ondismiss = function () {
+        return canDismiss;
+    };
 </script>
 
 </body>

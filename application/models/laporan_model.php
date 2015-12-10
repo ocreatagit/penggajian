@@ -104,11 +104,11 @@ class Laporan_model extends CI_Model {
         return $query->result();
     }
 
-    function get_saldo_kantor($IDCabang = FALSE ) {
+    function get_saldo_kantor($IDCabang = FALSE) {
         $sql = "SELECT s.*, c.provinsi, c.kabupaten
                 FROM setoran_bank s
                 INNER JOIN cabang c ON c.IDCabang = s.IDCabang
-                WHERE ". ( $IDCabang ? " c.IDCabang = " . $IDCabang . " AND " : "" )." (s.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                WHERE " . ( $IDCabang ? " c.IDCabang = " . $IDCabang . " AND " : "" ) . " (s.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
         return $this->db->query($sql)->result();
     }
 
@@ -116,33 +116,49 @@ class Laporan_model extends CI_Model {
         $sql = "SELECT t.*, c.provinsi, c.kabupaten
                 FROM tarik_kas_bank t
                 INNER JOIN cabang c ON c.IDCabang = t.IDCabang
-                WHERE ". ($IDCabang ? "c.IDCabang = " . $IDCabang . " AND " : "" ) . " (t.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                WHERE " . ($IDCabang ? "c.IDCabang = " . $IDCabang . " AND " : "" ) . " (t.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
         return $this->db->query($sql)->result();
     }
 
-    function select_laporan_periode($awal, $akhir) {
+    function select_laporan_periode($awal = FALSE, $akhir = FALSE) {
         if ($this->input->post("cabang")) {
-//            echo $this->input->post("cabang"); exit;
             if ($this->input->post("cabang") == 0) {
                 $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
                 FROM cabang c
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
-                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin
-                Where DATE(tanggal) BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'";
+                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin ";
+                if ($awal && $akhir) {
+                    $sql .= "Where DATE(tanggal) BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "' AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+                } else {
+                    $sql .= "WHERE lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+                }
             } else {
                 $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
                 FROM cabang c
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin
-                Where DATE(tanggal) BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "' AND c.IDCabang = " . $this->input->post("cabang");
+                Where c.IDCabang = " . $this->input->post("cabang");
+                if ($awal && $akhir) {
+                    $sql .= " AND DATE(tanggal) BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "' AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+                } else {
+                    $sql .= " AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+                }
             }
-        } else {
-            $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
+        } else {            
+             if ($this->session->userdata("Level") == 0) {
+                $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
+                FROM cabang c
+                INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
+                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin WHERE lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+            } else {
+                $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
                 FROM cabang c
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin
-                Where DATE(tanggal) BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'";
+                Where c.IDCabang = " . $this->session->userdata("IDCabang")." AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+            }
         }
+//        echo $sql; exit;
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -380,7 +396,7 @@ class Laporan_model extends CI_Model {
 //        print_r($sql); exit;
         return $this->db->query($sql)->result();
     }
-    
+
     function select_pengeluaran_kas($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
         $sql = "SELECT * 
                 from ((

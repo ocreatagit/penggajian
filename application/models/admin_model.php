@@ -201,7 +201,9 @@ class Admin_model extends CI_Model {
         if ($tanggal == "") {
             $this->session->set_userdata("status_tanggal", "Tanggal Kosong!");
         } else {
-            $res = $this->db->get_where("laporan_penjualan", array("tanggal" => strftime("%Y-%m-%d", strtotime($tanggal)), "IDCabang" => $IDCabang));
+            $sql = "SELECT * FROM laporan_penjualan WHERE tanggal = '".strftime("%Y-%m-%d", strtotime($tanggal))."' AND IDCabang = ".$IDCabang." AND laporan_penjualan.IDPenjualan NOT IN (SELECT laporan_pembatalan_penjualan.IDPenjualan FROM `laporan_pembatalan_penjualan`);";
+//            $res = $this->db->get_where("laporan_penjualan", array("tanggal" => strftime("%Y-%m-%d", strtotime($tanggal)), "IDCabang" => $IDCabang));
+            $res = $this->db->query($sql);
 
             if ($res->num_rows() > 0) {
                 return TRUE;

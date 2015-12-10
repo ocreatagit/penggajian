@@ -309,7 +309,7 @@ class Laporan extends CI_Controller {
     }
 
     public function HarianPengeluaran() {
-//        $this->cart->destroy(); exit;
+//        print_r($this->cart->contents()); exit;
         $this->form_validation->set_rules('nominal', 'Nominal', 'required');
         if ($this->input->post('btn_tambah')) {
             if ($this->form_validation->run() == TRUE) {
@@ -323,12 +323,13 @@ class Laporan extends CI_Controller {
                 }
 
                 $rowid = "";
-//            foreach ($this->cart->contents() as $items) {
-//                if ($items["options"]['keterangan'] == "Gaji" && $items["options"]['IDBarang'] == $this->input->post("nama_produk")) {
-//                    $rowid = $items["rowid"];
-//                    break;
-//                }
-//            }
+                foreach ($this->cart->contents() as $items) {
+                    if ($items["options"]['Keterangan'] == $this->input->post('jenis_pengeluaran')) {
+                        $rowid = $items["rowid"];
+                        break;
+                    }
+                }
+                
                 if ($rowid == "") {
                     $nominal = $this->input->post('nominal');
                     $jenis_kas = $this->input->post('jenis_pengeluaran');
@@ -361,6 +362,8 @@ class Laporan extends CI_Controller {
                     }
                     $this->session->set_userdata("tanggal_jual", $this->input->post("tanggal_keluar"));
                     $this->cart->insert($data);
+
+                    $this->session->set_flashdata("status", "Data Telah Di Tambahkan!");
 //                print_r($this->cart->contents());
 //                exit;
                 } else {
@@ -384,6 +387,7 @@ class Laporan extends CI_Controller {
         $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
         $data["penjualan_sales"] = $this->Sales_model->get_penjualan_sales();
         $data["komisi"] = $this->Sales_model->get_komisi($data["penjualan_sales"]);
+        $data["status"] = $this->session->userdata("status");
 
 //        if ($this->session->userdata('Username')) {
 //            $data['username'] = $this->session->userdata('Username');
@@ -449,6 +453,7 @@ class Laporan extends CI_Controller {
             $data['info_pengeluarans'] = $this->Sales_model->get_laporan_pengeluaran($kodepenjualan);
             $data['info_total_per_team_leader'] = $this->Sales_model->get_detail_stok_team_leader($kodepenjualan);
             $data['IDPenjualan'] = $kodepenjualan;
+            $data['pembatalan'] = $this->Sales_model->get_status_pembatalan($kodepenjualan);
         } else {
             redirect('welcome/index');
         }
@@ -687,7 +692,8 @@ class Laporan extends CI_Controller {
                 }
             }
 //            $this->Admin_model->hitung_saldo($IDPenjualan, $id_cabang);
-            redirect("Laporan/HarianPengeluaran");
+            $this->session->set_flashdata("status", "Data Telah Di Tambahkan!");
+            redirect("Laporan/laporan_pengeluaran");
         }
     }
 
@@ -1074,20 +1080,20 @@ class Laporan extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        if ($this->input->post("btn_pilih")) {            
+        if ($this->input->post("btn_pilih")) {
             $tgl_awal = "-";
             $tgl_akhir = "-";
-            if($this->input->post('tanggal_awal')){
+            if ($this->input->post('tanggal_awal')) {
                 $tgl_awal = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal')));
             }
-            if($this->input->post('tanggal_akhir')){
+            if ($this->input->post('tanggal_akhir')) {
                 $tgl_akhir = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
             }
             $jenis = $this->input->post("jenis");
-            
+
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas_bank($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), FALSE);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
-            
+
             $this->session->set_userdata("status_IDCabang", $this->input->post("cabang"));
         } else {
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas_bank($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'));
@@ -1249,7 +1255,7 @@ class Laporan extends CI_Controller {
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data["laporans"] = $this->Laporan_model->select_laporan_batal($awal, $akhir);
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
-            
+
             $this->session->set_userdata("selectCabang", $this->input->post("cabang"));
         }
 

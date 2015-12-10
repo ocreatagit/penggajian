@@ -82,8 +82,8 @@
                     <!--<th>#</th>-->
                     <th>Tanggal</th>
                     <th>Admin</th>
-                    <th>Total Penjualan</th>
                     <th>Keterangan</th>
+                    <th>Total Penjualan</th>
                     <!--<th>Aksi</th>-->
                 </tr>
             </thead>
@@ -96,60 +96,42 @@
                     ?>
                     <?php $total_penjualan += $laporan->totalPenjualan; ?>
                     <?php $total_komisi += $laporan->totalKomisi; ?>
-                    <tr>
-                        <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
-                        <td><?php echo $laporan->username; ?></td>
-                        <td>Rp <?php echo number_format($laporan->totalPenjualan, 0, ",", ".") ?>.- </td>
-                        <td><?php echo $laporan->keterangan; ?></td>
-    <!--                        <td>Rp <?php echo number_format($laporan->totalKomisi, 0, ",", ".") ?>.- </td>
-                        <td>Rp <?php echo number_format($laporan->saldoTerakhir, 0, ",", ".") ?>.- </td>-->
-                        <!--<td style="width: 180px; text-align: center;">-->
-                            <!--<a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>-->
-                            <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-primary siku"><i class="fa fa-pencil"></i></a>-->
-                            <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" id="delgrup" class="btn btn-sm btn-danger siku"><i class="fa fa-trash-o"></i></a>-->
-                        <!--</td>-->
-                    </tr>
+    <!--                    <tr>
+                            <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                            <td><?php echo $laporan->username; ?></td>
+                            <td>Rp <?php echo number_format($laporan->totalPenjualan, 0, ",", ".") ?>.- </td>
+                            <td><?php echo $laporan->keterangan; ?></td>
+                        </tr>-->
 
                 <?php endforeach; ?>
-            </tbody>
-
-            <tr>
-                <td colspan="3" style="text-align: right;">Total Penjualan</td>
-                <td colspan="2"><strong>Rp <?php echo number_format($total_penjualan, 0, ",", ".") ?>,-</strong></td>
-            </tr>
-            <?php if (count($pengeluarans) > 0) { ?>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <!--<td></td>-->
+                    <td colspan="" style="text-align: right;">Total Penjualan</td>
+                    <td colspan="1"><strong>Rp <?php echo number_format($total_penjualan, 0, ",", ".") ?>,-</strong></td>
                 </tr>
                 <?php
-            }
-            $total_biaya_keluar = 0;
-            foreach ($pengeluarans as $pengeluaran) {
+                $total_biaya_keluar = 0;
+                foreach ($pengeluarans as $pengeluaran) {
+                    ?>
+        <!--                <tr>
+                            <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
+                            <td><?php echo $pengeluaran->username; ?></td>
+                            <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
+                            <td><?php echo $pengeluaran->keterangan; ?></td>
+                        </tr>-->
+                    <?php
+                    $total_biaya_keluar += $pengeluaran->jumlah;
+                }
                 ?>
-                <tr>
-                    <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
-                    <td><?php echo $pengeluaran->username; ?></td>
-                    <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
-                    <td><?php echo $pengeluaran->keterangan; ?></td>
-                    <!--<td style="width: 180px; text-align: center;">-->
-                        <!--<a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-block btn-info siku"><i class="fa fa-print"></i> Print</a>-->
-                        <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" class="btn btn-sm btn-primary siku"><i class="fa fa-pencil"></i></a>-->
-                        <!--<a href="<?php echo base_url(); ?>index.php/ubah/laporan/<?php echo $laporan->idlaporan ?>" id="delgrup" class="btn btn-sm btn-danger siku"><i class="fa fa-trash-o"></i></a>-->
-                    <!--</td>-->
-                </tr>
-                <?php
-                $total_biaya_keluar += $pengeluaran->jumlah;
-            }
-            ?>
 
-            <tr>
-                <td colspan="3" style="text-align: right;">Total Pengeluaran</td>
-                <td colspan="2"><strong>Rp <?php echo number_format($total_biaya_keluar, 0, ",", ".") ?>,-</strong></td>
-            </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td colspan="" style="text-align: right;">Total Pengeluaran</td>
+                    <td colspan="1"><strong>Rp <?php echo number_format($total_biaya_keluar, 0, ",", ".") ?>,-</strong></td>
+                </tr>
+            </tbody>
         </table>
     </div>
 
@@ -165,51 +147,51 @@
 
 
 <script>
-    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-        "date-dmy-pre": function (a) {
-            if (a == null || a == "") {
-                return 0;
+        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+            "date-dmy-pre": function (a) {
+                if (a == null || a == "") {
+            return 0;
             }
             var date = a.split('-');
-            return (date[2] + date[1] + date[0]) * 1;
+        return (date[2] + date[1] + date[0]) * 1;
         },
-        "date-dmy-asc": function (a, b) {
-            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            "date-dmy-asc": function (a, b) {
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
         },
-        "date-dmy-desc": function (a, b) {
-            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
-        }
+            "date-dmy-desc": function (a, b) {
+    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
     });
 
-    $(document).ready(function () {
+        $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');
         $("#nama_produk").val('');
-        $('#list_laporan').DataTable({
+            $('#list_laporan').DataTable({
             "order": [[0, "desc"]],
-            "aoColumnDefs": [
-                {"sType": "date-dmy", "aTargets": [0]}
-            ]
+                "aoColumnDefs": [
+            {"sType": "date-dmy", "aTargets": [0]}
+    ]
         });
     });
 </script>
 <script>
-    $("#datepicker1").datepicker({
+        $("#datepicker1").datepicker({
         inline: true,
-        dateFormat: "dd-mm-yy"
+    dateFormat: "dd-mm-yy"
     });
-    $("#datepicker2").datepicker({
+        $("#datepicker2").datepicker({
         inline: true,
-        dateFormat: "dd-mm-yy"
+    dateFormat: "dd-mm-yy"
     });
 
-    $(document).ready(function () {
+        $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');
         $("#gaji_sales").val('');
         $("#nama_produk").val('');
         $(".kas_keluar").val('');
-        $("#bayar_gaji").hide();
+    $("#bayar_gaji").hide();
     });
 </script>
 </body>

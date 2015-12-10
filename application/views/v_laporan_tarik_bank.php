@@ -15,7 +15,7 @@
         </div>
     <?php }
     ?>
-    <div style="height: 75px; background-color: white; padding: 20px 20px;">
+    <div style="<?php echo $this->session->userdata("Level") == 0 ? 'height: 75px; background-color: white; padding: 20px 20px;' : '' ?>">
         <form class="form-inline" method="post" action="<?php
         echo current_url();
         ?>">
