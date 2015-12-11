@@ -105,9 +105,7 @@
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu siku">
-                                <?php if ($level != 0): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Sales/daftar_sales' ?>" style=''><span id='submenu'>Sales</span></a></li>
-                                <?php endif; ?>
                                 <?php if ($level == 0): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Admin/daftar_admin' ?>" style=''>Admin</a></li>
                                 <?php endif; ?>

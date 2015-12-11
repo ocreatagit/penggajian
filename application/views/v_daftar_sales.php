@@ -7,11 +7,13 @@
 <div class="container" style="">
     <!--<div--> 
     <div class="row" style="margin-top: 70px;">
+        <?php if ($this->session->userdata("Level") != 0) { ?>
         <div class="col-lg-12">
             <div class="panel panel-default siku">
                 <a href="<?php echo base_url() . 'index.php/Sales/tambah_sales' ?>" class="btn btn-info siku" role="button" style="margin: 10px;">Tambah Sales</a>
             </div>
         </div>
+        <?php } ?>
         <div class="col-lg-12" style="margin-top: -10px;">
             <div class="panel panel-info siku">
                 <div class="panel-heading siku">
