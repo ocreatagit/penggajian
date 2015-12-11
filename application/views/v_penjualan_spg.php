@@ -88,10 +88,15 @@
                 <?php
                 foreach ($datapenjualan as $penjualan):
                     $total[$penjualan->IDBarang] += intval($penjualan->jumlah);
-                    $satuan = intval($konversi_satuan[$penjualan->IDBarang]->total_konversi);
+                    if (count($konversi_satuan) > 0) {
+                        $satuan = intval($konversi_satuan[$key]->total_konversi);
+                    }
                     $jumlah = intval($penjualan->jumlah);
-                    $karton = floor($jumlah / ($satuan * 12));
-                    $jumlah %= ($satuan * 12);
+                    $karton = 0;
+                    if ($satuan != 0) {
+                        $karton = floor($jumlah / ($satuan * 12));
+                        $jumlah %= ($satuan * 12);
+                    }
                     $lusin = floor($jumlah / 12);
                     $jumlah %= 12;
                     ?>
@@ -115,10 +120,16 @@
             <?php
             $counter = 0;
             foreach ($total as $key => $value) :
-                $satuan = intval($konversi_satuan[$key]->total_konversi);
+                $satuan = 0;
+                if (count($konversi_satuan) > 0) {
+                    $satuan = intval($konversi_satuan[$key]->total_konversi);
+                }
                 $jumlah = intval($value);
-                $karton = floor($jumlah / ($satuan * 12));
-                $jumlah %= ($satuan * 12);
+                $karton = 0;
+                if ($satuan != 0) {
+                    $karton = floor($jumlah / ($satuan * 12));
+                    $jumlah %= ($satuan * 12);
+                }
                 $lusin = floor($jumlah / 12);
                 $jumlah %= 12;
                 ?>
