@@ -39,7 +39,7 @@ class Sales extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        
+
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
@@ -79,23 +79,25 @@ class Sales extends CI_Controller {
         $data['data_sales'] = NULL;
         if ($IDSales == NULL) {
             if ($this->input->post("btn_submit")) {
-                    $this->load->model("Sales_model");
-                    $dataController = $this->Sales_model->insert_sales();
+                $this->load->model("Sales_model");
+                $dataController = $this->Sales_model->insert_sales();
+                if (count($data['barangs']) > 0) {
                     $this->Sales_model->insert_komisi($dataController[1], $data['barangs']);
+                }
 
-                    $config['upload_path'] = "./uploads";
-                    $config['allowed_types'] = 'jpg|png|gif';
-                    $config['max_size'] = 0;
-                    $config['file_name'] = $dataController[0];
-                    $this->load->library('upload', $config);
+                $config['upload_path'] = "./uploads";
+                $config['allowed_types'] = 'jpg|png|gif';
+                $config['max_size'] = 0;
+                $config['file_name'] = $dataController[0];
+                $this->load->library('upload', $config);
 
-                    if (!$this->upload->do_upload("foto_sales")) {
-                        echo $response = $this->upload->display_errors();
-                        exit;
-                    } else {
-                        $response = $this->upload->data();
-                        redirect("Sales/daftar_sales");
-                    }
+                if (!$this->upload->do_upload("foto_sales")) {
+                    echo $response = $this->upload->display_errors();
+                    exit;
+                } else {
+                    $response = $this->upload->data();
+                    redirect("Sales/daftar_sales");
+                }
             } else {
                 $this->load->view('v_head');
                 $this->load->view('v_navigation', $data);
@@ -104,13 +106,15 @@ class Sales extends CI_Controller {
         } else {
             $this->load->model("Sales_model");
             $data['data_sales'] = $this->Sales_model->select_sales($IDSales);
-            $data['komisi_sales'] = $this->Sales_model->select_komisi($IDSales);                       
+            $data['komisi_sales'] = $this->Sales_model->select_komisi($IDSales);
             if ($this->input->post("btn_submit")) {
-                
+
                 $this->load->model("Sales_model");
                 $namafile = $this->Sales_model->update_sales($IDSales);
-                $this->Sales_model->ganti_komisi($IDSales,$data['barangs']);
-                
+                if (count($data['barangs']) > 0) {
+                    $this->Sales_model->ganti_komisi($IDSales, $data['barangs']);
+                }
+
                 if (!empty($_FILES['foto_sales']['name'])) {
                     $config['upload_path'] = "./uploads";
                     $config['allowed_types'] = 'jpg|png|gif';
@@ -123,7 +127,6 @@ class Sales extends CI_Controller {
                         exit;
                     } else {
                         $response = $this->upload->data();
-                        
                     }
                 }
                 redirect("Sales/daftar_sales");
@@ -134,7 +137,7 @@ class Sales extends CI_Controller {
             $this->load->view('v_tambah_sales', $data);
         }
     }
-    
+
     public function kehadiran_sales() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');

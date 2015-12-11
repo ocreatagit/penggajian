@@ -17,7 +17,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"  style='padding-top: 0px; background: #00BA8B none repeat scroll 0% 0% !important;'>
                 <ul class="nav navbar-nav">
-                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                      ?>">Input Data</a></li>-->
+                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                       ?>">Input Data</a></li>-->
                     <?php if ($level != 3): ?>
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Input Data <span class="caret"></span></a>
@@ -105,7 +105,9 @@
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu siku">
-                                <li><a href="<?php echo base_url() . 'index.php/Sales/daftar_sales' ?>" style=''><span id='submenu'>Sales</span></a></li>
+                                <?php if ($level != 0): ?>
+                                    <li><a href="<?php echo base_url() . 'index.php/Sales/daftar_sales' ?>" style=''><span id='submenu'>Sales</span></a></li>
+                                <?php endif; ?>
                                 <?php if ($level == 0): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Admin/daftar_admin' ?>" style=''>Admin</a></li>
                                 <?php endif; ?>
