@@ -280,6 +280,16 @@ class Sales_model extends CI_Model {
         $this->db->where("IDSales", $IDSales);
         $this->db->update("sales", $data);
     }
+    
+    function get_status_pembatalan($kodepenjualan) {
+        $sql = "SELECT * FROM laporan_penjualan INNER JOIN laporan_pembatalan_penjualan ON laporan_pembatalan_penjualan.IDPenjualan = laporan_penjualan.IDPenjualan WHERE laporan_penjualan.IDPenjualan = $kodepenjualan;";
+        $res = $this->db->query($sql);
+        if($res->num_rows() > 0){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
 //    function update_total_gaji($IDSales, $gaji_diambil) {
 //        $sales = $this->db->get_where("sales", array("IDSales" => $IDSales))->row();

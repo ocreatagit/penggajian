@@ -7,7 +7,16 @@
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h2 style="margin-top: 0px; border-bottom: #000 solid 1px; padding-bottom: 5px;">Informasi Penjualan</h2>
+            <div style="border-bottom: #000 solid 1px; padding-bottom: 5px;">
+                <h2 class="" style="margin-top: 0px; margin-bottom: 20px;">Informasi Penjualan
+                    <?php if ($pembatalan == 1) {
+                        ?>
+                        <span class="pull-right" style="border: #000 solid 1px; padding: 5px;"> Laporan Penjualan Telah Di-Batalkan! </span>
+                        <?php
+                    }
+                    ?>
+                </h2>
+            </div>
             <h3 style="">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
             </h3>
             <h3 style="padding-bottom: 10px;">Tanggal : <b><?php echo strftime("%d-%B-%Y", strtotime($laporan_penjualan->tanggal)) ?> </b> </h3>

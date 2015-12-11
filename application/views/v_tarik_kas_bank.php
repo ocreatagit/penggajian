@@ -60,7 +60,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-3"></label>
                                     <div class="col-lg-9">
-                                        <button name="btn_submit" value="btn_submit" type="submit" class="btn btn-info siku" id="bayar_button">Setor Ke Bank</button>
+                                        <button name="btn_submit" value="btn_submit" type="submit" class="btn btn-info siku" id="bayar_button">Tarik Kas Bank</button>
                                     </div>
                                 </div>
                             </form>

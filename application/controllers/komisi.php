@@ -153,7 +153,7 @@ class Komisi extends CI_Controller {
         if ($this->cart->total_items() > 0) {
             $id_laporan = $this->Sales_model->insert_laporan_komisi();
             foreach ($this->cart->contents() as $items) {
-//                $this->Sales_model->update_komisi($items["options"]["IDSales"], $items["price"], $id_laporan);
+                $this->Sales_model->update_komisi($items["options"]["IDSales"], $items["price"], $id_laporan);
                 
                 // Jurnal
                 $this->load->model('Jurnal_model');

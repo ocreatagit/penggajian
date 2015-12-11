@@ -34,7 +34,7 @@
             <div class="col-lg-7">
                 <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
                     <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
-<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                             ?>,-</span>-->
+<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                              ?>,-</span>-->
                     <input type="hidden" name="saldo" id="saldo" value="<?php echo $saldo; ?>"/>
                     <input type="hidden" name="idcabang" id="idcabang" value="<?php echo $cabang; ?>"/>
                     <input type="hidden" name="current_url" id="current_url" value="<?php echo current_url(); ?>"/>
@@ -851,7 +851,11 @@ echo $temp;
             alertify.message('Data Telah Ditambahkan!');
         });
 
-        alertify.error('<i class="fa fa-warning"></i> Tekan Tombol Save Jika Merubah Jumlah Barang!', 0);
+        var canDismiss = false;
+        var notification = alertify.error('<i class="fa fa-warning"></i> Tekan Tombol Save Jika Merubah Jumlah Barang!');
+        notification.ondismiss = function () {
+            return canDismiss;
+        };
 
 //        $("#simpan_cart_jual").mousedown(function (event) {
 //            event.preventDefault();

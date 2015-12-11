@@ -13,10 +13,10 @@
                 <a href="<?php echo base_url(); ?>index.php/laporan/setoran_bank" class="btn btn-primary" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-plus">&nbsp</i> Buat Setoran Bank</a>
             </div>
         </div>
-        <?php }
+    <?php }
     ?>
-    
-    <div style="height: 75px; background-color: white; padding: 20px 20px;">
+
+    <div style="<?php echo $this->session->userdata("Level") == 0 ? 'height: 75px; background-color: white; padding: 20px 20px;' : '' ?>">
         <form class="form-inline" method="post" action="<?php
         echo current_url();
         ?>">
@@ -54,12 +54,12 @@
             <tbody>
                 <?php
                 foreach ($laporans as $laporan):
-                ?>
+                    ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
-                        <td><?php echo $laporan->provinsi." - ".$laporan->kabupaten; ?></td>
+                        <td><?php echo $laporan->provinsi . " - " . $laporan->kabupaten; ?></td>
                         <td>Rp <?php echo number_format($laporan->jumlah, 0, ",", ".") ?>.- </td>
-<!--                        <td style="width: 50px; text-align: center;">
+    <!--                        <td style="width: 50px; text-align: center;">
                             <a href="<?php echo base_url(); ?>index.php/laporan/cetaklaporanpengeluaran/<?php echo $laporan->IDSetoran ?>" class="btn btn-sm btn-info siku"><i class="fa fa-print"></i></a>
                         </td>-->
                     </tr>

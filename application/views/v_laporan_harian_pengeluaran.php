@@ -3,9 +3,8 @@
     <div class="row" style="">
         <div class="col-lg-12">
             <h1 class="page-header" style="margin-top: 0px;">Input Data Pengeluaran</h1>
-            <ol class="breadcrumb" style="background-color: white; margin-top: 00px;">
-                <li><a href="#"><i class="fa fa-home"></i></a></li>
-                <li><a href="<?= base_url() ?>index.php/laporan/laporan_pengeluaran">Daftar Laporan Pengeluaran</a></li>
+            <ol class="breadcrumb" style="background-color: white; margin-top: 0px;">
+                <li><a href="<?= base_url() ?>index.php/laporan/laporan_pengeluaran"><i class="fa fa-home"></i> Daftar Laporan Pengeluaran</a></li>
                 <li><a>Pengeluaran</a></li>
             </ol>
         </div>
@@ -20,6 +19,9 @@
                 </div>
             </div>    
         </div>-->
+    <?php if ($this->session->flashdata("status")) { ?>
+        <div class="alert alert-info siku"><i class="fa fa-info-circle"></i> <?php echo $this->session->flashdata("status") ?></div>
+    <?php } ?>
     <div class="row">
         <div class="col-lg-6">
             <div class="panel panel-danger siku">
@@ -118,7 +120,7 @@
                                 if (strpos($items["id"], "KasKeluar") !== FALSE) {
                                     ?>
                                     <tr>
-                                        <td><?php echo ($items["options"]["Keterangan"] == "Gaji") ? $items["name"] : $items["options"]["Keterangan"] ?><?php echo isset($items["options"]["Keterangan_lainnya"]) ? '&nbsp; - &nbsp;'.$items["options"]["Keterangan_lainnya"] : '' ?></td>
+                                        <td><?php echo ($items["options"]["Keterangan"] == "Gaji") ? $items["name"] : $items["options"]["Keterangan"] ?><?php echo isset($items["options"]["Keterangan_lainnya"]) ? '&nbsp; - &nbsp;' . $items["options"]["Keterangan_lainnya"] : '' ?></td>
                                         <td align="right">Rp <?php echo number_format($items["price"], 0, ",", ".") ?></td>
                                         <td align="center">
                                             <a href="<?php echo base_url() ?>index.php/laporan/hapus_cart_pengeluaran/<?php echo $items["id"] ?>" class="btn btn-danger siku">
@@ -369,7 +371,7 @@
             }
         });
     });
-    
+
     $("#tanggal").datepicker();
 </script>
 </body>

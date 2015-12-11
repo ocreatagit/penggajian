@@ -15,9 +15,11 @@
                 </div>
                 <div class="panel-body siku">
                     <div class="row">
-                        <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
-                            <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
-                        </div>
+                        <?php if ($this->session->userdata("Level") != 0) { ?>
+                            <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
+                                <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
+                            </div>
+                        <?Php } ?>
                         <div class="col-lg-12">
                             <?php if ($status != "") {
                                 ?>
@@ -233,84 +235,6 @@
     <script type="text/javascript" src="<?php echo base_url() ?>Datatable/js/jquery.dataTables.js"></script>
     <script>
 
-                                                    alertify.defaults = {
-                                                        // dialogs defaults
-                                                        modal: true,
-                                                        basic: false,
-                                                        frameless: false,
-                                                        movable: true,
-                                                        resizable: true,
-                                                        closable: true,
-                                                        closableByDimmer: true,
-                                                        maximizable: true,
-                                                        startMaximized: false,
-                                                        pinnable: true,
-                                                        pinned: true,
-                                                        padding: true,
-                                                        overflow: true,
-                                                        maintainFocus: true,
-                                                        transition: 'pulse',
-                                                        autoReset: true,
-                                                        // notifier defaults
-                                                        notifier: {
-                                                            // auto-dismiss wait time (in seconds)  
-                                                            delay: 5,
-                                                            // default position
-                                                            position: 'bottom-right'
-                                                        },
-                                                        // language resources 
-                                                        glossary: {
-                                                            // dialogs default title
-                                                            title: 'Konfirmasi',
-                                                            // ok button text
-                                                            ok: 'OK',
-                                                            // cancel button text
-                                                            cancel: 'Cancel'
-                                                        },
-                                                        // theme settings
-                                                        theme: {
-                                                            // class name attached to prompt dialog input textbox.
-                                                            input: 'ajs-input',
-                                                            // class name attached to ok button
-                                                            ok: 'ajs-ok',
-                                                            // class name attached to cancel button 
-                                                            cancel: 'ajs-cancel'
-                                                        }
-                                                    };
-
-                                                    $("#inputCheck").click(function (event) {
-                                                        event.preventDefault();
-                                                        alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
-                                                            if (e) {
-                                                                $("#form_s").submit();
-                                                            } else {
-                                                                //after clicking Cancel
-                                                            }
-                                                        });
-                                                    });
-
-                                                    $("#tbl .inputDelete").click(function (event) {
-                                                        event.preventDefault();
-                                                        var a = this.href;
-                                                        alertify.confirm('Hapus Barang yang diPilih?', function (e) {
-                                                            if (e) {
-                                                                window.location.assign(a);
-                                                            } else {
-                                                                //after clicking Cancel
-                                                            }
-                                                        });
-                                                    });
-
-                                                    $("#datatable").dataTable();
-
-                                                    function delete_barang(btn) {
-                                                        document.preventDefault();
-                                                        alert();
-                                                    }
-                                                    console.log("<?php echo $refresh ?>");
-<?php
-if ($refresh) {
-    ?>
                                                         alertify.defaults = {
                                                             // dialogs defaults
                                                             modal: true,
@@ -339,7 +263,7 @@ if ($refresh) {
                                                             // language resources 
                                                             glossary: {
                                                                 // dialogs default title
-                                                                title: '<i class="fa fa-info-circle"></i> Information',
+                                                                title: 'Konfirmasi',
                                                                 // ok button text
                                                                 ok: 'OK',
                                                                 // cancel button text
@@ -355,7 +279,85 @@ if ($refresh) {
                                                                 cancel: 'ajs-cancel'
                                                             }
                                                         };
-                                                        alertify.alert("<?php echo $refresh; ?>");
+
+                                                        $("#inputCheck").click(function (event) {
+                                                            event.preventDefault();
+                                                            alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
+                                                                if (e) {
+                                                                    $("#form_s").submit();
+                                                                } else {
+                                                                    //after clicking Cancel
+                                                                }
+                                                            });
+                                                        });
+
+                                                        $("#tbl .inputDelete").click(function (event) {
+                                                            event.preventDefault();
+                                                            var a = this.href;
+                                                            alertify.confirm('Hapus Barang yang diPilih?', function (e) {
+                                                                if (e) {
+                                                                    window.location.assign(a);
+                                                                } else {
+                                                                    //after clicking Cancel
+                                                                }
+                                                            });
+                                                        });
+
+                                                        $("#datatable").dataTable();
+
+                                                        function delete_barang(btn) {
+                                                            document.preventDefault();
+                                                            alert();
+                                                        }
+                                                        console.log("<?php echo $refresh ?>");
+<?php
+if ($refresh) {
+    ?>
+                                                            alertify.defaults = {
+                                                                // dialogs defaults
+                                                                modal: true,
+                                                                basic: false,
+                                                                frameless: false,
+                                                                movable: true,
+                                                                resizable: true,
+                                                                closable: true,
+                                                                closableByDimmer: true,
+                                                                maximizable: true,
+                                                                startMaximized: false,
+                                                                pinnable: true,
+                                                                pinned: true,
+                                                                padding: true,
+                                                                overflow: true,
+                                                                maintainFocus: true,
+                                                                transition: 'pulse',
+                                                                autoReset: true,
+                                                                // notifier defaults
+                                                                notifier: {
+                                                                    // auto-dismiss wait time (in seconds)  
+                                                                    delay: 5,
+                                                                    // default position
+                                                                    position: 'bottom-right'
+                                                                },
+                                                                // language resources 
+                                                                glossary: {
+                                                                    // dialogs default title
+                                                                    title: '<i class="fa fa-info-circle"></i> Information',
+                                                                    // ok button text
+                                                                    ok: 'OK',
+                                                                    // cancel button text
+                                                                    cancel: 'Cancel'
+                                                                },
+                                                                // theme settings
+                                                                theme: {
+                                                                    // class name attached to prompt dialog input textbox.
+                                                                    input: 'ajs-input',
+                                                                    // class name attached to ok button
+                                                                    ok: 'ajs-ok',
+                                                                    // class name attached to cancel button 
+                                                                    cancel: 'ajs-cancel'
+                                                                }
+                                                            };
+                                                            alertify.alert("<?php echo $refresh; ?>");
     <?php
 }
 ?>

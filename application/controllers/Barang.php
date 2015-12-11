@@ -53,8 +53,10 @@ class Barang extends CI_Controller {
         $data['status'] = $this->session->flashdata("status");
         $data['refresh'] = $this->session->flashdata("status_refresh");
         $this->load->model("Laporan_model");
-        $data["stok_cabang"] = $this->Laporan_model->get_stok_cabang($data['username']);
-        
+        if ($this->session->userdata("Level") != 0) {
+            $data["stok_cabang"] = $this->Laporan_model->get_stok_cabang($data['username']);
+        }
+
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_tambah_barang', $data);
@@ -141,7 +143,7 @@ class Barang extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        
+
         if ($this->barang_model->get_status_barang($IDBarang) == 1) {
             $this->load->helper("file");
             $array = get_filenames("./barangs");

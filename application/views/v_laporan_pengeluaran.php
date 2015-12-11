@@ -7,6 +7,9 @@
             </ol>
         </div>
     </div>
+    <?php if ($this->session->flashdata("status")) { ?>
+        <div class="alert alert-info siku"><i class="fa fa-info-circle"></i> <?php echo $this->session->flashdata("status") ?></div>
+    <?php } ?>
     <?php if ($this->session->userdata("Level") != 0) { ?>
         <div style="background-color: white; height: 70px;">
             <div class="col-md-12">

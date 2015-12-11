@@ -126,9 +126,6 @@ class Jurnal_model extends CI_Model {
         $result = $this->db->query($sql)->result();
 
         $date = date("Y-m-d H:i:s");
-        if (date("Y-m-d") < date("Y-m-d", strtotime($penjualan->tanggal))) {
-            $date = date("Y-m-d H:i:s", strtotime($penjualan->tanggal));
-        }
 
         $data = array(
             'IDCabang' => $IDCabang,
@@ -176,10 +173,7 @@ class Jurnal_model extends CI_Model {
         $transaksi = $this->db->query($SQL)->row();
 
         $date = date("Y-m-d H:i:s");
-        if (date("Y-m-d", strtotime($tanggal) < date("Y-m-d"))) {
-            $date = date("Y-m-d H:i:s", strtotime($tanggal));
-        }
-
+        
         $data = array(
             'IDCabang' => $IDCabang,
             'tanggal' => $date,
