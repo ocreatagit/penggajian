@@ -89,7 +89,7 @@
                 foreach ($datapenjualan as $penjualan):
                     $total[$penjualan->IDBarang] += intval($penjualan->jumlah);
                     if (count($konversi_satuan) > 0) {
-                        $satuan = intval($konversi_satuan[$key]->total_konversi);
+                        $satuan = intval($konversi_satuan[$penjualan->IDBarang]->total_konversi);
                     }
                     $jumlah = intval($penjualan->jumlah);
                     $karton = 0;
