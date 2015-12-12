@@ -133,6 +133,12 @@ class Admin_model extends CI_Model {
         return $query->row()->saldo;
     }
 
+    function get_saldo_bank($IDCabang) {
+        $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = ".$IDCabang.";";
+        $res = $this->db->query($SQL)->row();
+        return $res->nilai_akun;
+    }
+
     function get_saldo_cabang($IDCabang) {
         $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
         $query = $this->db->query($sql);
@@ -201,7 +207,7 @@ class Admin_model extends CI_Model {
         if ($tanggal == "") {
             $this->session->set_userdata("status_tanggal", "Tanggal Kosong!");
         } else {
-            $sql = "SELECT * FROM laporan_penjualan WHERE tanggal = '".strftime("%Y-%m-%d", strtotime($tanggal))."' AND IDCabang = ".$IDCabang." AND laporan_penjualan.IDPenjualan NOT IN (SELECT laporan_pembatalan_penjualan.IDPenjualan FROM `laporan_pembatalan_penjualan`);";
+            $sql = "SELECT * FROM laporan_penjualan WHERE tanggal = '" . strftime("%Y-%m-%d", strtotime($tanggal)) . "' AND IDCabang = " . $IDCabang . " AND laporan_penjualan.IDPenjualan NOT IN (SELECT laporan_pembatalan_penjualan.IDPenjualan FROM `laporan_pembatalan_penjualan`);";
 //            $res = $this->db->get_where("laporan_penjualan", array("tanggal" => strftime("%Y-%m-%d", strtotime($tanggal)), "IDCabang" => $IDCabang));
             $res = $this->db->query($sql);
 

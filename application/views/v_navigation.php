@@ -1,10 +1,10 @@
-<nav class="navbar navbar-default navbar-fixed-top " style="border-radius: 0px; background: #00BA8B none repeat scroll 0% 0% !important;">
-    <div class="container"  style="background: #00BA8B none repeat scroll 0% 0% !important;">
+<nav class="navbar navbar-default navbar-fixed-top " style="border-radius: 0px; background-color: white; border-top: #2E6DA4 solid 2px; border-bottom: #2E6DA4 solid 2px;">
+    <div class="container"  style="">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class='' style=''>
             <div class="navbar-header" style='padding-top: 0px;'>
-                <a class="navbar-brand" href="#" style="color: white;">
-                    <strong>Laporan Penggajian SPG</strong>
+                <a class="navbar-brand" href="#" style="">
+                    <strong>Laporan SPG</strong>
                 </a>
                 <button  style='border-radius: 0px;' type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"  style="border-radius: 0px; background: #00BA8B none repeat scroll 0% 0% !important;">
                     <span class="sr-only">Toggle navigation</span>
@@ -15,9 +15,9 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"  style='padding-top: 0px; background: #00BA8B none repeat scroll 0% 0% !important;'>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"  style='padding-top: 0px;background-color: white'>
                 <ul class="nav navbar-nav">
-                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                       ?>">Input Data</a></li>-->
+                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                               ?>">Input Data</a></li>-->
                     <?php if ($level != 3): ?>
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Input Data <span class="caret"></span></a>
@@ -49,6 +49,14 @@
                                 <?php if ($level != 2): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Laporan/pembatalan_nota' ?>" style=''>Pembatalan Nota</a></li>                                
                                 <?php endif; ?>
+                                <?php if ($level != 2 && $level != 3): ?>
+                                    <li role="separator" class="divider"></li>
+                                    <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Input Data SPG MT </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo base_url() ?>index.php/toko/penjualan">Penjualan</a></li>
+                                        </ul>
+                                    </li>
+                                <?php endif; ?>
                             </ul>                                
                         </li>
                     <?php endif; ?>
@@ -58,6 +66,14 @@
                             <ul class="dropdown-menu siku">
                                 <li><a href="<?php echo base_url() . 'index.php/lokasi/tambah_lokasi' ?>" style=''><span id='submenu'>Lokasi</span></a></li>
                                 <li><a href="<?php echo base_url() . 'index.php/barang/tambah_barang' ?>" style=''>Barang</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Master Data SPG MT </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/barang">Barang</a></li>
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/toko">Toko</a></li>
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/spg_mt">SPG MT</a></li>
+                                    </ul>
+                                </li>
                                 <!--<li><a href="#" style=''>SPG</a></li>-->
                             </ul>                                
                         </li>
@@ -98,14 +114,25 @@
                             <?php if ($level != 3): ?>
                                 <li><a href="<?php echo base_url() . 'index.php/Sales/kehadiran_sales' ?>" style=''>Laporan Kehadiran</a></li>
                             <?php endif; ?>
-                            <!--<li><a href="#" style=''>SPG</a></li>-->
+                            <?php if ($level != 1): ?>
+                                <li><a href="<?php echo base_url() . 'index.php/Laporan/pembatalan_nota' ?>" style=''>Laporan Pembatalan Nota</a></li>
+                            <?php endif; ?>
+                            <?php if ($level != 3): ?>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Laporan SPG MT </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/laporan_penjualan">Laporan Penjualan</a></li>
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/laporan_spg">Laporan SPG</a></li>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
                         </ul>                                
                     </li>
                     <?php if ($level != 3): ?>
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
                             <ul class="dropdown-menu siku">
-                                    <li><a href="<?php echo base_url() . 'index.php/Sales/daftar_sales' ?>" style=''><span id='submenu'>Sales</span></a></li>
+                                <li><a href="<?php echo base_url() . 'index.php/Sales/daftar_sales' ?>" style=''><span id='submenu'>Sales</span></a></li>
                                 <?php if ($level == 0): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Admin/daftar_admin' ?>" style=''>Admin</a></li>
                                 <?php endif; ?>
@@ -123,6 +150,18 @@
                     </li>
                 </ul>
             </div>
+            <script>
+                (function ($) {
+                    $(document).ready(function () {
+                        $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            $(this).parent().siblings().removeClass('open');
+                            $(this).parent().toggleClass('open');
+                        });
+                    });
+                })(jQuery);
+            </script>
             <!-- /.navbar-collapse -->
         </div>
     </div><!-- /.container-fluid -->

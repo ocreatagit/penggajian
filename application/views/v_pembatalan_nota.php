@@ -39,18 +39,24 @@
         </div>
     </div>
     <hr>
-    <?php if ($this->session->userdata("Level") != 0) { ?>
-        <div style="background-color: white; height: 70px;">
-            <div class="col-md-12">
-                <a href="<?php echo base_url(); ?>index.php/laporan/buat_pembatalan_nota" class="btn btn-primary" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-plus">&nbsp</i> Buat Pembatalan Nota</a>
-                <a href="<?php echo base_url() ?>index.php/laporan/cetak_laporan_pembatalan" class="btn btn-info siku" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-print"></i> Print</a>
+    <?php
+    if ($this->session->userdata("Level") != 0) {
+        if ($this->session->userdata("Level") != 2) {
+            ?>
+            <div style="background-color: white; height: 70px;">
+                <div class="col-md-12">
+                    <a href="<?php echo base_url(); ?>index.php/laporan/buat_pembatalan_nota" class="btn btn-primary" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-plus">&nbsp</i> Buat Pembatalan Nota</a>
+                    <a href="<?php echo base_url() ?>index.php/laporan/cetak_laporan_pembatalan" class="btn btn-info siku" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-print"></i> Print</a>
+                </div>
             </div>
-        </div>
-    <?php }
+        <?php
+        }
+    }
     ?>
 
     <div class="col-md-12" style="background-color: white;">
-        <?php if ($periode != "Laporan Bulan Ini") {
+        <?php
+        if ($periode != "Laporan Bulan Ini") {
             ?>
             <h2 style="margin-bottom: 30px;"><i class="fa fa-calendar"></i> Periode <?php echo $periode ?></h2>
         <?php } else {

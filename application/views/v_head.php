@@ -39,13 +39,7 @@
             .siku{
                 border-radius: 0px;
             }
-            /*            .active{
-                            background-color: red;
-                        }*/
-
-            /*            .custom > li > a:hover {
-                            color: black;
-                        }*/
+            /*
             .navbar-default .navbar-nav > li > a{
                 color: white;
             }
@@ -56,7 +50,7 @@
                 background: transparent;
                 box-shadow: none !important;
                 -webkit-box-shadow: none !important;
-                /*box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.075) inset;*/
+                box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.075) inset;
             }
             .navbar-default .navbar-nav > .active > a, 
             .navbar-default .navbar-nav > .open > a{
@@ -72,7 +66,7 @@
                 background-color: transparent;    
             }
             .navbar-default .navbar-nav > .active{ 
-                /*padding-left: 15px;*/
+                padding-left: 15px;
                 color: #333;
                 text-decoration: none;
                 background-color: transparent;
@@ -85,9 +79,9 @@
                 background-color: transparent;
                 background-image: url(<?php echo base_url(); ?>images/line.png);
                 background-repeat: repeat-x;
-                /*                                background-color: transparent;
+                                                background-color: transparent;
                                                 color: black;
-                                                border-style: none;*/
+                                                border-style: none;
             }
 
             ul.dropdown-menu > li > a:hover{ 
@@ -98,7 +92,7 @@
                 background-repeat: repeat-x;
                 box-shadow: none !important;
                 -webkit-box-shadow: none !important;
-            }
+            }*/
 
             /* Kategori Produk */
             .panel-heading{
@@ -108,6 +102,22 @@
             /*            .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover{
                             
                         }*/
+
+            // Ronald Tambah
+
+            .marginBottom-0 {margin-bottom:0;}
+            .dropdown-submenu{position:relative;}
+            .dropdown-submenu>.dropdown-menu{
+                top:0;
+                left:100%;
+                margin-top:-6px;margin-left:-1px;-webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0px;
+            }
+            .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
+            .dropdown-submenu:hover>a:after{border-left-color:#555;}
+            .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+
+
+            // END Ronald Tambah
 
             .warna{
                 color: red;
@@ -145,7 +155,14 @@
             #datatable thead tr td{
                 color: white;
             }
+            
+/*            .dropdown-menu li:hover{
+                background-color: cyan;
+            }
+            .nav li ul li:hover{
+                background-color: cyan;
+            }*/
         </style>
-
+        <script src="<?php echo base_url(); ?>bootstrap/js/jquery.js"></script>
     </head>
     <body style="background-color: whitesmoke;">

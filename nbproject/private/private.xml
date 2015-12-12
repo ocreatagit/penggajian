@@ -3,14 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Lokasi.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Toko.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Laporan.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/lokasi_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/jurnal_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/barang_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_tambah_lokasi.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_mutasi_kas_bank.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_tambah_barang.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_harian_penjualan.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Pencarian.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/laporan_model.php</file>
         </group>
     </open-files>
 </project-private>

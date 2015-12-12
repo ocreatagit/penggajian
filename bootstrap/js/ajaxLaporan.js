@@ -434,6 +434,28 @@ function edit_lokasi() {
     }
 }
 
+function refreshEditPage() {
+    alert("Refreshing Page... (^.^)v");
+    var deferred = new $.Deferred();
+    // now, delay the resolution of the deferred:
+    setTimeout(function() {
+        window.location.href = current_url;
+    }, 1);
+    return deferred.promise();
+}
+
+function tempAlert(msg,duration)
+{
+    var el = document.createElement("div");
+    el.setAttribute("style","background-color: #31708F;position: absolute;top:0; bottom: 0; left: 0; right: 0; margin: auto;padding: 20px; height: 75px; width: 400px; color: white; font-size: 18px; border-radius: 6px;");
+    el.innerHTML = msg;
+    setTimeout(function(){
+     el.parentNode.removeChild(el);
+     window.location.href = current_url;
+    },duration);
+    document.body.appendChild(el);
+}
+
 function simpan_lokasi() {
     $.ajax({
         url: base_url + "index.php/lokasi/edit_cabang",
@@ -451,14 +473,19 @@ function simpan_lokasi() {
             $("#wilayah_edit").val("");
             $("#kabupaten_edit").val("");
             $("#provinsi_edit").val("");
+            
+            tempAlert('Memproses Data ...', 1000);
 
-            $("#load_lokasi").load(base_url + "index.php/Laporan/get_lokasi");
-            var lokasi = JSON.parse(data);
-
-            $("#kecamatan").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.kecamatan + "</p>");
-            $("#kabupaten").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.kabupaten + "</p>");
-            $("#wilayah").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.wilayah + "</p>");
-            $("#provinsi").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.provinsi + "</p>");
+//            refreshEditPage();
+//            refreshEditPage().then(function(result) {});
+            
+//            $("#load_lokasi").load(base_url + "index.php/Laporan/get_lokasi");
+//            var lokasi = JSON.parse(data);
+//
+//            $("#kecamatan").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.kecamatan + "</p>");
+//            $("#kabupaten").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.kabupaten + "</p>");
+//            $("#wilayah").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.wilayah + "</p>");
+//            $("#provinsi").html("<p style='margin: 0px; margin-top: 8px;'>" + lokasi.provinsi + "</p>");
         }, error: function (jqXHR, textStatus, errorThrown) {
             alert(JSON.stringify(jqXHR));
         }

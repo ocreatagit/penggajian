@@ -128,6 +128,9 @@ class Laporan extends CI_Controller {
         $data['cabang'] = $this->Admin_model->get_cabang($data['username']);
         $data['info_cabangs'] = $this->Admin_model->get_provinsi_kabupaten($data['username']);
         $data['info_lokasis'] = $this->Admin_model->get_kecamatan_desa($data['username']);
+        if (count($data['info_lokasis']) > 0) {
+            $data['info_lokasi_details'] = $this->Lokasi_model->get_detail_cabang_lokasi($data['info_lokasis'][0]->id_lokasi);
+        }
         $data['info_saleses'] = $this->Sales_model->get_sales_tiap_admin($data['username']);
         $data['info_team_leaders'] = $this->Sales_model->get_team_leader_tiap_admin($data['username']);
         $data['info_barang'] = $this->Barang_model->get_barang();
@@ -329,7 +332,7 @@ class Laporan extends CI_Controller {
                         break;
                     }
                 }
-                
+
                 if ($rowid == "") {
                     $nominal = $this->input->post('nominal');
                     $jenis_kas = $this->input->post('jenis_pengeluaran');
@@ -651,7 +654,6 @@ class Laporan extends CI_Controller {
                 }
                 $this->Sales_model->insert_kehadiran($temp);
 //                print_r($temp);exit;
-
                 // Jurnal
                 $this->load->model('Jurnal_model');
                 $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Penjualan Barang');
@@ -954,6 +956,7 @@ class Laporan extends CI_Controller {
             $data['IDCabang'] = $this->session->userdata('IDCabang');
 
             $data['laporans'] = $this->Laporan_model->select_laporan_pengeluaran();
+            $data['saldo'] = $this->Admin_model->get_saldo_cabang($data['IDCabang']);
         } else {
             redirect('welcome/index');
         }
@@ -1129,7 +1132,7 @@ class Laporan extends CI_Controller {
         }
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->get_saldo_kantor($data['IDCabang']);
-        $data['selectCabang'] = 0;
+        $data['saldo'] = $this->Admin_model->get_saldo_cabang($data['IDCabang']);
         $data['selectCabang'] = 0;
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
@@ -1160,6 +1163,8 @@ class Laporan extends CI_Controller {
 
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->get_saldo_kas_bank($data['IDCabang']);
+        
+        $data['saldo_bank'] = $this->Admin_model->get_saldo_bank($data['IDCabang']);
 
         $data['selectCabang'] = 0;
         if ($this->session->userdata("Level") == 0) {

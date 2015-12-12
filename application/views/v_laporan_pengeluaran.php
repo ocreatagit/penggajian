@@ -1,7 +1,14 @@
 <div class="container" style="margin-top: 80px; height: 100%; padding: 0px; margin-bottom: 50px;">    
     <div class="row" style="">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <h1 class="page-header" style="margin-top: 0px;">Daftar Data Pengeluaran</h1>
+        </div>
+        <div class="col-lg-6" style="background-color: whitesmoke">
+            <h1 class="" id="saldo" style="margin-top: 0px;">Saldo : Rp.<?php echo number_format($saldo, 0, ",", ".") ?>,-</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
             <ol class="breadcrumb" style="background-color: white; margin-top: 00px;">
                 <li><a href="<?php echo base_url(); ?>index.php/Laporan/laporan_pengeluaran"><i class="fa fa-home"></i> Daftar Laporan Pengeluaran</a></li>
             </ol>
@@ -108,7 +115,7 @@
             return ((a < b) ? 1 : ((a > b) ? -1 : 0));
         }
     });
-    
+
     $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');
@@ -122,7 +129,7 @@
     });
 </script>
 <script>
-    
+
     $("#datepicker").datepicker({
         inline: true,
         dateFormat: "dd-mm-yy"

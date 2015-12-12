@@ -24,7 +24,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Hari / Tanggal: </label>
                             <div class="col-sm-7">
-                                <input class="form-control siku" type="text" id="datepicker"  placeholder="Pilih Tanggal" name="tanggal" value="<?php echo ($this->session->userdata("tanggal_jual") != "") ? $this->session->userdata("tanggal_jual") : date("d-m-Y"); ?>" autofocus="">
+                                <input class="form-control siku" type="text" id="datepicker"  placeholder="Pilih Tanggal" name="tanggal" value="<?php echo ($this->session->userdata("tanggal_jual") != "") ? $this->session->userdata("tanggal_jual") : date("d-m-Y"); ?>"/>
                                 <span id="tanggal_error" style="color: red;"></span>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
             <div class="col-lg-7">
                 <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
                     <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
-<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                              ?>,-</span>-->
+<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                               ?>,-</span>-->
                     <input type="hidden" name="saldo" id="saldo" value="<?php echo $saldo; ?>"/>
                     <input type="hidden" name="idcabang" id="idcabang" value="<?php echo $cabang; ?>"/>
                     <input type="hidden" name="current_url" id="current_url" value="<?php echo current_url(); ?>"/>
@@ -64,27 +64,28 @@
                                     </select>
                                     <?php if (form_error("lokasi")) {
                                         ?>
-                                        <span class='warna' id='lokasi_error'><?php echo form_error("lokasi") ?></span>
+                                        <span class='warna' id='lokasi_error'><p style='margin: 0px; margin-top: 8px;'><?php echo form_error("lokasi") ?></span></p>
                                     <?php }
                                     ?>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-top: -12px;">
                                 <label class="col-sm-3 control-label">Kecamatan: </label>
-                                <div class="col-sm-9 lokasi_label" id="kecamatan"></div>
+                                <div class="col-sm-9 lokasi_label" id="kecamatan"><p style='margin: 0px; margin-top: 8px;'><?php echo $info_lokasi_details->kecamatan ?></p></div>
                             </div>
                             <div class="form-group" style="margin-top: -12px;">
                                 <label class="col-sm-3 control-label">Wilayah: </label>
-                                <div class="col-sm-9 lokasi_label" id="wilayah"></div>
+                                <div class="col-sm-9 lokasi_label" id="wilayah"><p style='margin: 0px; margin-top: 8px;'><?php echo $info_lokasi_details->wilayah ?></p></div>
                             </div>
                             <div class="form-group" style="margin-top: -12px;">
                                 <label class="col-sm-3 control-label">Kabupaten: </label>
-                                <div class="col-sm-9 lokasi_label" id="kabupaten">
+                                <div class="col-sm-9 lokasi_label" id="kabupaten"><p style='margin: 0px; margin-top: 8px;'><?php echo $info_lokasi_details->kabupaten ?></p>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-top: -12px;">
                                 <label class="col-sm-3 control-label">Provinsi: </label>
                                 <div class="col-sm-9 lokasi_label" id="provinsi">
+                                    <p style='margin: 0px; margin-top: 8px;'><?php echo $info_lokasi_details->provinsi ?></p>
                                 </div>
                             </div>
                             <div class="form-group">
