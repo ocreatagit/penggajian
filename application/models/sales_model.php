@@ -30,16 +30,17 @@ class Sales_model extends CI_Model {
                     From Sales s
                     WHERE s.pangkat = 'SPG'";
         }
+        $sql .= " AND s.aktif = 1";
         $query = $this->db->query($sql);
         return $query->result();
     }
 
     function get_team_leader_tiap_admin($username) {
         $sql = "Select s.IDSales as id_sales, s.nama as nama
-                                    From Sales s
-                                    INNER JOIN cabang c on c.IDCabang = s.IDCabang
-                                    INNER JOIN Admin a ON c.IDAdmin = a.IDAdmin
-                                    WHERE a.Username = '$username' AND s.pangkat = 'Team Leader'";
+                From Sales s
+                INNER JOIN cabang c on c.IDCabang = s.IDCabang
+                INNER JOIN Admin a ON c.IDAdmin = a.IDAdmin
+                WHERE a.Username = '$username' AND s.aktif = 1 AND s.pangkat = 'Team Leader'";
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -47,7 +48,7 @@ class Sales_model extends CI_Model {
     function get_barang_sales() {
         $IDSales = $this->input->post("IDSales");
         $IDBarang = $this->input->post("IDBarang");
-        $result = $this->db->get_where("komisi", array("IDSales" => $IDSales, "IDBarang" => $IDBarang));
+        $result = $this->db->get_where("komisi", array("IDSales" => $IDSales, "IDBarang" => $IDBarang, "aktif" => 1));
         if ($result->num_rows() == 0) {
             return 0;
         } else {
@@ -72,7 +73,8 @@ class Sales_model extends CI_Model {
 
     function get_penjualan_sales() {
         $sql = "SELECT j.*, s.nama, b.namaBarang FROM jual j INNER JOIN sales s ON s.IDSales = j.IDSales 
-                INNER JOIN barang b ON b.IDBarang = j.IDBarang";
+                INNER JOIN barang b ON b.IDBarang = j.IDBarang 
+                WHERE s.aktif = 1";
         $rs = $this->db->query($sql);
         if ($rs->num_rows() == 0) {
             return array();
@@ -84,7 +86,7 @@ class Sales_model extends CI_Model {
     function get_komisi($data) {
         $array = array();
         foreach ($data as $row) {
-            array_push($array, $this->db->get_where("komisi", array("IDSales" => $row->IDSales, "IDBarang" => $row->IDBarang))->row());
+            array_push($array, $this->db->get_where("komisi", array("IDSales" => $row->IDSales, "IDBarang" => $row->IDBarang, "aktif" => 1))->row());
         }
         return $array;
 //        return ;
@@ -100,7 +102,7 @@ class Sales_model extends CI_Model {
     }
 
     function get_gaji_sales() {
-        $sql = "SELECT totalGaji FROM sales WHERE IDSales = " . $this->input->post("IDSaless");
+        $sql = "SELECT totalGaji FROM sales WHERE aktif = 1 AND IDSales = " . $this->input->post("IDSaless");
         return $this->db->query($sql)->row()->totalGaji;
     }
 
@@ -559,6 +561,7 @@ class Sales_model extends CI_Model {
                 $sql .= " AND sales.IDCabang = " . $this->input->post('cabang');
             }
         }
+        $sql .= " sales.aktif = 1 ";
         $sql .= ($this->session->userdata("Level") == 0 ? "" : " AND sales.IDCabang = " . $this->session->userdata("IDCabang")) .
                 " GROUP BY sales.IDSales";
         return $this->db->query($sql)->result();
