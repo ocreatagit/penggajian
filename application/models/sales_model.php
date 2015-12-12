@@ -280,11 +280,11 @@ class Sales_model extends CI_Model {
         $this->db->where("IDSales", $IDSales);
         $this->db->update("sales", $data);
     }
-    
+
     function get_status_pembatalan($kodepenjualan) {
         $sql = "SELECT * FROM laporan_penjualan INNER JOIN laporan_pembatalan_penjualan ON laporan_pembatalan_penjualan.IDPenjualan = laporan_penjualan.IDPenjualan WHERE laporan_penjualan.IDPenjualan = $kodepenjualan;";
         $res = $this->db->query($sql);
-        if($res->num_rows() > 0){
+        if ($res->num_rows() > 0) {
             return 1;
         } else {
             return 0;
@@ -361,7 +361,7 @@ class Sales_model extends CI_Model {
         $this->db->insert_batch('komisi', $data);
     }
 
-    function select_komisi($IDSales) {         
+    function select_komisi($IDSales) {
         return $this->db->order_by('IDSales ASC, IDBarang ASC')->get_where('komisi', array('IDSales' => $IDSales))->result();
     }
 
@@ -393,8 +393,14 @@ class Sales_model extends CI_Model {
         return $temp;
     }
 
-    function delete_sales($id) {
-        $this->db->delete('sales', array('IDSales' => $id));
+    function aktif_sales($id) {
+        if ($this->db->get_where('sales', array('IDSales' => $id))->num_rows() > 0) {
+            if ($this->db->get_where('sales', array('IDSales' => $id))->row()->aktif == 1) {
+                $this->db->update('sales', array("aktif" => 0), array('IDSales' => $id));
+            } else {
+                $this->db->update('sales', array("aktif" => 1), array('IDSales' => $id));
+            }
+        }
     }
 
     function get_idcabang() {
