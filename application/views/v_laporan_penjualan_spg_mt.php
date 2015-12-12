@@ -116,18 +116,27 @@
                                 <th>Tanggal</th>
                                 <th>Nama SPG</th>
                                 <th>Nama Barang</th>
-                                <th>Jumlah</th>
+                                <th>Jumlah (Pcs)</th>
+                                <th>Konversi Satuan</th>
                                 <th>Nama Toko</th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- loop isi -->
-                            <?php foreach ($laporans as $laporan): ?>
+                            <?php
+                            foreach ($laporans as $laporan):
+                                $total_barang = intval($laporan->total_jumlah);
+                                $karton = floor($total_barang / (intval($laporan->niai_karton) * 12));
+                                $total_barang %= (intval($laporan->niai_karton) * 12);
+                                $lusin = floor($total_barang / 12);
+                                $total_barang %= 12;
+                                ?>
                                 <tr>
                                     <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
                                     <td><?php echo $laporan->sales; ?></td>
                                     <td><?php echo $laporan->barang ?> </td>
-                                    <td><?php echo $laporan->jumlah ?> pcs </td>
+                                    <td><?php echo $laporan->jumlah ?></td>
+                                    <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
                                     <td><?php echo $laporan->toko ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -140,16 +149,32 @@
                         <thead>
                             <tr style="background-color: yellow" >
                                 <td style="text-align: center">Nama Barang</td>
-                                <td class="text-center">Jumlah</td>
+                                <td class="text-center">Jumlah (Pcs)</td>
+                                <td class="text-center">Konversi Satuan</td>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($totals as $total): ?>
+                            <?php if (count($totals) <= 0) : ?>
                             <tr>
-                                <td style="text-align: center"><?php echo $total->barang ?></td>
-                                <td class="text-center"><?php echo $total->jumlah ?></td>
+                                <td colspan="3" style="text-align: center;">
+                                    Tidak Ada Data
+                                </td>
                             </tr>
-                            <?php endforeach; ?>
+                            <?php
+                            endif;
+                            foreach ($totals as $total):
+                                $total_barang = intval($total->total_jumlah);
+                                $karton = floor($total_barang / (intval($total->niai_karton) * 12));
+                                $total_barang %= (intval($total->niai_karton) * 12);
+                                $lusin = floor($total_barang / 12);
+                                $total_barang %= 12;
+                                ?>
+                                <tr>
+                                    <td style="text-align: center"><?php echo $total->barang ?></td>
+                                    <td class="text-center"><?php echo $total->jumlah ?></td>
+                                    <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
+                                </tr>
+<?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

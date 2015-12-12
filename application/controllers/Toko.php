@@ -311,9 +311,6 @@ class Toko extends CI_Controller {
             }
         }
 
-        $data["konversi_satuan"] = $this->Barang_model->get_satuan();
-        $data["harga_satuan"] = $this->Barang_model->get_harga_satuan();
-
         $data["status"] = $this->session->flashdata("status_mt");
         $data["tokos"] = $this->Toko_model->get_all_toko($data['IDCabang']);
         $data["spgs"] = $this->Toko_model->get_spg_mt($data['IDCabang']);

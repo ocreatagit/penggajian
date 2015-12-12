@@ -184,26 +184,15 @@
 <script>
     var arrSatuan = [<?php
                                 $temp = "";
-                                for ($i = 0; $i < count($konversi_satuan); $i++) {
+                                for ($i = 0; $i < count($barangs); $i++) {
                                     if ($i == 0) {
-                                        $temp .= "" . $konversi_satuan[$i]->total_konversi;
+                                        $temp .= "" . $barangs[$i]->nilai_karton;
                                     } else {
-                                        $temp .= ", " . $konversi_satuan[$i]->total_konversi;
+                                        $temp .= ", " . $barangs[$i]->nilaikarton;
                                     }
                                 }
                                 echo $temp;
-                                ?>];
-    var arrharga = [<?php
-                                $temp = "";
-                                for ($i = 0; $i < count($harga_satuan); $i++) {
-                                    if ($i == 0) {
-                                        $temp .= "" . $harga_satuan[$i]->harga_konversi;
-                                    } else {
-                                        $temp .= ", " . $harga_satuan[$i]->harga_konversi;
-                                    }
-                                }
-                                echo $temp;
-                                ?>];
+                                ?>];    
     $('#konversi').hide();
     var idx = 0;
     $('#nama_produk').change(function () {
@@ -218,7 +207,6 @@
         var pcs = data;
         $('#konversi').show();
         $('#konversi').html(karton + " Karton " + lusin + " Lusin " + pcs + " Pcs");
-        $('#pendapatan_SPG').val(karton * arrharga[idx * 3] + lusin * arrharga[idx * 3 + 1] + pcs * arrharga[idx * 3 + 2]);
     });
 </script>
 <script>
