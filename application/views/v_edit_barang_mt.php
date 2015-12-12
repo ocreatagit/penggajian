@@ -35,7 +35,7 @@
                             <form id="form_s" class="form-horizontal" method="POST" action="<?php echo current_url() ?>" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Nama Barang : </label>
-                                    <div class="col-sm-10">
+                                    <div class="input-group col-sm-3">
                                         <input type="text" name="nama_barang" class="form-control siku"placeholder="Masukkan Nama Barang" required="" title="Nama Barang Harus Diisi!" value="<?php echo set_value('nama_barang', $barang->nama) ?>">
                                         <input type="hidden" name="hid" value="7482hdyueldplf"/>
                                         <input type="hidden" name="IDBarangMT" value="<?php echo $barang->IDBarangMT ?>"/>
@@ -44,6 +44,13 @@
                                             <label style="color: red;"><?php echo form_error("nama_barang") ?></label>
                                         <?php }
                                         ?>
+                                    </div>
+                                </div>                                                               
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">1 Karton : </label>
+                                    <div class="input-group col-sm-3">
+                                        <input min="1" class="form-control siku text-right" name="satuan" placeholder="Satuan" value="<?php echo $barang->nilai_karton ?>" type="number">
+                                        <div class="input-group-addon siku">Lusin</div>                                        
                                     </div>
                                 </div>                                                               
                                 <div class="form-group">

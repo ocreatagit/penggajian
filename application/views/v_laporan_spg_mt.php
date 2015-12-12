@@ -126,7 +126,8 @@
                                     <thead>
                                         <tr>
                                             <td>Nama Barang</td>
-                                            <td>Jumlah Terjual</td>
+                                            <td>Jumlah Terjual (pcs)</td>
+                                            <td>Konversi Satuan</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -134,10 +135,16 @@
                                         $id_temp = $laporan_alls[$i]->IDSalesMT;
                                         while ($i < count($laporan_alls)):
                                             if ($id_temp = $laporan_alls[$i]->IDSalesMT) {
+                                                $total_barang = intval($laporan_alls[$i]->total_jumlah);
+                                                $karton = floor($total_barang/(intval($laporan_alls[$i]->niai_karton)*12));
+                                                $total_barang %= (intval($laporan_alls[$i]->niai_karton)*12);
+                                                $lusin = floor($total_barang/12);
+                                                $total_barang %= 12;
                                                 ?>
                                                 <tr>
                                                     <td><?php echo $laporan_alls[$i]->nama ?></td>
                                                     <td><?php echo $laporan_alls[$i]->total_jumlah ?></td>
+                                                    <td><?php echo ($karton == 0 ? "" : $karton." karton").($lusin == 0 ? "" : $lusin." lusin"). $total_barang." pcs" ?></td>
                                                 </tr>
                                                 <?php
                                                 $i++;

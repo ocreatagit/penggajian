@@ -19,14 +19,7 @@
                 </div>
                 <div class="panel-body">
                     <?php
-                    if ($this->session->userdata("Level") == 0) {
-                        if ($filter != "") {
-                            ?>
-                            <div class="alert alert-info alert-dismissible siku" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                Pencarian Berdasarkan '<?php echo $filter; ?>'
-                            </div>
-                        <?php } ?>
+                    if ($this->session->userdata("Level") == 0) { ?>                       
                         <form style="background-color: white; padding: 15px 10px 10px 5px;; margin-bottom: 10px;" class="form-horizontal" action="<?php echo current_url() ?>" method="POST">
                             <div class="form-group">
                                 <label for="exampleInputName2" class="control-label col-lg-2" style=""> Cabang : </label>

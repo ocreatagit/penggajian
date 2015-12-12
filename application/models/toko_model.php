@@ -91,7 +91,7 @@ class Toko_model extends CI_Model {
     function edit_barang($IDBarang) {
         $sql = "SELECT * FROM `barang_mt` WHERE lower(nama) = '" . strtolower($this->input->post("nama_barang")) . "' AND IDBarangMT != " . $IDBarang;
         if ($this->db->query($sql)->num_rows() == 0) {
-            $this->db->update('barang_mt', array("nama" => $this->input->post("nama_barang")), array('IDBarangMT' => $IDBarang));
+            $this->db->update('barang_mt', array("nama" => $this->input->post("nama_barang"), "nilai_karton" => $this->input->post("satuan")), array('IDBarangMT' => $IDBarang));
             $this->session->set_flashdata("status", "<b>Barang Telah Diubah!</b>");
         } else {
             $this->session->set_flashdata("status", "<b>Nama barang sudah digunakan</b>");
@@ -139,7 +139,7 @@ class Toko_model extends CI_Model {
     }
 
     function laporan_spg($awal = FALSE, $akhir = FALSE, $IDToko = FALSE) {
-        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as total_jumlah, barang_mt.nama
+        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as total_jumlah, barang_mt.nama, barang_mt.nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT 
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
@@ -201,7 +201,7 @@ class Toko_model extends CI_Model {
     }
 
     function get_laporan_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
-        $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko 
+        $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko, barang_mt.nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
                 INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT
@@ -229,7 +229,7 @@ class Toko_model extends CI_Model {
     }
 
     function get_total_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
-        $sql = "SELECT barang_mt.nama as barang, sum(laporan_barang_mt.jumlah) as jumlah, toko.nama as toko FROM laporan_barang_mt 
+        $sql = "SELECT barang_mt.nama as barang, sum(laporan_barang_mt.jumlah) as jumlah, toko.nama as toko, barang_mt.nilai_karton FROM laporan_barang_mt 
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
                 INNER JOIN barang_mt on barang_mt.IDBarangMT = laporan_barang_mt.IDBarangMT
                 INNER JOIN toko on toko.IDToko = laporan_barang_mt.IDToko";

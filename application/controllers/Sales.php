@@ -57,8 +57,8 @@ class Sales extends CI_Controller {
         $this->load->view('v_foot');
     }
 
-    public function delete_sales($IDSales) {
-        $this->Sales_model->delete_sales($IDSales);
+    public function update_sales($IDSales) {
+        $this->Sales_model->aktif_sales($IDSales);
         redirect('sales/daftar_sales');
     }
 

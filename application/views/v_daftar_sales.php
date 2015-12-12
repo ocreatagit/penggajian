@@ -57,14 +57,14 @@
                         <!-- looping -->
                         <?php 
                         foreach ($saless as $sales) : ?> 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="panel panel-success siku">
                                     <div class="panel-heading">
                                         <h5 style="font-size: x-large"><strong><?php echo $sales->nama ?></strong></h5>
                                     </div>
                                     <div class="panel-body">
                                         <div style="text-align: center;">
-                                            <img src="<?php echo base_url() ?>uploads/<?php echo $sales->foto ?>" alt="<?php echo $sales->foto ?>" width="200" >
+                                            <img src="<?php echo base_url() ?>uploads/<?php echo $sales->foto ?>" alt="<?php echo $sales->foto ?>" width="100%" >
                                         </div>
                                         <br>
                                         <table>
@@ -90,6 +90,10 @@
                                                 <td>Tanggal Lahir : </td>
                                                 <td><?php echo date_format(date_create($sales->tanggalLahir), 'd-m-Y') ?></td>
                                             </tr>
+                                            <tr>
+                                                <td style="color: <?php echo ($sales->aktif == 1 ? "green" : "red") ?>">Status Aktif : </td>
+                                                <td style="color: <?php echo ($sales->aktif == 1 ? "green" : "red") ?>" ><?php echo ($sales->aktif == 1 ? "Aktif" : "Tidak Aktif") ?></td>
+                                            </tr>
                                             <hr>                                            
                                         </table>
                                         <hr style="margin: 5px auto">
@@ -105,8 +109,8 @@
                                         </table>
                                         <br>
                                         <div style="text-align: center">
-                                            <a href='<?php echo base_url() ?>index.php/Sales/tambah_sales/<?php echo $sales->IDSales ?>' class='btn btn-primary btn-sm siku'><i class='fa fa-pencil'></i></a>
-                                            <a href='<?php echo base_url() ?>index.php/Sales/delete_sales/<?php echo $sales->IDSales ?>' class='btn btn-danger btn-sm siku' onclick="return confirm('Are you sure you want to delete this item?');"><i class='fa fa-trash'></i></a>
+                                            <a href='<?php echo base_url() ?>index.php/Sales/tambah_sales/<?php echo $sales->IDSales ?>' class='btn btn-primary btn-md siku'><i class='fa fa-pencil'></i> Edit</a>
+                                            <a href='<?php echo base_url() ?>index.php/Sales/update_sales/<?php echo $sales->IDSales ?>' class='btn btn-info btn-md siku' id="inputCheck" onclick="inputCheck()"><i class='fa fa-question-circle'></i> Ubah Status</a>
                                         </div>
                                     </div>
                                 </div>
@@ -126,6 +130,19 @@
 <script src="<?php echo base_url(); ?>bootstrap/js/bootstrap.min.js"></script>
 
 <script src="<?php echo base_url(); ?>jquery-ui/jquery-ui.js"></script>
-
+<script src="<?php echo base_url(); ?>alertify/alertify.min.js"></script>
+<script>
+    $("#inputCheck").click(function (event) {
+                                event.preventDefault();
+                                alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
+                                    if (e) {
+                                        var a = $("#inputCheck").attr("href");
+                                        window.location.assign(a);
+                                    } else {
+                                        //after clicking Cancel
+                                    }
+                                });
+                            });
+</script>
 </body>
 </html>
