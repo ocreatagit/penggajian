@@ -27,6 +27,7 @@
                                     <th>Cabang</th>
                                     <th>Nama Admin</th>
                                     <th>Email</th>
+                                    <th>Foto</th>
                                     <th style="text-align: center;">Aksi</th>
                                 </tr>
                             </thead>
@@ -39,9 +40,18 @@
                                     <?php echo "<td>" . $admin->nama . "</td>"; ?>
                                     <?php echo "<td>" . $admin->nama . "</td>"; ?>
                                     <?php echo "<td>" . $admin->email . "</td>"; ?>
+                                    <?php echo "<td align='center'><img class='thumbnail' style='width: 200px; height: 200px;' src='" . base_url() . 'uploads/' . $img_admins[$admin->IDAdmin] . "'/> </td>"; ?>
                                     <?php echo "<td align='center'>"; ?>
                                     <?php echo "<a href='" . base_url() . "index.php/admin/edit_admin/" . $admin->IDAdmin . "' class='btn btn-primary btn-sm siku'><i class='fa fa-pencil'></i></a>"; ?>
-                                    <?php echo "<a href='' class='btn btn-danger btn-sm siku'><i class='fa fa-trash'></i></a>"; ?>                                
+                                    <?php if ($admin->level == 3) { ?>
+                                    <a href='<?php echo base_url() . "index.php/admin/hapus_admin/" . $admin->IDAdmin; ?>' class='btn btn-danger btn-sm siku inputCheck'><i class='fa fa-trash'></i></a>
+                                    <?php
+                                } else {
+                                    ?>
+                                    <a id='' href='<?php echo base_url() . "index.php/admin/hapus_admin/" . $admin->IDAdmin; ?>' class='btn btn-danger btn-sm siku disabled inputCheck' title='Tidak Dapat Dihapus!'><i class='fa fa-trash'></i></a>
+                                        <?php
+                                    }
+                                    ?>
                                     <?php echo "</td>"; ?>
                                     <?php echo "</tr>"; ?>
                                 <?php endforeach; ?>
@@ -68,6 +78,23 @@
     notification.ondismiss = function () {
         return canDismiss;
     };
+
+    $("#gUser .inputCheck").click(function (event) {
+        event.preventDefault();
+        var a = this.href;
+        alertify.confirm('Hapus Barang yang diPilih?', function (e) {
+            if (e) {
+                window.location.assign(a);
+            } else {
+                //after clicking Cancel
+            }
+        });
+    });
+
+    function delete_admin(btn) {
+        document.preventDefault();
+        alert();
+    }
 </script>
 </body>
 </html>

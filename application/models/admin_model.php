@@ -42,12 +42,14 @@ class Admin_model extends CI_Model {
         }
     }
 
-    function delete_admin_set_increment($IDAdmin) {
+    function delete_admin_set_increment($IDAdmin, $set = TRUE) {
         $this->db->where("IDAdmin", $IDAdmin);
         $this->db->delete("admin");
 
-        $sql = "ALTER TABLE admin AUTO_INCREMENT=" . $IDAdmin;
-        $this->db->query($sql);
+        if ($set) {
+            $sql = "ALTER TABLE admin AUTO_INCREMENT=" . $IDAdmin;
+            $this->db->query($sql);
+        }
     }
 
     function get_provinsi_kabupaten($username) {
@@ -81,14 +83,19 @@ class Admin_model extends CI_Model {
     }
 
     function update_admin() {
-        $data = array(
-            "level" => $this->input->post("level"),
-            "nama" => $this->input->post("nama"),
-            "email" => $this->input->post("email")
-        );
-        $this->db->where("IDAdmin", $this->input->post("IDAdmin"));
-        $this->db->update("admin", $data);
-        $this->session->set_flashdata("status", "Admin Telah Diubah!");
+        $SQL = "SELECT * FROM admin WHERE nama = '" . $this->input->post("nama") . "' AND level != 0 AND IDAdmin != " . $this->input->post("IDAdmin") . ";";
+        $res = $this->db->query($SQL);
+        if ($res->num_rows() == 0) {
+            $data = array(
+                "nama" => $this->input->post("nama"),
+                "email" => $this->input->post("email")
+            );
+            $this->db->where("IDAdmin", $this->input->post("IDAdmin"));
+            $this->db->update("admin", $data);
+            $this->session->set_flashdata("status_admin", "Admin Telah Diubah!");
+        } else {
+            $this->session->set_flashdata("status_admin", "Nama atau Email Sudah Digunakan!");
+        }
     }
 
     function get_admin($username, $password) {
@@ -134,15 +141,23 @@ class Admin_model extends CI_Model {
     }
 
     function get_saldo_bank($IDCabang) {
-        $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = ".$IDCabang.";";
-        $res = $this->db->query($SQL)->row();
-        return $res->nilai_akun;
+        if ($this->session->userdata("Level") != 0) {
+            $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = " . $IDCabang . ";";
+            $res = $this->db->query($SQL)->row();
+            return $res->nilai_akun;
+        } else {
+            return 0;
+        }
     }
 
     function get_saldo_cabang($IDCabang) {
-        $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
-        $query = $this->db->query($sql);
-        return $query->row()->saldo;
+        if ($this->session->userdata("Level") != 0) {
+            $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
+            $query = $this->db->query($sql);
+            return $query->row()->saldo;
+        } else {
+            return 0;
+        }
     }
 
     /* Cek cek Penggajian */
@@ -533,6 +548,8 @@ class Admin_model extends CI_Model {
 
         $this->Jurnal_model->insert_jurnal_pengeluaran($IDJurnal, 'Setor Kas Bank', $total_setor);
         $this->Jurnal_model->insert_jurnal_pengeluaran($IDJurnal, 'Terima Setoran Bank', $total_setor, FALSE);
+
+        $this->session->set_userdata("tanggal_setoran", $tanggal);
     }
 
     function tarik_kas_bank() {

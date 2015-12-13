@@ -265,7 +265,7 @@ class Toko extends CI_Controller {
         $this->form_validation->set_rules('nama_barang', 'Barang', 'required');
         $this->form_validation->set_rules('jumlah', 'Jumlah', 'required');
 //        $this->cart->destroy();
-        if ($this->input->post('btn_submit')) {
+        if ($this->input->post('hid')) {
             if ($this->form_validation->run() == TRUE) {
                 $ke = 1;
                 if ($this->cart->total_items() > 0) {
@@ -386,10 +386,16 @@ class Toko extends CI_Controller {
     }
 
     function refresh_total() {
-        $total = $this->cart->total_items();
-        echo '<td class="" colspan="4" align="right" style="color: white"><h4>Total</h4></td>
-            <td class="" colspan="" style="color: white"><h4>' . $total . '</h4></td>
-            <td class="" colspan="" align="center"><button class="btn btn-default" id="btn_save" type="button"><i class="fa fa-save"></i> Save</button></td>';
+        $total = 0;
+        foreach ($this->cart->contents() as $items) {
+            if (strpos($items["id"], "barangmt") !== FALSE) {
+                $total += $items["qty"];
+            }
+        }
+//        echo '<td class="" colspan="4" align="right" style="color: white"><h4>Total</h4></td>
+//            <td class="" colspan="" style="color: white"><h4>' . $total . '</h4></td>
+//            <td class="" colspan="" align="center"><button class="btn btn-default" id="btn_save" type="button"><i class="fa fa-save"></i> Save</button></td>';
+        echo number_format($total, 0, ",", ".");
     }
 
     function insert_penjualan_mt() {
@@ -419,7 +425,7 @@ class Toko extends CI_Controller {
         if ($data['level'] == 0) {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan();
             $data['totals'] = $this->Toko_model->get_total_penjualan();
-        }else{
+        } else {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan($data['IDCabang']);
             $data['totals'] = $this->Toko_model->get_total_penjualan($data['IDCabang']);
         }
@@ -430,20 +436,20 @@ class Toko extends CI_Controller {
             $IDToko = $this->input->post('filterToko');
             $IDBarang = $this->input->post('filterBarang');
             $IDSpg = $this->input->post('filterSPG');
-            $data['laporans'] = $this->Toko_model->get_laporan_penjualan( ($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
-            $data['totals'] = $this->Toko_model->get_total_penjualan( ($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
+            $data['laporans'] = $this->Toko_model->get_laporan_penjualan(($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
+            $data['totals'] = $this->Toko_model->get_total_penjualan(($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
             $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
         }
-        if($this->input->post('btn_print')){
-           $this->xls_penjualan($data);
+        if ($this->input->post('btn_print')) {
+            $this->xls_penjualan($data);
         }
 
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_penjualan_spg_mt', $data);
     }
-    
-    function xls_penjualan($data){
+
+    function xls_penjualan($data) {
         $this->load->library('custom_excel');
         $excel = $this->custom_excel;
         $excel->declare_excel();
@@ -453,9 +459,9 @@ class Toko extends CI_Controller {
         $row++;
         $excel->add_cell('Nama Barang', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
         $excel->add_cell('Jumlah', 'B', $row++)->alignment('center')->border()->autoWidth()->font(16);
-       foreach ($data['totals'] as $laporan):            
+        foreach ($data['totals'] as $laporan):
             $excel->add_cell($laporan->barang, "A", $row)->border();
-            $excel->add_cell($laporan->jumlah, "B", $row)->border();            
+            $excel->add_cell($laporan->jumlah, "B", $row)->border();
             $row++;
         endforeach;
         $row++;
@@ -464,13 +470,13 @@ class Toko extends CI_Controller {
         $excel->add_cell('Nama Barang', 'C', $row)->alignment('center')->border()->autoWidth()->font(16);
         $excel->add_cell('Jumlah', 'D', $row)->alignment('center')->border()->autoWidth()->font(16);
         $excel->add_cell('Nama Toko', 'E', $row++)->alignment('center')->border()->autoWidth()->font(16);
-        
+
         foreach ($data['laporans'] as $laporan):
             $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
             $excel->add_cell($laporan->sales, "B", $row)->border();
             $excel->add_cell($laporan->barang, "C", $row)->border();
             $excel->add_cell($laporan->jumlah, "D", $row)->border();
-            $excel->add_cell($laporan->toko, "E", $row)->border();            
+            $excel->add_cell($laporan->toko, "E", $row)->border();
             $row++;
         endforeach;
         /* end */

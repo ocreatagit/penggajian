@@ -32,6 +32,22 @@ class Admin extends CI_Controller {
         }
         $data['status_admin'] = $this->session->flashdata('status_admin');
         $data['admins'] = $this->Admin_model->select_admin();
+        $data['img_admins'] = array();
+
+        $this->load->helper(array('form', 'url'));
+        $this->load->library('form_validation');
+        $this->load->helper('file');
+        $array = get_filenames("./uploads");
+
+        foreach ($data['admins'] as $items) {
+            foreach ($array as $key => $value) {
+                $array2 = explode(".", $value);
+                $value1 = $array2[0];
+                if ($value1 == $items->IDAdmin) {
+                    $data["img_admins"][$items->IDAdmin] = $value;
+                }
+            }
+        }
 
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
@@ -47,14 +63,14 @@ class Admin extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        
+
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('username', 'Username', 'required');
+        $this->form_validation->set_rules('username', 'Username', 'required|is_unique[admin.username]');
         $this->form_validation->set_rules('password', 'Password', 'required|matches[ulangi_password]');
         $this->form_validation->set_rules('ulangi_password', 'Ulangi Password', 'required|matches[password]');
-        $this->form_validation->set_rules('nama', 'Nama', 'required');
+        $this->form_validation->set_rules('nama', 'Nama', 'required|is_unique[admin.nama]');
         $this->form_validation->set_rules('email', 'Email', 'required');
 
         if ($this->input->post("btn_submit")) {
@@ -79,7 +95,7 @@ class Admin extends CI_Controller {
                 redirect("Admin/tambah_admin");
             }
         }
-        
+
         $data['status_admin'] = $this->session->flashdata('status_admin');
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
@@ -128,9 +144,19 @@ class Admin extends CI_Controller {
 
         $data['status'] = $this->session->flashdata('status');
         $data["admin"] = $this->Admin_model->get_admin_edit($IDAdmin);
+        $data['img'] = '';
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
         $this->load->helper('file');
+
+        $array = get_filenames("./uploads");
+        foreach ($array as $key => $value) {
+            $array = explode(".", $value);
+            $value1 = $array[0];
+            if ($value1 == $IDAdmin) {
+                $data["img"] = $value;
+            }
+        }
 
         $this->form_validation->set_rules('nama', 'Nama', 'required');
         $this->form_validation->set_rules('email', 'Email', 'required');
@@ -147,6 +173,9 @@ class Admin extends CI_Controller {
                 $this->load->view('v_navigation', $data);
                 $this->load->view('v_edit_admin', $data);
             } else {
+                $this->load->model("Admin_model");
+                $this->Admin_model->update_admin();
+
                 $name = $_FILES['foto_admin']['name'];
                 if ($name != "") {
                     if (file_exists("./uploads/" . $this->input->post("IDAdmin") . ".jpg")) {
@@ -168,12 +197,6 @@ class Admin extends CI_Controller {
                         }
                     }
                 }
-//                if (!unlink("./uploads/" . $this->input->post("IDAdmin"))) {
-//                    echo "gagal";
-//                    exit;
-//                }
-                $this->load->model("Admin_model");
-                $this->Admin_model->update_admin();
 
                 $config['upload_path'] = "./uploads";
                 $config['allowed_types'] = 'jpg|png|gif';
@@ -195,6 +218,16 @@ class Admin extends CI_Controller {
             $this->load->view('v_navigation', $data);
             $this->load->view('v_edit_admin', $data);
         }
+    }
+
+    function hapus_admin($IDAdmin = FALSE) {
+        if (!$IDAdmin) {
+            redirect("admin/daftar_admin");
+        }
+        $this->load->model("Admin_model");
+        $this->Admin_model->delete_admin_set_increment($IDAdmin, FALSE);
+        $this->session->set_flashdata("status_admin", "Akun User Telah Di Hapus!");
+        redirect("admin/daftar_admin");
     }
 
 }

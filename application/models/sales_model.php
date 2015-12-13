@@ -86,7 +86,7 @@ class Sales_model extends CI_Model {
     function get_komisi($data) {
         $array = array();
         foreach ($data as $row) {
-            array_push($array, $this->db->get_where("komisi", array("IDSales" => $row->IDSales, "IDBarang" => $row->IDBarang, "aktif" => 1))->row());
+            array_push($array, $this->db->get_where("komisi", array("IDSales" => $row->IDSales, "IDBarang" => $row->IDBarang))->row());
         }
         return $array;
 //        return ;
@@ -561,10 +561,37 @@ class Sales_model extends CI_Model {
                 $sql .= " AND sales.IDCabang = " . $this->input->post('cabang');
             }
         }
-        $sql .= " sales.aktif = 1 ";
+        $sql .= " AND sales.aktif = 1 AND sales.pangkat != 'Team Leader' ";
         $sql .= ($this->session->userdata("Level") == 0 ? "" : " AND sales.IDCabang = " . $this->session->userdata("IDCabang")) .
                 " GROUP BY sales.IDSales";
         return $this->db->query($sql)->result();
+    }
+    
+    function insert_kehadiran_sales(){
+        $tanggal_laporan = strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual")));
+        //sales masuk
+        $sql = "SELECT IDSales FROM `historygaji` WHERE Tanggal = '".$tanggal_laporan."'";
+        $sales_masuk = $this->db->query($sql)->result();
+        
+        $sql = "SELECT IDSales FROM sales WHERE IDSales NOT IN (SELECT IDSales FROM `historygaji` WHERE Tanggal = '".$tanggal_laporan."') AND aktif = 1 AND pangkat != 'Team Leader'";
+        $sales_absen = $this->db->query($sql)->result();
+        
+        foreach ($sales_masuk as $sales){
+            $data = array(
+                "IDSales" => $sales->IDSales,
+                "tanggal" => $tanggal_laporan,
+                "status" => "H"
+            );
+            $this->db->insert('kehadiran', $data);
+        }
+        foreach ($sales_absen as $sales){
+            $data = array(
+                "IDSales" => $sales->IDSales,
+                "tanggal" => $tanggal_laporan,
+                "status" => "A"
+            );
+            $this->db->insert('kehadiran', $data);
+        }
     }
 
     /* Daniel */

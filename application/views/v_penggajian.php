@@ -27,7 +27,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-lg-3">Tanggal : </label>
                                     <div class="col-lg-9">
-                                        <input class="form-control siku" type="text" name="tanggal" id="datepicker" placeholder="Pilih Tanggal">
+                                        <input class="form-control siku" type="text" name="tanggal" id="datepicker" placeholder="Pilih Tanggal" value="<?php echo set_value('tanggal', $this->session->userdata("tanggal_gaji")) ?>">
                                         <input type="hidden" id="base_url" value="<?php echo base_url() ?>">
                                         <?php if (form_error("tanggal") != "") : ?>
                                             <span style="color: red;"><?php echo form_error("tanggal"); ?></span>                                  

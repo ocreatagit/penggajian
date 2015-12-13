@@ -33,7 +33,7 @@
                         <div class="form-group">
                             <label for="inputPassword" class="col-sm-4 control-label">Tanggal : </label>
                             <div class="col-sm-8">
-                                <input type="text" name="tanggal_keluar" id="tanggal" class="form-control siku" value="<?php echo $this->session->userdata("tanggal_jual"); ?>"/>
+                                <input type="text" name="tanggal_keluar" date-format="dd-mm-yyyy" id="tanggal" class="form-control siku" value="<?php echo set_value('tanggal_keluar', $this->session->userdata("tanggal_jual") == '' ? date('d-m-Y') : $this->session->userdata("tanggal_jual")); ?>"/>
                             </div>
                         </div>
                         <div class="form-group">
@@ -372,7 +372,10 @@
         });
     });
 
-    $("#tanggal").datepicker();
+    $("#tanggal").datepicker({
+        inline: true,
+        dateFormat: "dd-mm-yy"
+    });
 </script>
 </body>
 </html>

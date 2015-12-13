@@ -82,8 +82,12 @@
                 <div class="panel-body">                    
                     <div id="GridView" class="col-md-12" style="background-color: white;">
                         <!-- looping -->
-
-                        <?php foreach ($kehadirans as $kehadiran) : ?> 
+                        <?php if (count($kehadirans) == 0): ?>
+                        <div class="alert alert-info"><i class="fa fa-info-circle"></i> Tidak Ada Data</div>
+                            <?php
+                        endif;
+                        foreach ($kehadirans as $kehadiran) :
+                            ?> 
                             <div class="col-md-3">
                                 <div class="panel panel-success siku">
                                     <div class="panel-heading">
@@ -123,7 +127,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($kehadirans as $kehadiran) : ?> 
+                                    <?php if (count($kehadirans) == 0): ?>
+                                        <tr>
+                                            <td colspan="3" style="text-align: center">Tidak Ada Data</td>
+                                        </tr>
+                                        <?php
+                                    endif;
+                                    foreach ($kehadirans as $kehadiran) :
+                                        ?> 
                                         <tr>
                                             <td style="text-align: left"><?php echo $kehadiran->nama ?></td>
                                             <td class="text-center"><?php echo $kehadiran->hadir ?></td>
