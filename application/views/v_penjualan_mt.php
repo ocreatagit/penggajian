@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="panel panel-danger siku">
+            <div class="panel panel-info siku">
                 <div class="panel-heading siku">
                     <h3 class="panel-title"></h3>
                 </div>
@@ -27,24 +27,12 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Tanggal : </label>
                                     <div class="col-sm-3">
-                                        <input type="text" name="tanggal" id="datetimepicker" class="form-control siku" placeholder="Tanggal" value="<?php echo set_value("tanggal") ?>"/>
+                                        <input type="text" name="tanggal" id="datetimepicker" class="form-control siku" placeholder="Tanggal" value="<?php echo set_value("tanggal", date("d-m-Y")) ?>"/>
                                         <?php if (form_error('tanggal')) {
                                             ?>
                                             <span class='warna' id='lokasi_error'><?php echo form_error("tanggal") ?></span>
                                         <?php }
                                         ?>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">Nama Toko : </label>
-                                    <div class="col-sm-3">
-                                        <select name="nama_toko" class="form-control siku">
-                                            <?php foreach ($tokos as $toko) {
-                                                ?>
-                                                <option value="<?php echo $toko->IDToko ?>"><?php echo $toko->nama ?></option>
-                                            <?php }
-                                            ?>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -57,6 +45,19 @@
                                             <?php }
                                             ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Nama Toko : </label>
+                                    <div class="col-sm-3">
+                                        <select name="nama_toko" class="form-control siku">
+                                            <?php foreach ($tokos as $toko) {
+                                                ?>
+                                                <option value="<?php echo $toko->IDToko ?>"><?php echo $toko->nama ?></option>
+                                            <?php }
+                                            ?>
+                                        </select>
+                                        <input type="hidden" name="hid" value="421378dhjkdfasiedf083089"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -91,7 +92,7 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" value="tambah_penjualan" name="btn_submit" class="btn btn-primary siku" id="inputCheck">Tambahkan Data</button>
+                                        <button type="submit" value="tambah_penjualan" name="btn_submit" class="btn btn-primary siku">Tambahkan Data</button>
                                     </div>
                                 </div>
                             </form>  
@@ -149,9 +150,9 @@
                                 ?>
                             </tbody>
                             <tfoot>
-                                <tr id="refresh">
+                                <tr>
                                     <td class="" colspan="4" align="right" style="color: white"><h4>Total</h4></td>
-                                    <td class="" colspan="" style="color: white"><h4><?php echo $total; ?></h4></td>
+                                    <td class="" colspan="" style="color: white"><h4 id="refresh"><?php echo $total; ?></h4></td>
                                     <td class="" colspan="" align="center"><button class="btn btn-default" id="btn_save" type="button"><i class="fa fa-save"></i> Save</button></td>
                                 </tr>
                             </tfoot>
@@ -192,7 +193,7 @@
                                     }
                                 }
                                 echo $temp;
-                                ?>];    
+                                ?>];
     $('#konversi').hide();
     var idx = 0;
     $('#nama_produk').change(function () {
@@ -244,13 +245,15 @@
         var idx = $('#nama_barang option:selected').index();
         $("#combo_index").val(idx);
     });
-
-    $("#btn_save").click(function (event) {
-        event.preventDefault();
-        update_cart_mt();
-        load_html();
-        alertify.message('Data Telah Ditambahkan!');
+    
+    $(document).ready(function (){
+        $("#btn_save").click(function (event) {
+            update_cart_mt();
+            load_html();
+            alertify.message('Data Telah Ditambahkan!');
+        });        
     });
+
 
     function update_cart_mt() {
         var number = $("#no").val();
@@ -288,8 +291,9 @@
         event.preventDefault();
         alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
             if (e) {
-                var a = $("#inputCheck").attr("href");
-                window.location.assign(a);
+//                var a = $("#inputCheck").attr("href");
+//                window.location.assign(a);
+                $("#form_s").submit();
             } else {
                 //after clicking Cancel
             }

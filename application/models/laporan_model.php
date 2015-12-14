@@ -93,13 +93,24 @@ class Laporan_model extends CI_Model {
     }
 
     function select_laporan_batal($awal = FALSE, $akhir = FALSE) {
-        $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
+        if ($this->session->userdata("Level") != 0) {
+            $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
                 WHERE lp.IDCabang = " . $this->session->userdata("IDCabang");
-        if ($awal && $akhir) {
-            $sql .=" AND (lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "')";
+            if ($awal && $akhir) {
+                $sql .=" AND (lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "')";
+            } else {
+                $sql .=" AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+            }
         } else {
-            $sql .=" AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+            $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
+                ";
+            if ($awal && $akhir) {
+                $sql .=" WHERE (lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "')";
+            } else {
+                $sql .=" WHERE (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+            }
         }
+        
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -174,6 +185,7 @@ class Laporan_model extends CI_Model {
             }
         }
 //        echo $sql; exit;
+        $sql .= " ORDER BY tanggal DESC ";
         $query = $this->db->query($sql);
         return $query->result();
     }

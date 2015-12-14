@@ -59,6 +59,9 @@ class Laporan extends CI_Controller {
         $this->form_validation->set_rules('jumlah', 'Jumlah', 'required|is_natural_no_zero');
         $this->form_validation->set_rules('pendapatan_SPG', 'Total Penjualan', 'required');
 
+//        print_r($this->cart->contents());
+//        exit;
+
         if ($this->input->post('btn_submit')) {
             if ($this->form_validation->run() == TRUE) {
                 $ke = 1;
@@ -129,7 +132,12 @@ class Laporan extends CI_Controller {
         $data['info_cabangs'] = $this->Admin_model->get_provinsi_kabupaten($data['username']);
         $data['info_lokasis'] = $this->Admin_model->get_kecamatan_desa($data['username']);
         if (count($data['info_lokasis']) > 0) {
-            $data['info_lokasi_details'] = $this->Lokasi_model->get_detail_cabang_lokasi($data['info_lokasis'][0]->id_lokasi);
+            if ($this->session->userdata("cbo_lokasi")) {
+                $id_new = $this->session->userdata("cbo_lokasi");
+            } else {
+                $id_new = $data['info_lokasis'][0]->id_lokasi;
+            }
+            $data['info_lokasi_details'] = $this->Lokasi_model->get_detail_cabang_lokasi($id_new);
         }
         $data['info_saleses'] = $this->Sales_model->get_sales_tiap_admin($data['username']);
         $data['info_team_leaders'] = $this->Sales_model->get_team_leader_tiap_admin($data['username']);
@@ -141,7 +149,7 @@ class Laporan extends CI_Controller {
         $data["harga_satuan"] = $this->Barang_model->get_harga_satuan();
 
         $array_cart = $this->cart->contents();
-        $data["array_cart"] = $this->msort($array_cart, array('IDTeamLeader', 'IDBarang'));
+        $data["array_cart"] = $this->msort($array_cart, array('IDTeamLeader', 'IDBarang'), SORT_REGULAR, 'Jual');
         $data["status"] = $this->session->flashdata("status_2");
         $data["status_tanggal"] = $this->session->flashdata("status");
 //        $data["info_total_per_team_leader"] = $this->Barang_model->total_per_team_leader($this->cart->contents());
@@ -153,7 +161,7 @@ class Laporan extends CI_Controller {
     }
 
     function refresh_total_penjualan_per_leader() {
-        $array_cart = $this->msort($this->cart->contents(), array('IDTeamLeader', 'IDBarang'));
+        $array_cart = $this->msort($this->cart->contents(), array('IDTeamLeader', 'IDBarang'), SORT_REGULAR, 'Jual');
         $array = array();
         $no = 0;
         $total_item = 0;
@@ -219,11 +227,20 @@ class Laporan extends CI_Controller {
     }
 
     // --------------------- SORT ---------------------------- //
-    function msort($array, $key, $sort_flags = SORT_REGULAR) {
+    function msort($array, $key, $sort_flags = SORT_REGULAR, $id) {
+        $array_new = array();
+        foreach ($array as $items) {
+            if (strpos($items["id"], $id) !== FALSE) {
+                $array_new[$items["rowid"]] = $items;
+            }
+        }
+
+//        print_r($array_new); exit;
+
         if (is_array($array) && count($array) > 0) {
             if (!empty($key)) {
                 $mapping = array();
-                foreach ($array as $k => $v) {
+                foreach ($array_new as $k => $v) {
                     $sort_key = '';
                     if (!is_array($key)) {
                         $sort_key = $v["options"][$key];
@@ -606,7 +623,7 @@ class Laporan extends CI_Controller {
                 }
             }
 
-            $sales_hadir = array();
+//            $sales_hadir = array();
 
             if ($isEmpty != 0) { /* Jual Ada Isi */
                 foreach ($this->cart->contents() as $items) {
@@ -616,9 +633,9 @@ class Laporan extends CI_Controller {
                                 $IDPenjualan, $items['options']['IDTeamLeader'], $items['options']['IDSales'], $items['options']['IDBarang'], $items['options']['IDLokasi'], $items['qty'], $items['price'], $this->session->userdata('Username')
                         );
 
-                        if (!array_search($items['options']['IDSales'], $sales_hadir)) {
-                            array_push($sales_hadir, $items['options']['IDSales']);
-                        }
+//                        if (!array_search($items['options']['IDSales'], $sales_hadir)) {
+//                            array_push($sales_hadir, $items['options']['IDSales']);
+//                        }
 
                         $this->Sales_model->tambah_gaji_dan_komisi_sales(
                                 $IDPenjualan, $items['options']['IDSales'], $items['options']['komisi']
@@ -628,31 +645,31 @@ class Laporan extends CI_Controller {
                         $this->cart->update($data);
                     }
                 }
-                sort($sales_hadir);
-                $temp = array();
-                $tanggal_laporan = strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual")));
-                $all_sales = $this->Sales_model->get_sales_tiap_admin($this->session->userdata('Username'));
-                $ii = 0;
-                for ($i = 0; $i < count($all_sales); $i++) {
-                    if (count($sales_hadir) > $ii) {
-                        if ($all_sales[$i]->id_sales == $sales_hadir[$ii]) {
-                            $ii++;
-                            array_push($temp, array(
-                                'IDSales' => $all_sales[$i]->id_sales,
-                                'tanggal' => $tanggal_laporan,
-                                'status' => 'H')
-                            );
-                            continue;
-                        }
-                    }
-                    array_push($temp, array(
-                        'IDSales' => $all_sales[$i]->id_sales,
-                        'tanggal' => $tanggal_laporan,
-                        'status' => 'A')
-                    );
-//                    print_r($temp);exit;
-                }
-                $this->Sales_model->insert_kehadiran($temp);
+                $this->Sales_model->insert_kehadiran_sales();
+//                sort($sales_hadir);
+//                $temp = array();
+//                $tanggal_laporan = strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual")));
+//                $all_sales = $this->Sales_model->get_sales_tiap_admin($this->session->userdata('Username'));
+//                $ii = 0;
+//                for ($i = 0; $i < count($all_sales); $i++) {
+//                    if (count($sales_hadir) > $ii) {
+//                        if ($all_sales[$i]->id_sales == $sales_hadir[$ii]) {
+//                            $ii++;
+//                            array_push($temp, array(
+//                                'IDSales' => $all_sales[$i]->id_sales,
+//                                'tanggal' => $tanggal_laporan,
+//                                'status' => 'H')
+//                            );
+//                            continue;
+//                        }
+//                    }
+//                    array_push($temp, array(
+//                        'IDSales' => $all_sales[$i]->id_sales,
+//                        'tanggal' => $tanggal_laporan,
+//                        'status' => 'A')
+//                    );
+//                }
+//                $this->Sales_model->insert_kehadiran($temp);
 //                print_r($temp);exit;
                 // Jurnal
                 $this->load->model('Jurnal_model');
@@ -857,6 +874,7 @@ class Laporan extends CI_Controller {
                                     )
                                 );
                                 $this->cart->insert($data);
+                                $this->session->set_userdata('tanggal_gaji', $this->input->post("tanggal"));
                             } else {
                                 $this->session->set_flashdata("status", "Gaji Sales Telah Diinputkan!");
                                 $rowid = "";
@@ -1163,7 +1181,7 @@ class Laporan extends CI_Controller {
 
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->get_saldo_kas_bank($data['IDCabang']);
-        
+
         $data['saldo_bank'] = $this->Admin_model->get_saldo_bank($data['IDCabang']);
 
         $data['selectCabang'] = 0;

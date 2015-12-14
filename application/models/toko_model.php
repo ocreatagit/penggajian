@@ -139,7 +139,7 @@ class Toko_model extends CI_Model {
     }
 
     function laporan_spg($awal = FALSE, $akhir = FALSE, $IDToko = FALSE) {
-        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as total_jumlah, barang_mt.nama, barang_mt.nilai_karton
+        $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as jumlah, barang_mt.nama, barang_mt.nilai_karton as nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT 
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
@@ -155,7 +155,9 @@ class Toko_model extends CI_Model {
         }
 
         if ($this->session->userdata('Level') != 0) {
-            $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
+            if ($this->session->userdata('IDCabang') != 0) {
+                $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
+            }
         }
 
         $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, barang_mt.IDBarangMT";
@@ -201,7 +203,7 @@ class Toko_model extends CI_Model {
     }
 
     function get_laporan_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
-        $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko, barang_mt.nilai_karton
+        $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko, barang_mt.nilai_karton as nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
                 INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT

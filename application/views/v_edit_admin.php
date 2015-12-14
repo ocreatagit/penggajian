@@ -41,9 +41,10 @@
                                     <label>Jabatan</label>
                                     <?php if ($admin->level != 0) {
                                         ?>
-                                        <select class="form-control siku" name="level">
+                                        <select class="form-control siku" name="level" disabled="">
                                             <option value="1" <?php if ($admin->level == 1) echo "selected"; ?>>Admin Lapangan</option>
                                             <option value="2" <?php if ($admin->level == 2) echo "selected"; ?>>Admin Kantor</option>
+                                            <option value="2" <?php if ($admin->level == 3) echo "selected"; ?>>Pengunjung</option>
                                         </select>
                                     <?php } else {
                                         ?>
@@ -52,13 +53,13 @@
                                         <?php
                                     }
                                     ?>
-                    <!--<p class="help-block">Example block-level help text here.</p>-->
+                <!--<p class="help-block">Example block-level help text here.</p>-->
                                 </div>
 
                                 <div class="form-group">
                                     <label>Foto : </label>
                                     <div>
-                                        <img src="<?php echo base_url() ?>uploads/<?php echo $admin->IDAdmin ?>" class="thumbnail" style="height: 20%;" />
+                                        <img src="<?php echo base_url() ?>uploads/<?php echo $img ?>" class="thumbnail" style="height: 20%;" />
                                     </div>
                                 </div>
                                 <div class="form-group">

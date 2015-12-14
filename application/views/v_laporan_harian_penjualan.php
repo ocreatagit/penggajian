@@ -34,7 +34,7 @@
             <div class="col-lg-7">
                 <div class="panel panel-default siku" style="padding-left: 20px; height: 61px; vertical-align: central;">
                     <h2 class="text text-danger" style="margin: 0px; padding: 0px; margin-top: 10px;"><i class="fa fa-info-circle"></i> Jangan Lupa Menambah Stok! <button type="button" class="btn btn-primary siku" data-toggle="modal" data-target="#myModalStok">Lihat Stok</button></h2>
-<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                               ?>,-</span>-->
+<!--                    <span style="font-size: 25px;  padding-top: 10px;" id="text_saldo">Saldo : Rp.<?php // echo number_format($saldo, 0, ",", ".")                                                                                  ?>,-</span>-->
                     <input type="hidden" name="saldo" id="saldo" value="<?php echo $saldo; ?>"/>
                     <input type="hidden" name="idcabang" id="idcabang" value="<?php echo $cabang; ?>"/>
                     <input type="hidden" name="current_url" id="current_url" value="<?php echo current_url(); ?>"/>
@@ -252,7 +252,7 @@
                                                 <input type="hidden" id="IDBarang<?php echo $no; ?>" name="IDBarang<?php echo $no; ?>" value="<?php echo $items["options"]["IDBarang"] ?>"/>
                                                 <input type="hidden" id="NamaBarang<?php echo $no; ?>" name="NamaBarang<?php echo $no; ?>" value="<?php echo $items["options"]["NamaBarang"] ?>"/>
                                                 <input type="hidden" id="komisi<?php echo $no; ?>" name="komisi<?php echo $no; ?>" value="<?php echo $items["options"]["komisi"] ?>"/>
-                                                <input type="hidden" id="price<?php echo $no; ?>" name="price<?php echo $no; ?>" value="<?php echo $items["price"] ?>"/>
+                                                <input type="hidden" id="price<?php echo $no; ?>" name="price<?php echo $no; ?>" value="<?php echo str_replace(",", "asd", $items["price"]) ?>"/>
                                                 <input type="hidden" id="rowid<?php echo $no; ?>" name="rowid<?php echo $no; ?>" value="<?php echo $items["rowid"] ?>"/>
                                                 <input type="hidden" id="index_combo<?php echo $no; ?>" name="index_combo<?php echo $no; ?>" value="<?php echo $items["options"]["index_combo"] ?>"/>
                                                 <input type="number" id="jumlah<?php echo $no; ?>" value="<?php echo $items["qty"] ?>" name="qty" class="form-control siku text-right" style="padding-right: 10px;" onkeyup="change_qty(<?php echo $no; ?>)" onclick="change_qty(<?php echo $no; ?>)" min="1"/>
@@ -742,30 +742,32 @@ echo $temp;
 ?>];
         var idx = $("#index_combo" + number).val();
         var data = $('#jumlah' + number).val();
-        console.log("ID : " + idx);
-        console.log("jumlah : " + data);
+//        console.log("ID : " + idx);
+//        console.log("jumlah : " + data);
 
         var karton = Math.floor(data / (arrSatuan[idx] * 12));
         data = data % (arrSatuan[idx] * 12);
-        console.log("Karton : " + karton);
+//        console.log("Karton : " + karton);
 
         var lusin = Math.floor(data / 12);
         data = data % 12;
-        console.log("Lusin : " + lusin);
+//        console.log("Lusin : " + lusin);
 
         var pcs = data;
-        console.log("pcs : " + pcs);
-        console.log("array satuan : " + arrSatuan);
-        console.log("array harga : " + arrharga);
+//        console.log("pcs : " + pcs);
+//        console.log("array satuan : " + arrSatuan);
+//        console.log("array harga : " + arrharga);
 //            $('#konversi').show();
 //            $('#konversi').html(karton + " Karton " + lusin + " Lusin " + pcs + " Pcs");
         var harga = karton * arrharga[idx * 3] + lusin * arrharga[idx * 3 + 1] + pcs * arrharga[idx * 3 + 2];
 
-        harga = harga.toLocaleString() + "";
+//        harga = harga.toLocaleString() + "";
         var no = $("#no").html();
         var total_penjualan = 0;
         var total_komisi = 0;
         no = parseInt(no);
+
+        console.log("=============== " + harga);
 
         $.ajax({
             url: "<?php echo base_url() ?>index.php/laporan/get_komisi_sales",
@@ -776,14 +778,25 @@ echo $temp;
             }, success: function (data, textStatus, jqXHR) {
                 var komisi = parseInt($("#jumlah" + number).val()) * parseInt(data);
                 var str_komisi = (komisi).toLocaleString() + "";
+                
+                var harga_lbl = harga.toLocaleString() + "";
 
-                $("#lbl_komisi" + number).html("Rp " + str_komisi.replace(",", ".") + ",-");
+                $("#lbl_komisi" + number).html("Rp " + str_komisi + ",-");
                 $("#komisi" + number).val(komisi);
+
+                $('#harga' + number).html("Rp " + harga_lbl.replace(",",".") + ",-");
+                $('#price' + number).val(harga + "");
+
+                console.log("1 " + total_penjualan);
+                console.log("2 " + total_komisi);
+                console.log("====================");
 
                 for (var i = 1; i < no; i++) {
                     total_penjualan = parseInt(total_penjualan) + parseInt($("#price" + i).val());
                     total_komisi = parseInt(total_komisi) + parseInt($("#komisi" + i).val());
                 }
+                console.log("1 " + total_penjualan);
+                console.log("2 " + total_komisi);
                 total_komisi = total_komisi.toLocaleString() + "";
                 total_penjualan = total_penjualan.toLocaleString() + "";
 
@@ -791,9 +804,6 @@ echo $temp;
                 $("#lbl_total_komisi").html("Rp " + total_komisi.replace(",", ".") + ",-");
             }
         });
-
-        $('#harga' + number).html("Rp " + harga.replace(',', '.') + ",-");
-        $('#price' + number).val(harga.replace(',', '') + "");
 
     }
 

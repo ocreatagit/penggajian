@@ -44,7 +44,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-lg-3">Tanggal Nota Penjualan : </label>
+                                    <label class="control-label col-lg-3">Tanggal Nota Pembatalan : </label>
                                     <div class="col-lg-9">
                                         <input class="form-control siku" type="text" name="tanggal_nota" id="tanggal_nota" placeholder="" disabled="" value="" id="tanggal_nota">
                                         <input type="hidden" id="base_url" value="<?php echo base_url() ?>">
