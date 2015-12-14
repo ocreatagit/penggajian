@@ -30,11 +30,11 @@
                             </div>
                         <?php }
                         ?>
-<!--                        <div class="form-group">
-                            <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
-                            <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
-                            <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
-                        </div>-->
+                        <!--                        <div class="form-group">
+                                                    <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
+                                                    <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
+                                                    <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
+                                                </div>-->
                         <div id="periode" class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Dari</label>
                             <div class="col-lg-3">
@@ -48,29 +48,29 @@
                                 <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
                             </div>
                         </div>
-<!--                        <div id="monthly" class="form-group">
-                            <label class="col-lg-2 control-label">Bulan</label>
-                            <div class="col-lg-3">
-                                <select class="form-control siku" name="monthly">
-                                    <option selected disabled>-- Pilih Bulan --</option>
-                                    <option value="1" >Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-1">                        
-                                <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
-                            </div>
-                        </div>-->
+                        <!--                        <div id="monthly" class="form-group">
+                                                    <label class="col-lg-2 control-label">Bulan</label>
+                                                    <div class="col-lg-3">
+                                                        <select class="form-control siku" name="monthly">
+                                                            <option selected disabled>-- Pilih Bulan --</option>
+                                                            <option value="1" >Januari</option>
+                                                            <option value="2">Februari</option>
+                                                            <option value="3">Maret</option>
+                                                            <option value="4">April</option>
+                                                            <option value="5">Mei</option>
+                                                            <option value="6">Juni</option>
+                                                            <option value="7">Juli</option>
+                                                            <option value="8">Agustus</option>
+                                                            <option value="9">September</option>
+                                                            <option value="10">Oktober</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">Desember</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-1">                        
+                                                        <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                                                    </div>
+                                                </div>-->
                     </form>
                 </div>
 
@@ -122,59 +122,61 @@
     </div>
     <!-- modal -->
     <?php
-    if (count($modalsales)) {
+    if (count($modalsales) > 0) {
         foreach ($modalsales as $modal) {
-            ?>
-            <div class="modal fade" id="myModal<?php echo $modal[0]->IDSales ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Daftar Penjualan</h4>
-                            <h4 class="modal-title">Nama : <?php echo $modal[0]->nama ?></h4>
-                        </div>
-                        <div class="modal-body">                            
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td>Nama Barang</td>
-                                        <td>Jumlah Terjual</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    foreach ($barangs as $semuabarang) {
-                                        $tulis = true;
-                                        ?>                                    
+            if (count($modal) > 0) {
+                ?>
+                <div class="modal fade" id="myModal<?php echo $modal[0]->IDSales ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Daftar Penjualan</h4>
+                                <h4 class="modal-title">Nama : <?php echo $modal[0]->nama ?></h4>
+                            </div>
+                            <div class="modal-body">                            
+                                <table>
+                                    <thead>
                                         <tr>
-                                            <td><?php
-                                                echo $semuabarang->namaBarang
-                                                ?></td>
-                                            <td>
-                                                <?php foreach ($modal as $mbarang) { ?>
-                                                    <?php
-                                                    if ($semuabarang->namaBarang == $mbarang->namaBarang) {
-                                                        echo $mbarang->jumlah;
-                                                        $tulis = false;
+                                            <td>Nama Barang</td>
+                                            <td>Jumlah Terjual</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        foreach ($barangs as $semuabarang) {
+                                            $tulis = true;
+                                            ?>                                    
+                                            <tr>
+                                                <td><?php
+                                                    echo $semuabarang->namaBarang
+                                                    ?></td>
+                                                <td>
+                                                    <?php foreach ($modal as $mbarang) { ?>
+                                                        <?php
+                                                        if ($semuabarang->namaBarang == $mbarang->namaBarang) {
+                                                            echo $mbarang->jumlah;
+                                                            $tulis = false;
+                                                        }
+                                                        ?>
+                                                        <?php
+                                                    } if ($tulis) {
+                                                        echo "0";
                                                     }
                                                     ?>
-                                                    <?php
-                                                } if ($tulis) {
-                                                    echo "0";
-                                                }
-                                                ?>
 
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
-
                     </div>
                 </div>
-            </div>
-            <?php
+                <?php
+            }
         }
     }
     ?>

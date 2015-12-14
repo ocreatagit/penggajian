@@ -183,14 +183,23 @@
         });
     });
 </script>
+<style type="text/css">
+    .ui-datepicker-year, .ui-datepicker-month{
+        color: black;
+    }
+</style>
 <script>
     $("#datepicker1").datepicker({
         inline: true,
-        dateFormat: "dd-mm-yy"
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true
     });
     $("#datepicker2").datepicker({
         inline: true,
-        dateFormat: "dd-mm-yy"
+        dateFormat: "dd-mm-yy",
+        changeYear: true,
+        changeMonth: true
     });
 
     $(document).ready(function () {

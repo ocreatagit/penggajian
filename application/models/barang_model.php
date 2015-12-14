@@ -251,8 +251,10 @@ class Barang_model extends CI_Model {
 
     function select_top_sales_barang($arr, $awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
         $data = array();
+//        var_dump($awal); exit;
         $awal = $this->input->post("tanggal_awal");
         $akhir = $this->input->post("tanggal_akhir");
+//        var_dump($awal); exit;
         foreach ($arr as $id) {
             $sql = "select sales.nama, jual.IDSales, barang.namaBarang, sum(jual.jumlah) as jumlah from jual
                     inner join barang on barang.IDBarang = jual. IDBarang

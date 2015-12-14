@@ -139,6 +139,10 @@ class Toko_model extends CI_Model {
     }
 
     function laporan_spg($awal = FALSE, $akhir = FALSE, $IDToko = FALSE) {
+        $awal = $this->input->post('tanggal_awal');
+        $akhir = $this->input->post('tanggal_akhir');
+        $IDToko = $this->input->post('filter');
+//        print_r($IDToko);exit;
         $sql = "SELECT sales_mt.IDSalesMT, SUM(laporan_barang_mt.jumlah) as jumlah, barang_mt.nama, barang_mt.nilai_karton as nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN sales_mt on sales_mt.IDSalesMT = laporan_barang_mt.IDSalesMT 
@@ -151,7 +155,7 @@ class Toko_model extends CI_Model {
         }
 
         if ($IDToko) {
-            $sql .= " AND laporan_penjualan_mt.IDTokoMT = " . $IDToko;
+            $sql .= " AND laporan_barang_mt.IDToko = " . $IDToko;
         }
 
         if ($this->session->userdata('Level') != 0) {
@@ -161,6 +165,33 @@ class Toko_model extends CI_Model {
         }
 
         $sql .= " GROUP BY laporan_barang_mt.IDSalesMT, barang_mt.IDBarangMT";
+//        print_r($sql);exit;
+        return $this->db->query($sql)->result();
+    }
+
+    function get_sales_laporan_spg() {
+        $sql = "SELECT DISTINCT(sales_mt.IDSalesMT), sales_mt.nama, sales_mt.foto FROM laporan_barang_mt
+                INNER JOIN sales_mt on laporan_barang_mt.IDSalesMT = sales_mt.IDSalesMT
+                INNER JOIN laporan_penjualan_mt on laporan_barang_mt.IDLaporanMT = laporan_penjualan_mt.IDLaporan ";
+        $awal = $this->input->post('tanggal_awal');
+        $akhir = $this->input->post('tanggal_akhir');
+        $IDToko = $this->input->post('filter');
+        if ($awal && $akhir) {
+            $sql.=" WHERE laporan_penjualan_mt.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else {
+            $sql.=" WHERE month(laporan_penjualan_mt.tanggal) = month(now()) AND year(laporan_penjualan_mt.tanggal) = year(now()) ";
+        }
+
+        if ($IDToko) {
+            $sql .= " AND laporan_barang_mt.IDToko = " . $IDToko;
+        }
+
+        if ($this->session->userdata('Level') != 0) {
+            if ($this->session->userdata('IDCabang') != 0) {
+                $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
+            }
+        }
+//        print_r($sql);exit;
         return $this->db->query($sql)->result();
     }
 
