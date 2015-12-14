@@ -46,8 +46,8 @@ class Welcome extends CI_Controller {
                 if($this->session->userdata('Level') == 2){
                     redirect('Laporan/kas');
                 }
-                if($this->session->userdata('Level') == 2){
-                    redirect('Laporan/kas');
+                if($this->session->userdata('Level') == 3){
+                    redirect('pencarian/TopSales');
                 }
                 redirect('Laporan/harian');
             } else {
