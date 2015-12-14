@@ -23,17 +23,17 @@
             ?>">
                 <!--                
                 <?php if ($this->session->userdata("Level") == 0) : ?>
-                                                                                            <div class="form-group">
-                                                                                                <label class="control-label col-sm-2">Cabang : </label>
-                                                                                                <div class="col-sm-10">                            
-                                                                                                    <select class="form-control siku" style="width: 30%" name="cabang">
-                                                                                                        <option value="0"> --- Semua Cabang ---</option>
+                                                                                                <div class="form-group">
+                                                                                                    <label class="control-label col-sm-2">Cabang : </label>
+                                                                                                    <div class="col-sm-10">                            
+                                                                                                        <select class="form-control siku" style="width: 30%" name="cabang">
+                                                                                                            <option value="0"> --- Semua Cabang ---</option>
                     <?php foreach ($cabangs as $cabang): ?>
-                                                                                                                                                                    <option value="////<?php echo $cabang->idcabang ?>" <?php echo $cabang->idcabang == $selectCabang ? "selected" : "" ?>><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
+                                                                                                                                                                            <option value="////<?php echo $cabang->idcabang ?>" <?php echo $cabang->idcabang == $selectCabang ? "selected" : "" ?>><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
                     <?php endforeach; ?>
-                                                                                                    </select>
-                                                                                                </div>                        
-                                                                                            </div>
+                                                                                                        </select>
+                                                                                                    </div>                        
+                                                                                                </div>
                 <?php endif; ?>
                 -->
                 <div class="form-group">
@@ -104,62 +104,83 @@
         </div>
     </div>  
     <!-- modal -->
-        <?php
-        if (count($laporan_alls)) {
-            $id_temp = 0;
-            for ($i = 0; $i < count($laporan_alls); $i++):
-                ?>                                                                                      </tr>-->
-                <div class="modal fade" id="myModal<?php echo $laporan_alls[$i]->IDSalesMT ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">Daftar Penjualan</h4>
-                            </div>
-                            <div class="modal-body">                            
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <td>Nama Barang</td>
-                                            <td>Jumlah Terjual (pcs)</td>
-                                            <td>Konversi Satuan</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $id_temp = $laporan_alls[$i]->IDSalesMT;
-                                        while ($i < count($laporan_alls)):
-                                            if ($id_temp == $laporan_alls[$i]->IDSalesMT) {
-                                                $total_barang = intval($laporan_alls[$i]->jumlah);
-                                                $karton = floor($total_barang/(intval($laporan_alls[$i]->nilai_karton)*12));
-                                                $total_barang %= (intval($laporan_alls[$i]->nilai_karton)*12);
-                                                $lusin = floor($total_barang/12);
-                                                $total_barang %= 12;
-                                                ?>
-                                                <tr>
-                                                    <td><?php echo $laporan_alls[$i]->nama ?></td>
-                                                    <td><?php echo $laporan_alls[$i]->jumlah ?></td>
-                                                    <td><?php echo ($karton == 0 ? "" : $karton." karton").($lusin == 0 ? "" : $lusin." lusin"). $total_barang." pcs" ?></td>
-                                                </tr>
-                                                <?php
-                                                $i++;
-                                            }else{
-                                                break;
-                                            }
-                                        endwhile;
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
+    <?php
+    if (count($laporan_alls)) {
+        $arr_id = array();
+        $id_temp = 0;
+        for ($i = 0; $i < count($laporan_alls); $i++):
+            array_push($arr_id, $laporan_alls[$i]->IDSalesMT);
+            ?>                                                                                      </tr>-->
+        <div class="modal fade" id="myModal<?php echo $laporan_alls[$i]->IDSalesMT ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Daftar Penjualan</h4>
                     </div>
+                    <div class="modal-body">                            
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Nama Barang</td>
+                                    <td>Jumlah Terjual (pcs)</td>
+                                    <td>Konversi Satuan</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $id_temp = $laporan_alls[$i]->IDSalesMT;
+                                while ($i < count($laporan_alls)):
+                                    if ($id_temp == $laporan_alls[$i]->IDSalesMT) {
+                                        $total_barang = intval($laporan_alls[$i]->jumlah);
+                                        $karton = floor($total_barang / (intval($laporan_alls[$i]->nilai_karton) * 12));
+                                        $total_barang %= (intval($laporan_alls[$i]->nilai_karton) * 12);
+                                        $lusin = floor($total_barang / 12);
+                                        $total_barang %= 12;
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $laporan_alls[$i]->nama ?></td>
+                                            <td><?php echo $laporan_alls[$i]->jumlah ?></td>
+                                            <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
+                                        </tr>
+                                        <?php
+                                        $i++;
+                                    } else {
+                                        break;
+                                    }
+                                endwhile;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-                <?php
-            endfor;
-        }
-        ?>
-    <!-- modal -->
+            </div>
+        </div>
+        <?php
+    endfor;
+}
+?>
+<!-- modal -->
+<!-- modal -->
+<?php foreach ($laporans as $laporan): 
+    if(!array_search($laporan->IDSalesMT, $arr_id)){ ?>
+    <div class="modal fade" id="myModal<?php echo $laporan->IDSalesMT ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Daftar Penjualan</h4>
+                </div>
+                <div class="modal-body">                            
+                    <h3>Tidak Ada Data Penjualan</h3>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <?php } endforeach; ?>
+<!-- modal -->
 </div>
 
 <script src="<?php echo base_url(); ?>bootstrap/js/jquery.js"></script>
