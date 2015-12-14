@@ -125,7 +125,7 @@
                             <!-- loop isi -->
                             <?php
                             foreach ($laporans as $laporan):
-                                $total_barang = intval($laporan->umlah);
+                                $total_barang = intval($laporan->jumlah);
                                 $karton = floor($total_barang / (intval($laporan->nilai_karton) * 12));
                                 $total_barang %= (intval($laporan->nilai_karton) * 12);
                                 $lusin = floor($total_barang / 12);
@@ -163,7 +163,7 @@
                             <?php
                             endif;
                             foreach ($totals as $total):
-                                $total_barang = intval($total->total_jumlah);
+                                $total_barang = intval($total->jumlah);
                                 $karton = floor($total_barang / (intval($total->nilai_karton) * 12));
                                 $total_barang %= (intval($total->nilai_karton) * 12);
                                 $lusin = floor($total_barang / 12);

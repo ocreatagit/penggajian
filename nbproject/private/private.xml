@@ -3,11 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_harian_pengeluaran.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Laporan.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_tambah_barang.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Admin.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/sales_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_edit_admin.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_tambah_admin.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_penggajian.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/admin_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_daftar_admin.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_navigation.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/komisi.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/barang_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Barang.php</file>
         </group>
     </open-files>
 </project-private>

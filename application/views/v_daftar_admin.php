@@ -40,7 +40,12 @@
                                     <?php echo "<td>" . $admin->nama . "</td>"; ?>
                                     <?php echo "<td>" . $admin->nama . "</td>"; ?>
                                     <?php echo "<td>" . $admin->email . "</td>"; ?>
-                                    <?php echo "<td align='center'><img class='thumbnail' style='width: 200px; height: 200px;' src='" . base_url() . 'uploads/' . $img_admins[$admin->IDAdmin] . "'/> </td>"; ?>
+                                    <?php if(count($img_admins) > 0) {
+                                    echo "<td align='center'><img class='thumbnail' style='width: 200px; height: 200px;' src='" . base_url() . 'uploads/' . $img_admins[$admin->IDAdmin] . "'/> </td>"; 
+                                    } else {
+                                        echo "<td align='center'><img class='thumbnail' style='width: 200px; height: 200px;' src='" . base_url() . 'uploads/' . $admin->IDAdmin . "'/> </td>"; 
+                                    }
+                                    ?>
                                     <?php echo "<td align='center'>"; ?>
                                     <?php echo "<a href='" . base_url() . "index.php/admin/edit_admin/" . $admin->IDAdmin . "' class='btn btn-primary btn-sm siku'><i class='fa fa-pencil'></i></a>"; ?>
                                     <?php if ($admin->level == 3) { ?>

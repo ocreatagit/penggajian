@@ -36,6 +36,18 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-sm-2 control-label">Nama SPG : </label>
+                                    <div class="col-sm-3">
+                                        <select name="nama_spg" class="form-control siku">
+                                            <?php foreach ($spgs as $spg) {
+                                                ?>
+                                                <option value="<?php echo $spg->IDSalesMT ?>"><?php echo $spg->nama ?></option>
+                                            <?php }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label class="col-sm-2 control-label">Nama Toko : </label>
                                     <div class="col-sm-3">
                                         <select name="nama_toko" class="form-control siku">
@@ -46,18 +58,6 @@
                                             ?>
                                         </select>
                                         <input type="hidden" name="hid" value="421378dhjkdfasiedf083089"/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">Nama SPG : </label>
-                                    <div class="col-sm-3">
-                                        <select name="nama_spg" class="form-control siku">
-                                            <?php foreach ($spgs as $spg) {
-                                                ?>
-                                                <option value="<?php echo $spg->IDSalesMT ?>"><?php echo $spg->nama ?></option>
-                                            <?php }
-                                            ?>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" value="tambah_penjualan" name="btn_submit" class="btn btn-primary siku" id="inputCheck">Tambahkan Data</button>
+                                        <button type="submit" value="tambah_penjualan" name="btn_submit" class="btn btn-primary siku">Tambahkan Data</button>
                                     </div>
                                 </div>
                             </form>  
