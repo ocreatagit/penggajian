@@ -108,12 +108,7 @@
         if (count($laporan_alls)) {
             $id_temp = 0;
             for ($i = 0; $i < count($laporan_alls); $i++):
-                ?>
-                                                                                                <!--        <tr>
-                                                                                                            <td><?php echo $laporan_alls[$i]->IDSalesMT ?></td>
-                                                                                                            <td><?php echo $laporan_alls[$i]->IDBarangMT ?></td>
-                                                                                                            <td><?php echo $laporan_alls[$i]->total_jumlah ?></td>
-                                                                                                        </tr>-->
+                ?>                                                                                      </tr>-->
                 <div class="modal fade" id="myModal<?php echo $laporan_alls[$i]->IDSalesMT ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -134,7 +129,7 @@
                                         <?php
                                         $id_temp = $laporan_alls[$i]->IDSalesMT;
                                         while ($i < count($laporan_alls)):
-                                            if ($id_temp = $laporan_alls[$i]->IDSalesMT) {
+                                            if ($id_temp == $laporan_alls[$i]->IDSalesMT) {
                                                 $total_barang = intval($laporan_alls[$i]->jumlah);
                                                 $karton = floor($total_barang/(intval($laporan_alls[$i]->nilai_karton)*12));
                                                 $total_barang %= (intval($laporan_alls[$i]->nilai_karton)*12);
