@@ -180,6 +180,7 @@ class Pencarian extends CI_Controller {
         }
 
         $data['topbarangs'] = $this->Barang_model->select_top_barang();
+        $data['konversi'] = $this->Barang_model->get_satuan();
         $data['admincabang'] = $this->Barang_model->get_all_admincabang();
         //print_r($data['admincabang']);exit;
         $data['data'] = "BULAN INI";

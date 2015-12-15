@@ -25,23 +25,23 @@
                     <form class="form-horizontal" method="POST" action="<?php echo current_url(); ?>">
                         <!-- Cabang -->
                         <?php if ($this->session->userdata("Level") == 0) : ?>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Cabang</label>
-                            <div class="col-lg-3">
-                                <select class="form-control siku" name="cabang">
-                                    <option value="0"> --- Semua Cabang ---</option>
-                                    <?php foreach ($admincabang as $cabang): ?>
-                                        <option value="<?php echo $cabang->IDCabang ?>"><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Cabang</label>
+                                <div class="col-lg-3">
+                                    <select class="form-control siku" name="cabang">
+                                        <option value="0"> --- Semua Cabang ---</option>
+                                        <?php foreach ($admincabang as $cabang): ?>
+                                            <option value="<?php echo $cabang->IDCabang ?>"><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                         <?php endif; ?>
-<!--                        <div class="form-group">
-                            <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
-                            <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
-                            <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
-                        </div>-->
+                        <!--                        <div class="form-group">
+                                                    <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
+                                                    <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
+                                                    <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
+                                                </div>-->
                         <div id="periode" class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Dari</label>
                             <div class="col-lg-3">
@@ -55,29 +55,29 @@
                                 <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
                             </div>
                         </div>
-<!--                        <div id="monthly" class="form-group">
-                            <label class="col-lg-2 control-label">Bulan</label>
-                            <div class="col-lg-3">
-                                <select class="form-control siku" name="monthly">
-                                    <option selected disabled>-- Pilih Bulan --</option>
-                                    <option value="1" >Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-1">                        
-                                <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
-                            </div>
-                        </div>-->
+                        <!--                        <div id="monthly" class="form-group">
+                                                    <label class="col-lg-2 control-label">Bulan</label>
+                                                    <div class="col-lg-3">
+                                                        <select class="form-control siku" name="monthly">
+                                                            <option selected disabled>-- Pilih Bulan --</option>
+                                                            <option value="1" >Januari</option>
+                                                            <option value="2">Februari</option>
+                                                            <option value="3">Maret</option>
+                                                            <option value="4">April</option>
+                                                            <option value="5">Mei</option>
+                                                            <option value="6">Juni</option>
+                                                            <option value="7">Juli</option>
+                                                            <option value="8">Agustus</option>
+                                                            <option value="9">September</option>
+                                                            <option value="10">Oktober</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">Desember</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-1">                        
+                                                        <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                                                    </div>
+                                                </div>-->
                     </form>
                 </div>
             </div>
@@ -92,6 +92,7 @@
                                     <td><strong>Peringkat</strong></td>
                                     <td><strong>Nama Produk</strong></td>
                                     <td><strong>Jumlah Terjual</strong></td>
+                                    <td><strong>Konversi Stok</strong></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,6 +100,12 @@
                                 $counter = 1;
                                 if (count($topbarangs) > 0) {
                                     foreach ($topbarangs as $barang) :
+                                        $satuan = $konversi[$counter - 1]->total_konversi;
+                                        $jumlah_barang = $barang->jumlah;
+                                        $karton = $jumlah_barang / ($satuan*12);
+                                        $jumlah_barang %= ($satuan*12);
+                                        $lusin = $jumlah_barang / 12;
+                                        $jumlah_barang %= 12;
                                         ?>
                                         <tr>
                                             <td class="text-center">
@@ -112,7 +119,8 @@
                                                 ?>
                                             </td>
                                             <td style="vertical-align: middle"><?php echo $barang->namaBarang ?></td>
-                                            <td style="vertical-align: middle"><?php echo $barang->jumlah ?></td>
+                                            <td style="vertical-align: middle"><?php echo $barang->jumlah ?> pcs</td>
+                                            <td style="vertical-align: middle"><?php echo ($karton == 0 ? "" : $karton." karton ").($lusin == 0?"":$lusin." lusin ").$jumlah_barang." pcs" ?></td>
                                         </tr>
                                         <?php
                                     endforeach;
@@ -141,14 +149,14 @@
 
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');
         $("#nama_produk").val('');
         $('#list_laporan').DataTable({});
         $('#monthly').hide();
-        $(document).ready(function() {
-            $('input[type=radio][name=kategori]').change(function() {
+        $(document).ready(function () {
+            $('input[type=radio][name=kategori]').change(function () {
                 if (this.value == 'Periode') {
                     $('#periode').show();
                     $('#monthly').hide();
@@ -180,7 +188,7 @@
         changeMonth: true
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');
         $("#gaji_sales").val('');
