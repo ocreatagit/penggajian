@@ -401,6 +401,7 @@ class Toko extends CI_Controller {
     function insert_penjualan_mt() {
         if ($this->cart->total_items() > 0) {
             $this->Toko_model->insert_penjualan_mt();
+            $this->Toko_model->insert_kehadiran_mt();
             $this->session->set_flashdata("status_mt", "Data Telah Disimpan!");
         } else {
             $this->session->set_flashdata("status_mt", "Tidak Terdapat Data yang Diinputkan!");
@@ -481,6 +482,39 @@ class Toko extends CI_Controller {
         endforeach;
         /* end */
         $excel->end_excel("laporan penjualan SPG MT");
+    }
+    
+    function laporan_kehadiran_mt(){
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+            $data['selectCabang'] = $this->input->post('cabang');
+        }
+
+        $data["periode"] = "Laporan Bulan Ini";
+        $data['selectSeles'] = $this->input->post('filter');
+        $data['datasales'] = $this->Toko_model->get_all_sales($data['IDCabang']);
+        $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt();
+
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_export')) {
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
+            $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
+            $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+        }
+
+        $this->load->view('v_head', $data);
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_kehadiran_mt', $data);
+        $this->load->view('v_foot');
     }
 
 }

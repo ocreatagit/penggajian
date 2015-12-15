@@ -291,9 +291,9 @@
         event.preventDefault();
         alertify.confirm('Apakah Data yang telah Di Masukan Benar?', function (e) {
             if (e) {
-//                var a = $("#inputCheck").attr("href");
-//                window.location.assign(a);
-                $("#form_s").submit();
+                var a = $("#inputCheck").attr("href");
+                window.location.assign(a);
+//                $("#form_s").submit();
             } else {
                 //after clicking Cancel
             }

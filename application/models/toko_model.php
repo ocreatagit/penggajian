@@ -62,6 +62,14 @@ class Toko_model extends CI_Model {
             return $this->db->get_where("toko", array("IDCabang" => $IDCabang))->result();
         }
     }
+    
+    function get_all_sales($IDCabang = false) {
+        if ($IDCabang == false) {
+            return $this->db->get('sales_mt')->result();
+        } else {
+            return $this->db->get_where("sales_mt", array("IDCabang" => $IDCabang))->result();
+        }
+    }
 
     function get_detail_toko($IDToko) {
         return $this->db->get_where('toko', array("IDToko" => $IDToko))->row();
@@ -205,7 +213,7 @@ class Toko_model extends CI_Model {
 
     function insert_penjualan_mt() {
         $data = array(
-            'tanggal' => date("Y-m-d"),
+            'tanggal' => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
             'keterangan' => "Laporan Penjualan MT",
             'IDTokoMT' => 0
         );
@@ -284,6 +292,60 @@ class Toko_model extends CI_Model {
             $sql .= " AND toko.IDCabang = " . $IDCabang;
         }
         $sql .= " GROUP BY barang_mt.nama ORDER BY barang ";
+        return $this->db->query($sql)->result();
+    }
+
+    function insert_kehadiran_mt() {
+        $sql = "SELECT laporan_barang_mt.IDSalesMT FROM laporan_barang_mt
+                INNER JOIN laporan_penjualan_mt ON laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
+                WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))) . "'";
+        $spgmt_hadir = $this->db->query($sql)->result();
+        $sql = "SELECT IDSalesMT FROM sales_mt
+                WHERE IDSalesMT NOT IN ( 
+                    SELECT laporan_barang_mt.IDSalesMT FROM laporan_barang_mt 
+                    INNER JOIN laporan_penjualan_mt ON laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
+                    WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))) . "' 
+                ) ";
+        $spgmt_absen = $this->db->query($sql)->result();
+        foreach ($spgmt_hadir as $spg) {
+            if($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows()== 0) {
+                $data = array(
+                    "IDSalesMT" => $spg->IDSalesMT,
+                    "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+                    "status" => "H"
+                );
+                $this->db->insert('kehadiran_mt', $data);
+            }
+        }
+        foreach ($spgmt_absen as $spg) {
+            if($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows()== 0) {
+                $data = array(
+                    "IDSalesMT" => $spg->IDSalesMT,
+                    "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+                    "status" => "A"
+                );
+                $this->db->insert('kehadiran_mt', $data);
+            }
+        }
+    }
+    
+    function get_kehadiran_mt($awal = FALSE, $akhir = FALSE, $IDSales = FALSE){
+        $sql = "SELECT sales_mt.gaji, sales_mt.IDSalesMT as IDSales, sales_mt.foto, sales_mt.nama, COUNT(IF( kehadiran_mt.status = 'H', kehadiran_mt.status, NULL )) as hadir, COUNT(IF( kehadiran_mt.status = 'A', kehadiran_mt.status, NULL )) as absen
+                FROM sales_mt
+                INNER JOIN kehadiran_mt on kehadiran_mt.IDSalesMT = sales_mt.IDSalesMT";
+        if ($awal && $akhir) {
+            $sql.=" WHERE tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else {
+            $sql.=" WHERE month(tanggal) = month(now()) AND year(tanggal) = year(now()) ";
+        }
+        if ($this->session->userdata('Level') == 0) {
+            if ($this->input->post('cabang') != 0) {
+                $sql .= " AND sales_mt.IDCabang = " . $this->input->post('cabang');
+            }
+        }else{
+            $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
+        }
+         $sql .= " GROUP BY sales_mt.IDSalesMT";
         return $this->db->query($sql)->result();
     }
 
