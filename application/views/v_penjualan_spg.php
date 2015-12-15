@@ -118,7 +118,7 @@
             </tr>
 
             <?php
-            $counter = 0;
+            $counter = 0;           
             foreach ($total as $key => $value) :
                 $satuan = 0;
                 if (count($konversi_satuan) > 0) {
