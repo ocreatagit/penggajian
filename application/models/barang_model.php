@@ -20,8 +20,8 @@ class Barang_model extends CI_Model {
             //set default konversi lusin ke pcs
             $data = array(
                 'IDBarang' => $kembali,
-                'IDSatuan1' => 2,
-                'IDSatuan2' => 3,
+                'IDSatuan1' => 3,
+                'IDSatuan2' => 2,
                 'total_konversi' => 1000
             );
             $this->db->insert('satuan_unit', $data);
@@ -193,7 +193,7 @@ class Barang_model extends CI_Model {
             if ($this->input->post("cabang") != 0) {
                 $sql.=" AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
             }
-        } else if ($this->session->userdata('Level') != 0) {
+        } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
         $sql.= " GROUP BY jual.IDLokasi ORDER BY jumlah DESC LIMIT 15";
@@ -213,7 +213,7 @@ class Barang_model extends CI_Model {
             if ($this->input->post("cabang") != 0) {
                 $sql.=" AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
             }
-        } else if ($this->session->userdata('Level') != 0) {
+        } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
         $sql.= " GROUP BY sales.IDSales ORDER BY jumlah DESC LIMIT 15";
@@ -239,8 +239,9 @@ class Barang_model extends CI_Model {
             return;
         }
         if ($this->input->post("cabang")) {
+            
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
-        } else if ($this->session->userdata('Level') != 0) {
+        } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
         $sql .= " GROUP BY jual.IDBarang, jual.IDLokasi ORDER BY jual.IDLokasi ASC, jual.IDBarang ASC";
@@ -250,6 +251,10 @@ class Barang_model extends CI_Model {
 
     function select_top_sales_barang($arr, $awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
         $data = array();
+//        var_dump($awal); exit;
+        $awal = $this->input->post("tanggal_awal");
+        $akhir = $this->input->post("tanggal_akhir");
+//        var_dump($awal); exit;
         foreach ($arr as $id) {
             $sql = "select sales.nama, jual.IDSales, barang.namaBarang, sum(jual.jumlah) as jumlah from jual
                     inner join barang on barang.IDBarang = jual. IDBarang
@@ -263,9 +268,10 @@ class Barang_model extends CI_Model {
                 $sql.=" WHERE month(lp.tanggal) = month(now()) AND year(lp.tanggal) = year(now()) ";
             }
             $sql .= " and jual.IDSales = $id group by jual.IDBarang ORDER BY jual.IDBarang ASC ";
+//            echo $sql; exit;
             array_push($data, $this->db->query($sql)->result());
         }
-        //print_r($data);exit;
+//        print_r($data);exit;
         return $data;
     }
 

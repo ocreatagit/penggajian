@@ -147,10 +147,10 @@ class Pencarian extends CI_Controller {
         }
         $data["konversi_satuan"] = $this->Barang_model->get_satuan();
         $jumlah_loop = count($data['konversi_satuan']);
-        for($i = $jumlah_loop-1; $i>=0;$i--){
+        for($i = $jumlah_loop-1; $i>-1;$i--){
             $temp = $data["konversi_satuan"][$i];
-            $data['konversi_satuan'][$temp->IDBarang] = $temp;
             unset($data["konversi_satuan"][$i]);
+            $data['konversi_satuan'][$temp->IDBarang] = $temp;
         }
         if ($awal == "" && $akhir == "") {
             $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
@@ -180,6 +180,7 @@ class Pencarian extends CI_Controller {
         }
 
         $data['topbarangs'] = $this->Barang_model->select_top_barang();
+        $data['konversi'] = $this->Barang_model->get_satuan();
         $data['admincabang'] = $this->Barang_model->get_all_admincabang();
         //print_r($data['admincabang']);exit;
         $data['data'] = "BULAN INI";

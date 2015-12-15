@@ -175,7 +175,7 @@ class Toko extends CI_Controller {
 //        $data["cabangs"] = $this->Admin_model->get_all_cabang();
 //        $data['selectCabang'] = "";
         $data['laporan_alls'] = $this->Toko_model->laporan_spg();
-        $data['laporans'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
+        $data['laporans'] = $this->Toko_model->get_sales_laporan_spg();
         $data['tokos'] = $this->Toko_model->get_all_toko();
         $data['data'] = "SEMUA BARANG BULAN INI";
         if ($this->input->post('btn_pilih')) {
@@ -183,10 +183,10 @@ class Toko extends CI_Controller {
             $akhir = $this->input->post('tanggal_akhir');
             $IDToko = $this->input->post('filter');
             $data['laporan_alls'] = $this->Toko_model->laporan_spg($awal, $akhir, ($IDToko == 0 ? FALSE : $IDToko));
-            $data['laporans'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
+            $data['laporans'] = $this->Toko_model->get_sales_laporan_spg();
             $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
         }
-
+//        print_r($data['laporan_alls']);exit;
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_spg_mt', $data);
