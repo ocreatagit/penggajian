@@ -90,7 +90,7 @@
                     <li class="dropdown">
                         <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan <span class="caret"></span></a>
                         <ul class="dropdown-menu siku">
-                            <?php if ($level == 3): ?>
+                            <?php if ($level != 3): ?>
                                 <li><a href="<?php echo base_url() . 'index.php/Laporan/harian' ?>" style=''><span id='submenu'>Penjualan Harian</span></a></li>
                             <?php endif; ?>
                             <?php if ($level != 3): ?>
