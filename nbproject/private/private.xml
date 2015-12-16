@@ -3,18 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_top_lokasi.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Toko.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_spg_mt.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Laporan.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_pencarian.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Welcome.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/toko_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_balancing_saldo.php</file>
             <file>file:/C:/xampp/htdocs/Penggajian/application/models/admin_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/barang_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_penjualan_spg.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Pencarian.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_top_sales.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/jurnal_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_navigation.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_input_data_komisi.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/laporan_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_kas.php</file>
         </group>
     </open-files>
 </project-private>

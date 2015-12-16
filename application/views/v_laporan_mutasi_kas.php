@@ -92,7 +92,7 @@
                                 echo '';
                             }
                             ?></td>
-                        <td><?php echo $ket[0]; ?></td>
+                        <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>('.$keterangan_lanjut[$laporan->IDJurnal] .')</b>' : '' : '' ?></td>
                         <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                         <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                         <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>

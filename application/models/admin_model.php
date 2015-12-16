@@ -16,7 +16,7 @@ class Admin_model extends CI_Model {
             $this->session->set_flashdata("status", "Username Tidak Terdaftar Dalam Sistem!");
             return false;
         } else {
-            $query = $this->db->query("SELECT * FROM admin WHERE username = '$username' and password = '$password'");
+            $query = $this->db->query("SELECT * FROM admin WHERE LOWER(username) = LOWER('$username') and LOWER(password) = LOWER('$password')");
             if ($query->num_rows() > 0) {
                 return true;
             } else {
@@ -309,6 +309,11 @@ class Admin_model extends CI_Model {
         }
 //        adassadasd
         return $res->tanggal;
+    }
+
+    function get_keterangan_lanjut($IDPengeluaran) {
+//        $sql = "SELECT * FROM laporan_pengeluaran lp INNER JOIN detail_pengeluaran dp ON lp.IDPengeluaran = dp.IDPengeluaran";
+//        $res = 
     }
 
     function insert_pengeluaran($IDPengeluaran, $keterangan, $nominal, $keterangan_lainnya) {
@@ -637,7 +642,7 @@ class Admin_model extends CI_Model {
           $this->db->where("IDCabang", $IDCabang);
           $this->db->update("cabang", $data);
          */
-        $this->Jurnal_model->insert_jurnal($IDJurnal, 'Pembatalan Penjualan');
+        $this->Jurnal_model->insert_jurnal($penjualan->IDPenjualan, 'Pembatalan Penjualan');
     }
 
 }

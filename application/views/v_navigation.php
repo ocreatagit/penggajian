@@ -17,7 +17,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"  style='padding-top: 0px;background-color: white'>
                 <ul class="nav navbar-nav">
-                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                                 ?>">Input Data</a></li>-->
+                    <!--<li class="active"><a href="<?php // echo base_url() . 'index.php/Laporan/harian'                                  ?>">Input Data</a></li>-->
                     <?php if ($level != 3): ?>
                         <li class="dropdown">
                             <a href="#"  style="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Input Data <span class="caret"></span></a>
@@ -48,6 +48,9 @@
                                 <?php endif; ?>
                                 <?php if ($level != 2): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Laporan/pembatalan_nota' ?>" style=''>Pembatalan Nota</a></li>                                
+                                <?php endif; ?>
+                                <?php if ($level != 1 && $level != 3): ?>
+                                    <li><a href="<?php echo base_url() . 'index.php/Laporan/balancing_saldo' ?>" style=''>Balancing Saldo</a></li>                                
                                 <?php endif; ?>
                                 <?php if ($level != 2 && $level != 3): ?>
                                     <li role="separator" class="divider"></li>

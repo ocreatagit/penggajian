@@ -1082,6 +1082,7 @@ class Laporan extends CI_Controller {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
         }
 
+        $data['keterangan_lanjut'] = $this->Laporan_model->get_keterangan_lanjut($data['jurnals']);
         $data["status_IDCabang"] = $this->session->userdata("status_IDCabang");
         $data["status_jenis"] = $this->session->userdata("status_jenis");
 
@@ -1332,6 +1333,41 @@ class Laporan extends CI_Controller {
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_cetak_pembatalan_nota', $data);
+    }
+
+    function balancing_saldo() {
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+
+        $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+        $this->form_validation->set_rules('nominal', 'Nominal', 'required');
+
+        if ($this->input->post("base_url")) {
+            if ($this->form_validation->run() == TRUE) {
+                $this->Laporan_model->insert_balancing_saldo();
+                $this->session->set_flashdata('status', 'Balancing Saldo Telah Dibuat!');
+                redirect("laporan/balancing_saldo");
+            }
+        }
+
+        $data["status"] = $this->session->flashdata("status");
+
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_balancing_saldo', $data);
+    }
+
+    function get_saldo_kas_kantor() {
+        echo 'Rp. '.number_format($this->Admin_model->get_saldo_cabang($this->session->userdata("IDCabang")), 0, ',', '.')." ,-";
+    }
+    
+    function get_saldo_kas_bank() {
+        echo 'Rp. '.number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.')." ,-";
     }
 
     function excel_kas($data, $filename) {
