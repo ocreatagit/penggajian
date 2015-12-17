@@ -182,9 +182,24 @@ class Pencarian extends CI_Controller {
             $this->cetak_penjualan_sales();
         }
 
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_penjualan_spg', $data);
+        if ($this->input->post("btn_print")) {
+            $awal = $this->input->post("tanggal_awal");
+            $akhir = $this->input->post("tanggal_akhir");
+            if ($awal && $akhir) {
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir);
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
+            } else {
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
+            }
+
+            $this->load->view("v_head");
+            $this->load->view("v_navigation", $data);
+            $this->load->view("v_cetak_laporan_penjualan_spg", $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_penjualan_spg', $data);
+        }
     }
 
     /* Daniel */

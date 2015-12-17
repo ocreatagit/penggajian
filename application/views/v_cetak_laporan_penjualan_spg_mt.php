@@ -1,56 +1,83 @@
 <div class="container" style="margin-top: 60px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR PEMBATALAN PENJUALAN </h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">LAPORAN PENJUALAN SPG MT</h1>
         </div>
     </div>
+    <?php
+    $saldo_mutasi = 0;
+    ?>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h3 style="margin-top: 0px;">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
-            </h3>
-            <?php if ($periode != "Laporan Bulan Ini") {
-                ?>
-                <h3 style="margin-bottom: 30px;">
-                    Periode <?php echo $periode ?></h3>
-            <?php } else {
-                ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
-                <?php
-            }
-            ?>
+            <h2 style="margin-top: 5px;">Laporan Penjualan SPG MT <small> <?php echo $data ?> </small> </h2>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>
-                    <tr style="background-color: whitesmoke;">
-                        <th id="tengah">No</th>
-                        <th id="tengah">Tanggal Pembatalan Penjualan</th>
-                        <th id="tengah">Tanggal Nota Penjualan</th>
-                        <th id="tengah">Nilai Pembatalan Penjualan</th>
+                    <tr>
+                        <!--<th style="display: none;">ID</th>-->
+                        <th>Tanggal</th>
+                        <th>Nama SPG</th>
+                        <th>Nama Barang</th>
+                        <th>Jumlah (Pcs)</th>
+                        <th>Konversi Satuan</th>
+                        <th>Nama Toko</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- loop isi -->
                     <?php
-                    $no = 1;
-                    $total = 0;
-                    foreach ($laporans as $value):
+                    foreach ($laporans as $laporan):
+                        $total_barang = intval($laporan->jumlah);
+                        $karton = floor($total_barang / (intval($laporan->nilai_karton) * 12));
+                        $total_barang %= (intval($laporan->nilai_karton) * 12);
+                        $lusin = floor($total_barang / 12);
+                        $total_barang %= 12;
                         ?>
                         <tr>
-                            <td><?php echo $no ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
-                            <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
+                            <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                            <td><?php echo $laporan->sales; ?></td>
+                            <td><?php echo $laporan->barang ?> </td>
+                            <td><?php echo $laporan->jumlah ?></td>
+                            <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
+                            <td><?php echo $laporan->toko ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <!-- end loop isi -->
+                </tbody>
+            </table>
+
+            <hr>
+            <h2>Total Penjualan</h2>
+            <table class="col-sm-3">
+                <thead>
+                    <tr style="background-color: yellow" >
+                        <td style="text-align: center">Nama Barang</td>
+                        <td class="text-center">Jumlah (Pcs)</td>
+                        <td class="text-center">Konversi Satuan</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (count($totals) <= 0) : ?>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">
+                                Tidak Ada Data
+                            </td>
                         </tr>
                         <?php
-                        $no++;
-                        $total += $value->total;
-                    endforeach;
-                    ?>
+                    endif;
+                    foreach ($totals as $total):
+                        $total_barang = intval($total->jumlah);
+                        $karton = floor($total_barang / (intval($total->nilai_karton) * 12));
+                        $total_barang %= (intval($total->nilai_karton) * 12);
+                        $lusin = floor($total_barang / 12);
+                        $total_barang %= 12;
+                        ?>
+                        <tr>
+                            <td style="text-align: center"><?php echo $total->barang ?></td>
+                            <td class="text-center"><?php echo $total->jumlah ?></td>
+                            <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
-                        <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

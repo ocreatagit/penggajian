@@ -60,8 +60,9 @@
                                 <input class="form-control siku" type="text" id="datepicker2" placeholder="Sampai" name="tanggal_akhir" value="">
                             </div>                    
                             <div class="col-lg-3">                        
-                                <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                                <button class="btn btn-default siku" type="submit" value="kategori" name="submit">Pilih</button>
                                 <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
+                                <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku"><i class="fa fa-print"></i> Print</button> 
 
                             </div>
                         </div>

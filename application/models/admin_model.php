@@ -204,7 +204,20 @@ class Admin_model extends CI_Model {
     }
 
     function get_detail_cabang($IDCabang) {
-        return $this->db->get_where("cabang", array("IDCabang" => $IDCabang))->row();
+        if ($IDCabang == 0) {
+            $array = array(
+                'IDCabang' => 0,
+                'IDAdmin' => 0,
+                'IDAdmin_kantor' => 0,
+                'provinsi' => 'Semua Cabang',
+                'kabupaten' => 'Semua Cabang',
+                'saldo' => 0,
+                'last_updated' => date('Y-m-d')
+            );
+            return (object)$array;
+        } else {
+            return $this->db->get_where("cabang", array("IDCabang" => $IDCabang))->row();
+        }
     }
 
     function insert_pendapatan() {

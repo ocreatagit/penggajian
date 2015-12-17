@@ -92,7 +92,7 @@ class Laporan_model extends CI_Model {
         return $query->result();
     }
 
-    function select_laporan_batal($awal = FALSE, $akhir = FALSE) {
+    function select_laporan_batal($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE) {
         if ($this->session->userdata("Level") != 0) {
             $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
                 WHERE lp.IDCabang = " . $this->session->userdata("IDCabang");
@@ -109,6 +109,10 @@ class Laporan_model extends CI_Model {
             } else {
                 $sql .=" WHERE (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
             }
+        }
+
+        if ($IDCabang) {
+            $sql.= "AND lp.IDCabang = " . $IDCabang . ";";
         }
 
         $query = $this->db->query($sql);

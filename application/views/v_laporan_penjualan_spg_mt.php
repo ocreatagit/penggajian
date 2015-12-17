@@ -88,11 +88,14 @@
                 </div>     
                 <div class="form-group" >
                     <label class="control-label col-sm-2" for="filterSPG"></label>
-                    <div class="col-sm-3">
-                        <button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-primary siku btn-block">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
+                    <div class="col-sm-2">
+                        <button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-default siku btn-block">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                     </div>                    
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <button type="submit" name='btn_print' value='btn_print' class="btn btn-success siku btn-block">&nbsp;&nbsp; <i class="fa fa-book"></i> Export To Xls&nbsp;&nbsp;</button>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" name='btn_print_2' value='btn_print' class="btn btn-primary siku btn-block">&nbsp;&nbsp;<i class="fa fa-print"></i> Print &nbsp;&nbsp;</button> 
                     </div>
                 </div>
             </form>
@@ -155,12 +158,12 @@
                         </thead>
                         <tbody>
                             <?php if (count($totals) <= 0) : ?>
-                            <tr>
-                                <td colspan="3" style="text-align: center;">
-                                    Tidak Ada Data
-                                </td>
-                            </tr>
-                            <?php
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">
+                                        Tidak Ada Data
+                                    </td>
+                                </tr>
+                                <?php
                             endif;
                             foreach ($totals as $total):
                                 $total_barang = intval($total->jumlah);
@@ -174,7 +177,7 @@
                                     <td class="text-center"><?php echo $total->jumlah ?></td>
                                     <td><?php echo ($karton == 0 ? "" : $karton . " karton") . ($lusin == 0 ? "" : $lusin . " lusin") . $total_barang . " pcs" ?></td>
                                 </tr>
-<?php endforeach; ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
