@@ -430,7 +430,7 @@ class Toko extends CI_Controller {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan($data['IDCabang']);
             $data['totals'] = $this->Toko_model->get_total_penjualan($data['IDCabang']);
         }
-        if ($this->input->post('btn_pilih') || $this->input->post('btn_print')) {
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_print') || $this->input->post('btn_print_2')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $IDCabang = $this->input->post('cabang');
@@ -445,9 +445,15 @@ class Toko extends CI_Controller {
             $this->xls_penjualan($data);
         }
 
-        $this->load->view('v_head', $data);
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_laporan_penjualan_spg_mt', $data);
+        if ($this->input->post('btn_print_2')) {
+            $this->load->view('v_head', $data);
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_laporan_penjualan_spg_mt', $data);
+        } else {
+            $this->load->view('v_head', $data);
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_laporan_penjualan_spg_mt', $data);
+        }
     }
 
     function xls_penjualan($data) {
@@ -483,8 +489,8 @@ class Toko extends CI_Controller {
         /* end */
         $excel->end_excel("laporan penjualan SPG MT");
     }
-    
-    function laporan_kehadiran_mt(){
+
+    function laporan_kehadiran_mt() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');
             $data['level'] = $this->session->userdata('Level');
@@ -510,7 +516,28 @@ class Toko extends CI_Controller {
             $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
         }
+        
+        if ($this->input->post('btn_print')) {
+            $data['selectCabang'] = $this->input->post('filter');
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+//            echo $akhir; exit;
+            $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
+            $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
+            if (!$akhir && !$akhir) {
+                $data['periode'] = ' - S/D - ';
+            } else {
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            }
+            $data['print'] = $this->input->post('btn_print');
 
+//            print_r($data["laporan_penjualan"]); exit;
+
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_kehadiran_mt', $data);
+            return;
+        }
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
         $this->load->view('v_kehadiran_mt', $data);

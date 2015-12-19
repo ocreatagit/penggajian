@@ -1,56 +1,51 @@
 <div class="container" style="margin-top: 60px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR PEMBATALAN PENJUALAN </h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">PENGELUARAN</h1>
         </div>
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h3 style="margin-top: 0px;">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
-            </h3>
-            <?php if ($periode != "Laporan Bulan Ini") {
-                ?>
-                <h3 style="margin-bottom: 30px;">
-                    Periode <?php echo $periode ?></h3>
-            <?php } else {
-                ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
-                <?php
-            }
-            ?>
+            <h2 style="margin-left: 15px; margin-top: 0px;">Pengeluaran <small><?php echo $searchby ?> - Periode <?php echo $data ?></small></h2>            
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
-                <thead>
-                    <tr style="background-color: whitesmoke;">
-                        <th id="tengah">No</th>
-                        <th id="tengah">Tanggal Pembatalan Penjualan</th>
-                        <th id="tengah">Tanggal Nota Penjualan</th>
-                        <th id="tengah">Nilai Pembatalan Penjualan</th>
+                <thead style="text-align: center; background-color: #ffcc33 ">
+                    <tr>
+                        <td><strong>Tanggal</strong></td>
+                        <?php if ($kolom): ?>
+                            <td><strong>Keterangan</strong></td>
+                        <?php endif; ?>
+                        <td><strong>Jumlah Pengeluaran</strong></td>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $no = 1;
                     $total = 0;
-                    foreach ($laporans as $value):
+                    if (count($isi_tabel) > 0) {
+                        foreach ($isi_tabel as $isi):
+                            ?>
+                            <tr>
+                                <td><?php echo date('d-m-Y', strtotime($isi->tanggal)) ?></td>
+                                <?php if ($kolom): ?>
+                                    <td><?php echo $isi->keterangan . ($isi->keterangan_lanjut != "" ? " - " . $isi->keterangan_lanjut : "" ) ?></td>
+                                <?php endif; ?>
+                                <td>Rp. <?php echo number_format($isi->jumlah, 0, ',', '.') ?>,-</td>
+                            </tr>
+                            <?php
+                            $total+= $isi->jumlah;
+                        endforeach;
+                    } else {
                         ?>
                         <tr>
-                            <td><?php echo $no ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
-                            <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
+                            <td colspan="3" style="text-align: center">Tidak ada data penjualan pada periode ini</td>
                         </tr>
-                        <?php
-                        $no++;
-                        $total += $value->total;
-                    endforeach;
-                    ?>
+                    <?php } ?>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
-                        <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
+                        <td <?php echo $kolom ? 'colspan="2"' : '' ?> align="right"> Total Pengeluaran </td>
+                        <td  align="left">Rp. <?php echo number_format($total, 0, ',', '.') ?>,-</td>
                     </tr>
-                </tfoot>
+                </tfoot>  
             </table>
         </div>
     </div>

@@ -1,56 +1,92 @@
 <div class="container" style="margin-top: 60px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR PEMBATALAN PENJUALAN </h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">PENJUALAN SPG</h1>
         </div>
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h3 style="margin-top: 0px;">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
-            </h3>
-            <?php if ($periode != "Laporan Bulan Ini") {
+            <?php
+            $total = array();
+            if ($periode != "Laporan Bulan Ini") {
                 ?>
-                <h3 style="margin-bottom: 30px;">
-                    Periode <?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;">Periode <?php echo $periode ?></h2>
             <?php } else {
                 ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;"><?php echo $periode ?></h2>
                 <?php
             }
+            foreach ($barangs as $barang):
+                $total[$barang->IDBarang] = 0;
+            endforeach;
             ?>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>
-                    <tr style="background-color: whitesmoke;">
-                        <th id="tengah">No</th>
-                        <th id="tengah">Tanggal Pembatalan Penjualan</th>
-                        <th id="tengah">Tanggal Nota Penjualan</th>
-                        <th id="tengah">Nilai Pembatalan Penjualan</th>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>SPG</th>
+                        <th>Nama Barang</th>
+                        <th>Penjualan(pcs)</th>
+                        <th>Konversi Satuan</th>
+                        <th>Lokasi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $no = 1;
-                    $total = 0;
-                    foreach ($laporans as $value):
+                    foreach ($datapenjualan as $penjualan):
+                        $total[$penjualan->IDBarang] += intval($penjualan->jumlah);
+                        if (count($konversi_satuan) > 0) {
+                            $satuan = intval($konversi_satuan[$penjualan->IDBarang]->total_konversi);
+                        }
+                        $jumlah = intval($penjualan->jumlah);
+                        $karton = 0;
+                        if ($satuan != 0) {
+                            $karton = floor($jumlah / ($satuan * 12));
+                            $jumlah %= ($satuan * 12);
+                        }
+                        $lusin = floor($jumlah / 12);
+                        $jumlah %= 12;
                         ?>
                         <tr>
-                            <td><?php echo $no ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
-                            <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
+                            <td><?php echo strftime("%d-%m-%Y", strtotime($penjualan->tanggal)) ?></td>
+                            <td><?php echo $penjualan->nama ?></td>
+                            <td><?php echo $penjualan->namaBarang ?></td>
+                            <td><?php echo $penjualan->jumlah ?></td>
+                            <td><?php echo ( $karton == 0 ? "" : $karton . " karton ") . ($lusin == 0 ? "" : $lusin . " lusin ") . $jumlah . " pcs" ?></td>
+                            <td><?php echo $penjualan->desa ?></td>
                         </tr>
-                        <?php
-                        $no++;
-                        $total += $value->total;
-                    endforeach;
-                    ?>
+                    <?php endforeach; ?>
                 </tbody>
-                <tfoot>
+                <tr>
+                    <td colspan="6" style="text-align: center; height: 20px;"></td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: center; font-size: medium; background-color: #ccccff"><strong>TOTAL PENJUALAN</strong> </td>
+                </tr>
+
+                <?php
+                $counter = 0;
+                foreach ($total as $key => $value) :
+                    $satuan = 0;
+                    if (count($konversi_satuan) > 0) {
+                        $satuan = intval($konversi_satuan[$key]->total_konversi);
+                    }
+                    $jumlah = intval($value);
+                    $karton = 0;
+                    if ($satuan != 0) {
+                        $karton = floor($jumlah / ($satuan * 12));
+                        $jumlah %= ($satuan * 12);
+                    }
+                    $lusin = floor($jumlah / 12);
+                    $jumlah %= 12;
+                    ?>
                     <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
-                        <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
+                        <td colspan="3" style="text-align: right;"><?php echo $barangs[$counter++]->namaBarang ?> :</td>
+                        <td><?php echo $value ?></td>
+                        <td><?php echo ( $karton == 0 ? "" : $karton . " karton ") . ($lusin == 0 ? "" : $lusin . " lusin ") . $jumlah . " pcs" ?></td>
+                        <td></td>
                     </tr>
-                </tfoot>
+                <?php endforeach; ?>    
             </table>
         </div>
     </div>

@@ -45,6 +45,7 @@
                 <div class="col-lg-4 col-lg-offset-2">
                     <button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-default siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                     <button type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>
+                    <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print &nbsp;&nbsp;</button> 
                 </div>
             </div>
         </form>

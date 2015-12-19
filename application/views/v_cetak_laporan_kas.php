@@ -1,56 +1,82 @@
 <div class="container" style="margin-top: 60px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR PEMBATALAN PENJUALAN </h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR LAPORAN KAS </h1>
         </div>
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h3 style="margin-top: 0px;">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
-            </h3>
             <?php if ($periode != "Laporan Bulan Ini") {
                 ?>
-                <h3 style="margin-bottom: 30px;">
-                    Periode <?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;">Periode <?php echo $periode ?></h2>
             <?php } else {
                 ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;"><?php echo $periode ?></h2>
                 <?php
             }
             ?>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>
-                    <tr style="background-color: whitesmoke;">
-                        <th id="tengah">No</th>
-                        <th id="tengah">Tanggal Pembatalan Penjualan</th>
-                        <th id="tengah">Tanggal Nota Penjualan</th>
-                        <th id="tengah">Nilai Pembatalan Penjualan</th>
+                    <tr>
+                        <!--<th>#</th>-->
+                        <th>Tanggal</th>
+                        <th>Admin</th>
+                        <th>Keterangan</th>
+                        <th>Total Penjualan</th>
+                        <!--<th>Aksi</th>-->
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $no = 1;
-                    $total = 0;
-                    foreach ($laporans as $value):
+                    $total_penjualan = 0;
+                    $total_pengeluaran = 0;
+                    $total_komisi = 0;
+                    foreach ($laporans as $laporan):
                         ?>
+                        <?php $total_penjualan += $laporan->totalPenjualan; ?>
+                        <?php $total_komisi += $laporan->totalKomisi; ?>
                         <tr>
-                            <td><?php echo $no ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
-                            <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
+                            <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                            <td><?php echo $laporan->username; ?></td>
+                            <td><?php echo $laporan->keterangan; ?></td>
+                            <td>Rp <?php echo number_format($laporan->totalPenjualan, 0, ",", ".") ?>.- </td>
                         </tr>
+
+                    <?php endforeach; ?>
+
+                    <?php
+                    $total_biaya_keluar = 0;
+                    foreach ($pengeluarans as $pengeluaran) {
+                        ?>
+                    <!--                <tr>
+                                <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
+                                <td><?php echo $pengeluaran->username; ?></td>
+                                <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
+                                <td><?php echo $pengeluaran->keterangan; ?></td>
+                            </tr>-->
                         <?php
-                        $no++;
-                        $total += $value->total;
-                    endforeach;
+                        $total_biaya_keluar += $pengeluaran->jumlah;
+                    }
                     ?>
-                </tbody>
-                <tfoot>
                     <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
-                        <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
+                        <td colspan="">&nbsp;</td>
+                        <td colspan="">&nbsp;</td>
+                        <td colspan="">&nbsp;</td>
+                        <td colspan="">&nbsp;</td>
                     </tr>
-                </tfoot>
+                    <tr style="font-size: 18px">
+                        <td></td>
+                        <td></td>
+                        <td colspan="" style="text-align: right;">Total Penjualan</td>
+                        <td colspan="" style=""><strong>Rp <?php echo number_format($total_penjualan, 0, ",", ".") ?>,-</strong></td>
+                    </tr>
+                    <tr style="font-size: 18px">
+                        <td></td>
+                        <td></td>
+                        <td colspan="" style="text-align: right;">Total Pengeluaran</td>
+                        <td colspan="" style=""><strong>Rp <?php echo number_format($total_biaya_keluar, 0, ",", ".") ?>,-</strong></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>

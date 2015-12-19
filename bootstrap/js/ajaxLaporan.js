@@ -438,21 +438,21 @@ function refreshEditPage() {
     alert("Refreshing Page... (^.^)v");
     var deferred = new $.Deferred();
     // now, delay the resolution of the deferred:
-    setTimeout(function() {
+    setTimeout(function () {
         window.location.href = current_url;
     }, 1);
     return deferred.promise();
 }
 
-function tempAlert(msg,duration)
+function tempAlert(msg, duration)
 {
     var el = document.createElement("div");
-    el.setAttribute("style","background-color: #31708F;position: absolute;top:0; bottom: 0; left: 0; right: 0; margin: auto;padding: 20px; height: 75px; width: 400px; color: white; font-size: 18px; border-radius: 6px;");
+    el.setAttribute("style", "background-color: #31708F;position: absolute;top:0; bottom: 0; left: 0; right: 0; margin: auto;padding: 20px; height: 75px; width: 400px; color: white; font-size: 18px; border-radius: 6px;");
     el.innerHTML = msg;
-    setTimeout(function(){
-     el.parentNode.removeChild(el);
-     window.location.href = current_url;
-    },duration);
+    setTimeout(function () {
+        el.parentNode.removeChild(el);
+        window.location.href = current_url;
+    }, duration);
     document.body.appendChild(el);
 }
 
@@ -473,12 +473,12 @@ function simpan_lokasi() {
             $("#wilayah_edit").val("");
             $("#kabupaten_edit").val("");
             $("#provinsi_edit").val("");
-            
+
             tempAlert('Memproses Data ...', 1000);
 
 //            refreshEditPage();
 //            refreshEditPage().then(function(result) {});
-            
+
 //            $("#load_lokasi").load(base_url + "index.php/Laporan/get_lokasi");
 //            var lokasi = JSON.parse(data);
 //
@@ -626,7 +626,32 @@ function tampil_foto() {
     });
 }
 
-
+function change_kas(IDSelect) {
+    var IDKas = document.getElementById(IDSelect).value;
+    if (IDKas == 2) {
+        $.ajax({
+            url: base_url + "index.php/laporan/get_saldo_kas_kantor",
+            type: 'POST',
+            data: {
+            }, success: function (data, textStatus, jqXHR) {
+                $("#saldo_1").val(data);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert(JSON.stringify(jqXHR));
+            }
+        });
+    } else {
+        $.ajax({
+            url: base_url + "index.php/laporan/get_saldo_kas_bank",
+            type: 'POST',
+            data: {
+            }, success: function (data, textStatus, jqXHR) {
+                $("#saldo_1").val(data);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert(JSON.stringify(jqXHR));
+            }
+        });
+    }
+}
 //function get_saldo() {
 //    var cabang = document.getElementById("cabang").value;
 //    if (cabang == 0) {

@@ -53,6 +53,7 @@
                 </div>                            
                 &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-primary siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                 <!--&nbsp;<button id="btn_export" type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>-->
+                &nbsp;<button id="btn_print" type="submit" name='btn_print' value='btn_print' class="btn btn-default siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print&nbsp;&nbsp;</button>
             </form>
 
         </div>
@@ -179,16 +180,16 @@
 </style>
 <script>
                             $('#ListView').hide();
-                            $('#btn_export').hide();
+                            $('#btn_print').hide();
                             function gridview() {
                                 $('#GridView').show();
                                 $('#ListView').hide();
-                                $('#btn_export').hide();
+                                $('#btn_print').hide();
                             }
                             function listview() {
                                 $('#GridView').hide();
                                 $('#ListView').show();
-                                $('#btn_export').show();
+                                $('#btn_print').show();
                             }
                             $("#datepicker1").datepicker({
                                 inline: true,

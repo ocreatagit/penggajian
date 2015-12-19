@@ -164,6 +164,28 @@ class Sales extends CI_Controller {
             $data['kehadirans'] = $this->Sales_model->get_kehadiran($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
         }
+        
+        if ($this->input->post('btn_print')) {
+            $data['selectCabang'] = $this->input->post('filter');
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+//            echo $akhir; exit;
+            $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
+            $data['kehadirans'] = $this->Sales_model->get_kehadiran($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
+            if (!$akhir && !$akhir) {
+                $data['periode'] = ' - S/D - ';
+            } else {
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            }
+            $data['print'] = $this->input->post('btn_print');
+
+//            print_r($data["laporan_penjualan"]); exit;
+
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_kehadiran', $data);
+            return;
+        }
 
         if ($this->input->post('btn_export')) {
             $this->excel_kehadiran($data);

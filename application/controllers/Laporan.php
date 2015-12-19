@@ -1037,9 +1037,35 @@ class Laporan extends CI_Controller {
             }
         }
 
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_pengeluaran', $data);
+        if ($this->input->post("btn_print")) {
+            $data['searchby'] = $this->input->post('jenis_pengeluaran');
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
+                if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
+                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['kolom'] = true;
+                } else {
+                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['kolom'] = false;
+                }
+            } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
+                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data['kolom'] = true;
+            } else {
+                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
+                $data['kolom'] = true;
+            }
+            $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
+
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_pengeluaran_cetak', $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_pengeluaran', $data);
+        }
     }
 
     function laporan_mutasi_kas() {
@@ -1054,7 +1080,7 @@ class Laporan extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        if ($this->input->post("btn_pilih")) {
+        if ($this->input->post("btn_pilih") || $this->input->post("btn_print")) {
             $tgl_awal = "-";
             $tgl_akhir = "-";
             if ($this->input->post('tanggal_awal')) {
@@ -1082,12 +1108,19 @@ class Laporan extends CI_Controller {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
         }
 
+        $data['keterangan_lanjut'] = $this->Laporan_model->get_keterangan_lanjut($data['jurnals']);
         $data["status_IDCabang"] = $this->session->userdata("status_IDCabang");
         $data["status_jenis"] = $this->session->userdata("status_jenis");
 
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_laporan_mutasi_kas', $data);
+        if ($this->input->post("btn_print")) {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_laporan_mutasi_kas', $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_laporan_mutasi_kas', $data);
+        }
     }
 
     function laporan_mutasi_kas_bank() {
@@ -1102,7 +1135,7 @@ class Laporan extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        if ($this->input->post("btn_pilih")) {
+        if ($this->input->post("btn_pilih") || $this->input->post("btn_print")) {
             $tgl_awal = "-";
             $tgl_akhir = "-";
             if ($this->input->post('tanggal_awal')) {
@@ -1130,9 +1163,15 @@ class Laporan extends CI_Controller {
         }
 
         $data["status_IDCabang"] = $this->session->userdata("status_IDCabang");
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_laporan_mutasi_kas_bank', $data);
+        if ($this->input->post("btn_print")) {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_laporan_mutasi_kas_bank', $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_laporan_mutasi_kas_bank', $data);
+        }
     }
 
     function daftar_setoran_bank() {
@@ -1284,9 +1323,32 @@ class Laporan extends CI_Controller {
         }
 
         $data["selectCabang"] = $this->session->userdata("selectCabang");
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_pembatalan_nota', $data);
+        if ($this->input->post('btn_print')) {
+            $data['selectCabang'] = $this->input->post('cabang');
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+//            echo $akhir; exit;
+            $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
+            $data["laporans"] = $this->Laporan_model->select_laporan_batal($data['selectCabang'], $awal, $akhir);
+            if (!$akhir && !$akhir) {
+                $data['periode'] = ' - S/D - ';
+            } else {
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            }
+
+            $data["laporan_penjualan"] = $this->Admin_model->get_detail_cabang($this->input->post("cabang"));
+            $data['print'] = $this->input->post('btn_print');
+
+//            print_r($data["laporan_penjualan"]); exit;
+
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_cetak_pembatalan_nota', $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_pembatalan_nota', $data);
+        }
     }
 
     function buat_pembatalan_nota() {
@@ -1332,6 +1394,41 @@ class Laporan extends CI_Controller {
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_cetak_pembatalan_nota', $data);
+    }
+
+    function balancing_saldo() {
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+
+        $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+        $this->form_validation->set_rules('nominal', 'Nominal', 'required');
+
+        if ($this->input->post("base_url")) {
+            if ($this->form_validation->run() == TRUE) {
+                $this->Laporan_model->insert_balancing_saldo();
+                $this->session->set_flashdata('status', 'Balancing Saldo Telah Dibuat!');
+                redirect("laporan/balancing_saldo");
+            }
+        }
+
+        $data["status"] = $this->session->flashdata("status");
+
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_balancing_saldo', $data);
+    }
+
+    function get_saldo_kas_kantor() {
+        echo 'Rp. ' . number_format($this->Admin_model->get_saldo_cabang($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
+    }
+
+    function get_saldo_kas_bank() {
+        echo 'Rp. ' . number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
     }
 
     function excel_kas($data, $filename) {

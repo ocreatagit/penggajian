@@ -1,56 +1,51 @@
 <div class="container" style="margin-top: 60px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR PEMBATALAN PENJUALAN </h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px;">DAFTAR KEHADIRAN MT </h1>
         </div>
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
-            <h3 style="margin-top: 0px;">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
-            </h3>
             <?php if ($periode != "Laporan Bulan Ini") {
                 ?>
-                <h3 style="margin-bottom: 30px;">
-                    Periode <?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;">Periode <?php echo $periode ?></h2>
             <?php } else {
                 ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
+                <h2 style="margin-bottom: 30px; margin-top: 0px;"><?php echo $periode ?></h2>
                 <?php
             }
             ?>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>
-                    <tr style="background-color: whitesmoke;">
-                        <th id="tengah">No</th>
-                        <th id="tengah">Tanggal Pembatalan Penjualan</th>
-                        <th id="tengah">Tanggal Nota Penjualan</th>
-                        <th id="tengah">Nilai Pembatalan Penjualan</th>
+                    <tr>
+                        <td style="text-align: center"><strong>Nama SPG</strong></td>
+                        <td class="text-center"><strong>Kehadiran</strong></td>
+                        <td class="text-center"><strong>Absen</strong></td>
+                        <td class="text-center"><strong>Gaji</strong></td>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $no = 1;
-                    $total = 0;
-                    foreach ($laporans as $value):
-                        ?>
+                    <?php if (count($kehadirans) == 0): ?>
                         <tr>
-                            <td><?php echo $no ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
-                            <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
-                            <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
+                            <td colspan="3" style="text-align: center">Tidak Ada Data</td>
                         </tr>
                         <?php
-                        $no++;
-                        $total += $value->total;
-                    endforeach;
-                    ?>
+                    endif;
+                    foreach ($kehadirans as $kehadiran) :
+                        ?> 
+                        <tr>
+                            <td style="text-align: left"><?php echo $kehadiran->nama ?></td>
+                            <td class="text-center"><?php echo $kehadiran->hadir ?></td>
+                            <td class="text-center"><?php echo $kehadiran->absen ?></td>
+                            <td class="text-center">Rp. <?php
+                                $hadir = intval($kehadiran->hadir);
+                                $gajiperhari = intval($kehadiran->gaji);
+                                echo number_format($hadir * $gajiperhari, 0, ",", ".");
+                                ?>,-</td>
+                        </tr>
+
+                    <?php endforeach; ?>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
-                        <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>
@@ -87,7 +82,7 @@
         inline: true,
         dateFormat: "dd-mm-yy"
     });
-
+    window.print();
     $(document).ready(function () {
         $("#lokasi").val('');
         $("#salesnya_admin").val('');

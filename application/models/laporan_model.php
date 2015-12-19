@@ -92,7 +92,7 @@ class Laporan_model extends CI_Model {
         return $query->result();
     }
 
-    function select_laporan_batal($awal = FALSE, $akhir = FALSE) {
+    function select_laporan_batal($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE) {
         if ($this->session->userdata("Level") != 0) {
             $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
                 WHERE lp.IDCabang = " . $this->session->userdata("IDCabang");
@@ -110,7 +110,11 @@ class Laporan_model extends CI_Model {
                 $sql .=" WHERE (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
             }
         }
-        
+
+        if ($IDCabang) {
+            $sql.= "AND lp.IDCabang = " . $IDCabang . ";";
+        }
+
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -135,7 +139,7 @@ class Laporan_model extends CI_Model {
         return $this->db->query($sql)->result();
     }
 
-    function select_laporan_periode($awal = FALSE, $akhir = FALSE) {
+    function select_laporan_periode($awal = FALSE, $akhir = FALSE, $sort_asc = FALSE) {
 //        echo $this->input->post("tanggal_awal"); exit;
 //        var_dump($awal);exit;
         $awal = $this->input->post("tanggal_awal");
@@ -185,7 +189,11 @@ class Laporan_model extends CI_Model {
             }
         }
 //        echo $sql; exit;
-        $sql .= " ORDER BY tanggal DESC ";
+        if ($sort_asc) {
+            $sql .= " ORDER BY tanggal ASC ";
+        } else {
+            $sql .= " ORDER BY tanggal DESC ";
+        }
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -457,6 +465,62 @@ class Laporan_model extends CI_Model {
         }
 //        print_r($sql);exit;                
         return $this->db->query($sql)->result();
+    }
+
+    function insert_balancing_saldo() {
+        $cabang = $this->db->get_where("cabang", array("IDCabang" => $this->session->userdata("IDCabang")))->row();
+
+        if ($this->input->post("jenis") == 0) {
+            if ($this->input->post("jenis_kas") == 2) {
+                $sql = "UPDATE cabang SET saldo = " . (intval($cabang->saldo) + intval($this->input->post("nominal"))) . " WHERE IDCabang = " . $cabang->IDCabang . ";";
+                $this->db->query($sql);
+            }
+        } else {
+            if ($this->input->post("jenis_kas") == 2) {
+                $sql = "UPDATE cabang SET saldo = " . (intval($cabang->saldo) - intval($this->input->post("nominal"))) . " WHERE IDCabang = " . $cabang->IDCabang . ";";
+                $this->db->query($sql);
+            }
+        }
+
+        $this->load->model("Jurnal_model");
+        if ($this->input->post("jenis_kas") == 2) {
+            if ($this->input->post("jenis") == 0) {
+                $this->Jurnal_model->insert_jurnal_balancing(1, 'Balancing Tambah Saldo Kas Admin Kantor', $this->input->post("nominal"), $saldo = true);
+            } else {
+                $this->Jurnal_model->insert_jurnal_balancing(1, 'Balancing Kurang Saldo Kas Admin Kantor', $this->input->post("nominal"), $saldo = true);
+            }
+        } else {
+            if ($this->input->post("jenis") == 0) {
+                $this->Jurnal_model->insert_jurnal_balancing(1, 'Balancing Tambah Saldo Kas Bank', $this->input->post("nominal"), $saldo = true);
+            } else {
+                $this->Jurnal_model->insert_jurnal_balancing(1, 'Balancing Kurangi Saldo Kas Bank', $this->input->post("nominal"), $saldo = true);
+            }
+        }
+    }
+
+    function get_keterangan_lanjut($arrJurnal) {
+        $return_array = array();
+        $sql = "SELECT lp.IDPengeluaran, dp.keterangan_lanjut FROM laporan_pengeluaran lp INNER JOIN detail_pengeluaran dp ON dp.IDPengeluaran = lp.IDPengeluaran";
+        $res = $this->db->query($sql)->result();
+        foreach ($arrJurnal as $items) {
+            $arr = explode('|', $items->keterangan);
+            $bool = FALSE;
+            foreach ($res as $keterangan) {
+                if ($arr[1] == $keterangan->IDPengeluaran && (strpos($arr[0], 'Biaya') !== FALSE)) {
+                    $bool = TRUE;
+                    $return_array[$items->IDJurnal] = $keterangan->keterangan_lanjut;
+//                    echo $keterangan->keterangan_lanjut."<br>";
+                }
+            }
+
+            if ($bool == FALSE) {
+                $return_array[$items->IDJurnal] = '';
+            }
+        }
+//        exit;
+//        print_r($arrJurnal); exit;
+//        print_r($return_array); exit;
+        return $return_array;
     }
 
 }

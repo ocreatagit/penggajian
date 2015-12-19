@@ -30,7 +30,7 @@ class Pencarian extends CI_Controller {
         $awal = "";
         $akhir = "";
         $data['username'] = $this->session->userdata('Username');
-        
+
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
@@ -50,6 +50,7 @@ class Pencarian extends CI_Controller {
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
             }
         }
+
         if ($this->input->post("btn_export")) {
             $this->cetak_excel();
         }
@@ -59,9 +60,27 @@ class Pencarian extends CI_Controller {
             redirect('welcome/index');
         }
 
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_pencarian', $data);
+        if ($this->input->post("btn_print")) {
+            $awal = $this->input->post("tanggal_awal");
+            $akhir = $this->input->post("tanggal_akhir");
+            if ($awal && $akhir) {
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode($this->input->post("tanggal_awal"), $this->input->post("tanggal_akhir"), TRUE);
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
+
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+            } else {
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode();
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
+            }
+
+            $this->load->view("v_head");
+            $this->load->view("v_navigation", $data);
+            $this->load->view("v_cetak_laporan_kas", $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_pencarian', $data);
+        }
 //        $this->load->view('v_foot');
     }
 
@@ -147,7 +166,7 @@ class Pencarian extends CI_Controller {
         }
         $data["konversi_satuan"] = $this->Barang_model->get_satuan();
         $jumlah_loop = count($data['konversi_satuan']);
-        for($i = $jumlah_loop-1; $i>-1;$i--){
+        for ($i = $jumlah_loop - 1; $i > -1; $i--) {
             $temp = $data["konversi_satuan"][$i];
             unset($data["konversi_satuan"][$i]);
             $data['konversi_satuan'][$temp->IDBarang] = $temp;
@@ -163,9 +182,24 @@ class Pencarian extends CI_Controller {
             $this->cetak_penjualan_sales();
         }
 
-        $this->load->view('v_head');
-        $this->load->view('v_navigation', $data);
-        $this->load->view('v_penjualan_spg', $data);
+        if ($this->input->post("btn_print")) {
+            $awal = $this->input->post("tanggal_awal");
+            $akhir = $this->input->post("tanggal_akhir");
+            if ($awal && $akhir) {
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir);
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
+            } else {
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
+            }
+
+            $this->load->view("v_head");
+            $this->load->view("v_navigation", $data);
+            $this->load->view("v_cetak_laporan_penjualan_spg", $data);
+        } else {
+            $this->load->view('v_head');
+            $this->load->view('v_navigation', $data);
+            $this->load->view('v_penjualan_spg', $data);
+        }
     }
 
     /* Daniel */
