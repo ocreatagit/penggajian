@@ -32,13 +32,21 @@
                 </thead>
                 <tbody>
                     <?php
-                    if(count($saldo_pindahan) > 0)
-                    {
+                    if (count($saldo_pindahan) > 0) {
                         foreach ($saldo_pindahan as $saldo):
                             $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
                         endforeach;
                     }
-                    
+                    ?>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>                        
+                        <td>Saldo Pindahan </td>
+                        <td>Rp.<?php echo number_format($saldo_mutasi, 0, ',', '.'); ?>,-</td>
+                    </tr>
+                    <?php
                     if (count($jurnals) > 0) {
                         foreach ($jurnals as $laporan):
                             $ket = explode('|', $laporan->keterangan);
@@ -46,12 +54,12 @@
                             <tr>
                                 <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                                 <td><?php
-                                    if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
-                                        echo strftime("%d-%m-%Y", strtotime($ket[2]));
-                                    } else {
-                                        echo '';
-                                    }
-                                    ?></td>
+                    if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
+                        echo strftime("%d-%m-%Y", strtotime($ket[2]));
+                    } else {
+                        echo '';
+                    }
+                            ?></td>
                                 <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>(' . $keterangan_lanjut[$laporan->IDJurnal] . ')</b>' : '' : '' ?></td>
                                 <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                                 <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
