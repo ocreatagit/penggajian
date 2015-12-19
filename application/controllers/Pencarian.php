@@ -34,25 +34,40 @@ class Pencarian extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        $data['laporans'] = $this->Laporan_model->select_laporan_periode();
+        $data['laporans'] = $this->Laporan_model->select_laporan_periode(date("Y-m-1"), date("Y-m-t"), FALSE);
         $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
         $data["periode"] = "Laporan Bulan Ini";
         if ($this->input->post("btn_pilih") || $this->input->post("btn_export")) {
             $awal = $this->input->post("tanggal_awal");
             $akhir = $this->input->post("tanggal_akhir");
             if ($awal && $akhir) {
-                $data['laporans'] = $this->Laporan_model->select_laporan_periode($this->input->post("tanggal_awal"), $this->input->post("tanggal_akhir"));
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode($this->input->post("tanggal_awal"), $this->input->post("tanggal_akhir"), FALSE);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
 
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
             } else {
-                $data['laporans'] = $this->Laporan_model->select_laporan_periode();
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
             }
+            
+            $this->session->set_flashdata("sort_status", "asc");
         }
 
         if ($this->input->post("btn_export")) {
             $this->cetak_excel();
+        }
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->cetak_excel();
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Kas Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+                
+                $this->session->set_flashdata('status_laporan_kas', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+            }
         }
 
         if ($this->input->post('logout')) {
@@ -69,7 +84,7 @@ class Pencarian extends CI_Controller {
 
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
             } else {
-                $data['laporans'] = $this->Laporan_model->select_laporan_periode();
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
             }
 
@@ -316,14 +331,14 @@ class Pencarian extends CI_Controller {
         $total_pengeluaran = 0;
         $total_komisi = 0;
 
-        if ($this->input->post('btn_export')) {
+        if ($this->input->post('btn_export') || $this->input->post('btn_email')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
         }
-        $data['laporans'] = $this->Laporan_model->select_laporan();
-        if ($this->input->post("btn_export")) {
+        $data['laporans'] = $this->Laporan_model->select_laporan(FALSE, FALSE, TRUE);
+        if ($this->input->post("btn_export") || $this->input->post('btn_email')) {
             if ($awal != "" && $akhir != "") {
-                $data['laporans'] = $this->Laporan_model->select_laporan_periode($awal, $akhir);
+                $data['laporans'] = $this->Laporan_model->select_laporan_periode($awal, $akhir, TRUE);
             }
         }
         $awal = $awal == '' ? '---' : $awal;
@@ -352,7 +367,7 @@ class Pencarian extends CI_Controller {
             $this->insert_cell('B' . $ke, strftime("%d-%m-%Y", strtotime($laporan->tanggal)), 14, FALSE, TRUE, TRUE, TRUE);
             $this->insert_cell('C' . $ke, $laporan->username, 14, FALSE, TRUE, TRUE, FALSE);
             $this->insert_cell('D' . $ke, $laporan->keterangan, 14, FALSE, TRUE, TRUE, FALSE);
-            $this->insert_cell('E' . $ke, $laporan->totalPenjualan, 14, FALSE, TRUE, TRUE, TRUE);
+            $this->insert_cell('E' . $ke, number_format($laporan->totalPenjualan, 0, ',', '.'), 14, FALSE, TRUE, TRUE, TRUE);
 
             $total_penjualan += $laporan->totalPenjualan;
             $total_komisi += $laporan->totalKomisi;
@@ -393,7 +408,7 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()
                 ->getStyle('A' . $ke)
                 ->getAlignment()
-                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $this->excel->getActiveSheet()->getStyle('B' . $ke)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $this->excel->getActiveSheet()->getStyle('B' . $ke)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
@@ -415,15 +430,21 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
-        $this->excel->getActiveSheet()->setCellValue('E' . $ke, $total_penjualan);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getFont()->setSize(14);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getFont()->setBold(true);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-        $this->excel->getActiveSheet()->getStyle('F' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->setCellValue('E' . $ke, number_format($total_penjualan, 0, ',', '.'));
+        
+        $this->excel->getActiveSheet()
+                ->getStyle('E' . $ke)
+                ->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setSize(14);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $ke++;
 
         /* ------------------------------------- */
@@ -441,7 +462,7 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()
                 ->getStyle('A' . $ke)
                 ->getAlignment()
-                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
         $this->excel->getActiveSheet()->getStyle('B' . $ke)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $this->excel->getActiveSheet()->getStyle('B' . $ke)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
@@ -463,20 +484,42 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
-        $this->excel->getActiveSheet()->setCellValue('E' . $ke, $total_komisi);
+        $this->excel->getActiveSheet()->setCellValue('E' . $ke, number_format($total_komisi, 0, ',', '.'));
+        
+        $this->excel->getActiveSheet()
+                ->getStyle('E' . $ke)
+                ->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setSize(14);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+        $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
         $ke++;
 
         /* ------------------------------------- */
 
-        $filename = 'laporan_harian.xls'; //save our workbook as this file name
-        header('Content-Type: application/vnd.ms-excel'); //mime type
-        header('Content-Disposition: attachment;filename="' . $filename . '"'); //tell browser what's the file name
-        header('Cache-Control: max-age=0'); //no cache
-        //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
-        //if you want to save it as .XLSX Excel 2007 format
-        $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
-        //force user to download the Excel file without writing it to server's HD
-        $objWriter->save('php://output');
+        if ($this->input->post("btn_export")) {
+            $filename = 'laporan_harian.xls'; //save our workbook as this file name
+            header('Content-Type: application/vnd.ms-excel'); //mime type
+            header('Content-Disposition: attachment;filename="' . $filename . '"'); //tell browser what's the file name
+            header('Cache-Control: max-age=0'); //no cache
+            //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+            //if you want to save it as .XLSX Excel 2007 format
+            $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter->save('php://output');
+        } else if ($this->input->post("btn_email")) {
+            $filename = 'laporan_penjualan_SPG.xls'; //save our workbook as this file name
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+            $objWriter->save(str_replace(__FILE__, './xls/' . $filename, __FILE__));
+            return $filename;
+        }
     }
 
     function cetak_penjualan_sales() {
@@ -669,15 +712,17 @@ class Pencarian extends CI_Controller {
 
         endforeach;
 
-        $filename = 'laporan_penjualan_SPG.xls'; //save our workbook as this file name
-        header('Content-Type: application/vnd.ms-excel'); //mime type
-        header('Content-Disposition: attachment;filename="' . $filename . '"'); //tell browser what's the file name
-        header('Cache-Control: max-age=0'); //no cache
-        //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
-        //if you want to save it as .XLSX Excel 2007 format
-        $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
-        //force user to download the Excel file without writing it to server's HD
-        $objWriter->save('php://output');
+        if ($this->input->post("btn_export")) {
+            $filename = 'laporan_penjualan_SPG.xls'; //save our workbook as this file name
+            header('Content-Type: application/vnd.ms-excel'); //mime type
+            header('Content-Disposition: attachment;filename="' . $filename . '"'); //tell browser what's the file name
+            header('Cache-Control: max-age=0'); //no cache
+            //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+            //if you want to save it as .XLSX Excel 2007 format
+            $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter->save('php://output');
+        }
     }
 
     function declare_excel() {
@@ -708,4 +753,54 @@ class Pencarian extends CI_Controller {
             $this->excel->getActiveSheet()->getStyle($nama_cell)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
     }
 
+    //------------ EMAIL ------------/
+    function email_header($email_setting, $password) {
+        $this->load->library('email');
+        $this->email->initialize(array(
+            'protocol' => 'smtp',
+            'smtp_host' => 'ssl://smtp.googlemail.com',
+            'smtp_user' => $email_setting,
+            'smtp_pass' => $password,
+            'smtp_port' => 465,
+            'crlf' => "\r\n",
+            'newline' => "\r\n"
+        ));
+//        $this->email->from('ronald.lloyd57@gmail.com', 'Lloyd');
+//        $this->email->to($emailTujuan);
+//        $this->email->set_newline("\r\n");
+//        $this->email->subject($subject);
+//        $this->email->message($message);
+//        $this->email->attach('./pdf/pdf.zip');
+//        $this->email->attach('./pdf/pdf.rar');
+//        $this->email->attach('./pdf/form_persiapan_kegiatan_56.pdf');
+//        if (!$this->email->send()) {
+//            echo show_error($this->email->print_debugger());
+//            exit;
+//        } else {
+//            return TRUE;
+//        }
+    }
+
+    function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
+        $this->email->from($from_mail, $from_nick);
+        $this->email->to($to_mail);
+        $this->email->set_newline("\r\n");
+        $this->email->subject($subject);
+        $this->email->message($message);
+    }
+
+    function email_send() {
+        if (!$this->email->send()) {
+            echo show_error($this->email->print_debugger());
+            exit;
+        } else {
+            return TRUE;
+        }
+    }
+
+    function attach_email_files($jenis = 'xls', $filename) {
+        $this->email->attach("./$jenis/$filename");
+    }
+
+    //------------ END EMAIL ------------/
 }

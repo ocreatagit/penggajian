@@ -1077,6 +1077,7 @@ class Laporan extends CI_Controller {
             redirect('welcome/index');
         }
         $data["periode"] = "Laporan Bulan Ini";
+        $data['saldo_pindahan'] = array();
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
@@ -1091,6 +1092,7 @@ class Laporan extends CI_Controller {
             }
             $jenis = $this->input->post("jenis");
 //            echo $jenis; exit;
+            $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
 
@@ -1316,10 +1318,14 @@ class Laporan extends CI_Controller {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
-            $data["laporans"] = $this->Laporan_model->select_laporan_batal($awal, $akhir);
-            $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+             $data["laporans"] = $this->Laporan_model->select_laporan_batal($data['selectCabang'], $awal, $akhir);
+            if (!$akhir && !$akhir) {
+                $data['periode'] = ' - S/D - ';
+            } else {
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            }
 
-            $this->session->set_userdata("selectCabang", $this->input->post("cabang"));
+            $data["laporan_penjualan"] = $this->Admin_model->get_detail_cabang($this->input->post("cabang"));
         }
 
         $data["selectCabang"] = $this->session->userdata("selectCabang");

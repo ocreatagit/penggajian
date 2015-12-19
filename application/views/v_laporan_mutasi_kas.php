@@ -21,15 +21,15 @@
                             <?php
                             foreach ($cabangs as $cabang) {
                                 ?>
-                                <option value="<?php echo $cabang->idcabang ?>" <?php if($status_IDCabang == $cabang->idcabang) echo "selected"; ?>><?php echo $cabang->provinsi . " - " . $cabang->kabupaten ?></option>
+                                <option value="<?php echo $cabang->idcabang ?>" <?php if ($status_IDCabang == $cabang->idcabang) echo "selected"; ?>><?php echo $cabang->provinsi . " - " . $cabang->kabupaten ?></option>
                             <?php }
                             ?>
                         </select>
                     </div>
                     <div class="col-lg-3">
                         <select name="jenis" class="form-control siku">
-                            <option value="1" <?php if($status_jenis == 1) echo "selected"; ?>>Admin Lapangan</option>
-                            <option value="2" <?php if($status_jenis == 2) echo "selected"; ?>>Admin Kantor</option>
+                            <option value="1" <?php if ($status_jenis == 1) echo "selected"; ?>>Admin Lapangan</option>
+                            <option value="2" <?php if ($status_jenis == 2) echo "selected"; ?>>Admin Kantor</option>
                         </select>
                     </div>
                 </div>
@@ -81,19 +81,25 @@
             </thead>
             <tbody>
                 <?php
+                if (count($saldo_pindahan) > 0) {
+                    foreach ($saldo_pindahan as $saldo):
+                        $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+                    endforeach;
+                }
+
                 foreach ($jurnals as $laporan):
                     $ket = explode('|', $laporan->keterangan);
                     ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                         <td><?php
-                            if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
-                                echo strftime("%d-%m-%Y", strtotime($ket[2]));
-                            } else {
-                                echo '';
-                            }
-                            ?></td>
-                        <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>('.$keterangan_lanjut[$laporan->IDJurnal] .')</b>' : '' : '' ?></td>
+                if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
+                    echo strftime("%d-%m-%Y", strtotime($ket[2]));
+                } else {
+                    echo '';
+                }
+                    ?></td>
+                        <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>(' . $keterangan_lanjut[$laporan->IDJurnal] . ')</b>' : '' : '' ?></td>
                         <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                         <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                         <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>

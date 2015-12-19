@@ -121,6 +121,7 @@
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo base_url() ?>index.php/toko/laporan_penjualan">Laporan Penjualan</a></li>
                                         <li><a href="<?php echo base_url() ?>index.php/toko/laporan_spg">Laporan SPG</a></li>
+                                        <li><a href="<?php echo base_url() ?>index.php/toko/laporan_kehadiran_mt">Laporan Kehadiran MT</a></li>
                                     </ul>
                                 </li>
                             <?php endif; ?>

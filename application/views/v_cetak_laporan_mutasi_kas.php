@@ -32,6 +32,13 @@
                 </thead>
                 <tbody>
                     <?php
+                    if(count($saldo_pindahan) > 0)
+                    {
+                        foreach ($saldo_pindahan as $saldo):
+                            $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+                        endforeach;
+                    }
+                    
                     if (count($jurnals) > 0) {
                         foreach ($jurnals as $laporan):
                             $ket = explode('|', $laporan->keterangan);
