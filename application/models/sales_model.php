@@ -444,7 +444,7 @@ class Sales_model extends CI_Model {
         }
     }
 
-    function get_penjualan($arrID, $awal = false, $akhir = false) {
+    function get_penjualan($arrID, $awal = false, $akhir = false, $sort_asc) {
         if ($this->session->userdata("Level") == 1) {
             $sql = "SELECT c.IDCabang FROM admin a INNER JOIN cabang c ON c.IDAdmin = a.IDAdmin WHERE username = '" . $this->session->userdata("Username") . "'";
         } else if ($this->session->userdata("Level") == 2) {
@@ -484,6 +484,11 @@ class Sales_model extends CI_Model {
         if (count($arrID) > 0)
             $this->db->where_in('jual.IDSales', $arrID);
 
+        if ($sort_asc) {
+            $this->db->order_by("laporan_penjualan.tanggal", "asc"); 
+        } else {
+            $this->db->order_by("laporan_penjualan.tanggal", "desc"); 
+        }
 //        if ($this->session->userdata("Level") != 0) {
 //            $this->db->where('laporan_penjualan.IDCabang', $admin);
 //        }

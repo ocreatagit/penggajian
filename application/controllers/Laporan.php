@@ -1007,33 +1007,49 @@ class Laporan extends CI_Controller {
         $data['data'] = "Bulan ini";
         $data['kolom'] = true;
         $data['searchby'] = 'Semua Jenis';
-        $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran();
+        $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran(FALSE, FALSE, FALSE, FALSE);
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
 
-        if ($this->input->post('submit') || $this->input->post('btn_convert')) {
+        if ($this->input->post('submit') || $this->input->post('btn_convert') || $this->input->post('btn_email')) {
             $data['searchby'] = $this->input->post('jenis_pengeluaran');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
                 if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
-                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = true;
                 } else {
-                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = false;
                 }
             } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
-                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir, FALSE, TRUE);
                 $data['kolom'] = true;
             } else {
-                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
+                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir, FALSE, TRUE);
                 $data['kolom'] = true;
             }
             $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
             if ($this->input->post('btn_convert')) {
-                $this->excel_pengeluaran($data);
+                $this->excel_pengeluaran($data, $this->input->post('btn_convert'));
+            }
+        }
+
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->excel_pengeluaran($data, $this->input->post('btn_email'));
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Pengeluaran Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_pengeluaran', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+                
             }
         }
 
@@ -1043,17 +1059,17 @@ class Laporan extends CI_Controller {
             $akhir = $this->input->post('tanggal_akhir');
             if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
                 if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
-                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = true;
                 } else {
-                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir);
+                    $data['isi_tabel'] = $this->Laporan_model->select_per_jenis($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = false;
                 }
             } else if ($this->input->post('jenis_pengeluaran') == 'Semua Jenis') {
-                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data['isi_tabel'] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir, FALSE, TRUE);
                 $data['kolom'] = true;
             } else {
-                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir);
+                $data['isi_tabel'] = $this->Laporan_model->select_lain_lain($awal, $akhir, FALSE, TRUE);
                 $data['kolom'] = true;
             }
             $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
@@ -1077,11 +1093,15 @@ class Laporan extends CI_Controller {
             redirect('welcome/index');
         }
         $data["periode"] = "Laporan Bulan Ini";
+
+//        $datestring = date("Y-m-d").' first day of last month';
+//        $dt = date_create($datestring);
         $data['saldo_pindahan'] = array();
+
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        if ($this->input->post("btn_pilih") || $this->input->post("btn_print")) {
+        if ($this->input->post("btn_pilih") || $this->input->post("btn_print") || $this->input->post("btn_export") || $this->input->post("btn_email")) {
             $tgl_awal = "-";
             $tgl_akhir = "-";
             if ($this->input->post('tanggal_awal')) {
@@ -1091,8 +1111,8 @@ class Laporan extends CI_Controller {
                 $tgl_akhir = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
             }
             $jenis = $this->input->post("jenis");
-//            echo $jenis; exit;
-            $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
+//            echo $tgl_awal; exit;
+            $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas($tgl_awal == "-" ? "-" : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
 
@@ -1103,11 +1123,28 @@ class Laporan extends CI_Controller {
             $data['saldo'] = $this->Jurnal_model->get_kas();
         }
         if ($this->input->post("btn_export")) {
-            $this->excel_kas($data, "Laporan Mutasi Kas");
+            $this->excel_kas($data, "Laporan Mutasi Kas", $this->input->post("btn_export"));
         }
         $data["filter"] = "";
         if ($this->input->post("btn_submit")) {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
+        }
+
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->excel_kas($data, "Laporan Mutasi Kas", $this->input->post('btn_email'));
+//                $filename = $this->excel_pengeluaran($data,  $this->input->post('btn_email'));
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Mutasi Kas Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_mutasi_kas', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+                
+            }
         }
 
         $data['keterangan_lanjut'] = $this->Laporan_model->get_keterangan_lanjut($data['jurnals']);
@@ -1318,7 +1355,7 @@ class Laporan extends CI_Controller {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
-             $data["laporans"] = $this->Laporan_model->select_laporan_batal($data['selectCabang'], $awal, $akhir);
+            $data["laporans"] = $this->Laporan_model->select_laporan_batal($data['selectCabang'], $awal, $akhir);
             if (!$akhir && !$akhir) {
                 $data['periode'] = ' - S/D - ';
             } else {
@@ -1437,7 +1474,7 @@ class Laporan extends CI_Controller {
         echo 'Rp. ' . number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
     }
 
-    function excel_kas($data, $filename) {
+    function excel_kas($data, $filename, $post) {
         $this->load->library('custom_excel');
         $excel = $this->custom_excel;
         $excel->declare_excel();
@@ -1457,6 +1494,24 @@ class Laporan extends CI_Controller {
         $excel->add_cell('Saldo Akhir', 'F', $row++)->alignment('center')->border()->autoWidth()->font(16);
 
         $saldo_mutasi = 0;
+        
+        $saldo_pindahan = 0;
+
+        if ($data['saldo_pindahan'] > 0) {
+            foreach ($data['saldo_pindahan'] as $saldo):
+                $saldo->sifat == 'K' ? $saldo_pindahan -= $saldo->kaskeluar : $saldo_pindahan += $saldo->kasmasuk;
+            endforeach;
+        }
+        
+        $excel->add_cell("", "A", $row)->border();
+        $excel->add_cell("", "B", $row)->border();
+        $excel->add_cell("", "C", $row)->border();
+        $excel->add_cell("", "D", $row)->border();
+        $excel->add_cell("Saldo Sebelumnya", "E", $row)->border();
+        $excel->add_cell("Rp. " . number_format($saldo_pindahan, 0, ',', '.') . ",-", "F", $row)->border();
+        $row++;
+        
+        $saldo_mutasi = $saldo_pindahan;
 
         foreach ($data['jurnals'] as $laporan):
             $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
@@ -1468,10 +1523,11 @@ class Laporan extends CI_Controller {
             $row++;
         endforeach;
         /* end */
-        $excel->end_excel($filename);
+        $excel->end_excel($filename, $post);
+        return $excel->get_filename();
     }
 
-    function excel_pengeluaran($data) {
+    function excel_pengeluaran($data, $post) {
 // -------------------- convert to excel ------------------------        
         $this->load->library('custom_excel');
         $excel = $this->custom_excel;
@@ -1490,6 +1546,9 @@ class Laporan extends CI_Controller {
             $excel->add_cell("Keterangan", 'B', $row)->border()->autoWidth()->alignment('center');
         }
         $excel->add_cell("Jumlah", !$data['kolom'] ? 'B' : 'C', $row++)->border()->alignment('center');
+
+        // saldo pindahan ronald - 19/12/2015
+
         foreach ($data['isi_tabel'] as $isi):
             $excel->add_cell(date('d-m-Y', strtotime($isi->tanggal)), "A", $row)->border()->autoWidth();
             if ($data['kolom']) {
@@ -1500,7 +1559,46 @@ class Laporan extends CI_Controller {
         endforeach;
         $excel->add_cell('Total :', !$data['kolom'] ? 'A' : 'B', $row)->alignment('right')->autoWidth();
         $excel->add_cell("Rp. " . number_format($total, 0, ',', '.') . ",-", !$data['kolom'] ? 'B' : 'C', $row++)->border()->autoWidth();
-        $excel->end_excel("laporan_pengeluaran");
+
+        $excel->end_excel("laporan_pengeluaran", $post);
+        return $excel->get_filename();
     }
 
+    //------------ EMAIL ------------/
+    function email_header($email_setting, $password) {
+        $this->load->library('email');
+        $this->email->initialize(array(
+            'protocol' => 'smtp',
+            'smtp_host' => 'ssl://smtp.googlemail.com',
+            'smtp_user' => $email_setting,
+            'smtp_pass' => $password,
+            'smtp_port' => 465,
+            'crlf' => "\r\n",
+            'newline' => "\r\n"
+        ));
+    }
+
+    function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
+        $this->email->from($from_mail, $from_nick);
+        $this->email->to($to_mail);
+        $this->email->set_newline("\r\n");
+        $this->email->subject($subject);
+        $this->email->message($message);
+    }
+
+    function attach_email_files($jenis = 'xls', $filename) {
+        $this->email->attach("./$jenis/$filename");
+    }
+
+    function email_send() {
+        if (!$this->email->send()) {
+            $this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
+//            echo show_error($this->email->print_debugger());
+//            exit;
+        } else {
+            return TRUE;
+        }
+    }
+
+    //------------ END EMAIL ------------/
 }

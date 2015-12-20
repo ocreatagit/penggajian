@@ -7,6 +7,11 @@
             </ol>
         </div>
     </div>
+    
+    <?php if ($this->session->flashdata("status_laporan_kas")) { ?>
+        <div class="alert alert-info siku"><?php echo $this->session->flashdata("status_laporan_kas") ?></div>
+    <?php } ?>
+    
     <div class="row" style="">
         <div class="col-lg-12">
             <div class="panel panel-default siku">
@@ -45,11 +50,11 @@
                                 </select>                                
                             </div>
                         </div>
-<!--                        <div class="form-group">
-                            <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
-                            <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
-                            <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
-                        </div>-->
+                        <!--                        <div class="form-group">
+                                                    <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
+                                                    <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
+                                                    <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
+                                                </div>-->
                         <div id="periode" class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Dari</label>
                             <div class="col-lg-3">
@@ -58,38 +63,52 @@
                             <label class="col-lg-1 control-label" for="exampleInputName2">Sampai</label>
                             <div class="col-lg-3">
                                 <input class="form-control siku" type="text" id="datepicker2" placeholder="Sampai" name="tanggal_akhir" value="">
-                            </div>                    
-                            <div class="col-lg-3">                        
-                                <button class="btn btn-default siku" type="submit" value="kategori" name="submit">Pilih</button>
-                                <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
-                                <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku"><i class="fa fa-print"></i> Print</button> 
-
                             </div>
                         </div>
-<!--                        <div id="monthly" class="form-group">
-                            <label class="col-lg-2 control-label">Bulan</label>
-                            <div class="col-lg-3">
-                                <select class="form-control siku" name="monthly">
-                                    <option selected disabled>-- Pilih Bulan --</option>
-                                    <option value="1">Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
+                        <div class="form-group" style="">
+                            <label for="exampleInputName2" class="control-label col-lg-2" style="">Kirim ke Email :</label>
+                            <div class="col-lg-2">
+                                <input class="form-control siku" type="text" id="" placeholder="Email" name="email" value="" style="background-color: whitesmoke">
+                                <?php if (form_error('email')) {
+                                    ?>
+                                    <span class='warna' style="color: red;" id='lokasi_error'><p style='margin: 0px; margin-top: 8px;'><?php echo form_error("email") ?></span>
+                                <?php } ?>
                             </div>
-                            <div class="col-lg-3">                        
-                                <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                            <label for="exampleInputName2" class="col-lg-4" style="color: red;">(Diisi jika ingin mengirim email)</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label" for="exampleInputName2"></label>
+                            <div class="col-lg-6">                        
+                                <button class="btn btn-default siku" type="submit" value="kategori" name="submit">Pilih</button>
                                 <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
+                                <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku"><i class="fa fa-print"></i> Print</button>
+                                <button type="submit" name='btn_email' value='btn_email' class="btn btn-warning siku">&nbsp;&nbsp;<i class="fa fa-envelope"></i> Kirim Email &nbsp;&nbsp;</button> 
                             </div>
-                        </div>-->
+                        </div>
+                        <!--                        <div id="monthly" class="form-group">
+                                                    <label class="col-lg-2 control-label">Bulan</label>
+                                                    <div class="col-lg-3">
+                                                        <select class="form-control siku" name="monthly">
+                                                            <option selected disabled>-- Pilih Bulan --</option>
+                                                            <option value="1">Januari</option>
+                                                            <option value="2">Februari</option>
+                                                            <option value="3">Maret</option>
+                                                            <option value="4">April</option>
+                                                            <option value="5">Mei</option>
+                                                            <option value="6">Juni</option>
+                                                            <option value="7">Juli</option>
+                                                            <option value="8">Agustus</option>
+                                                            <option value="9">September</option>
+                                                            <option value="10">Oktober</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">Desember</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-3">                        
+                                                        <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                                                        <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
+                                                    </div>
+                                                </div>-->
                     </form>
                 </div>
             </div>

@@ -34,7 +34,7 @@
                     <?php
                     if (count($saldo_pindahan) > 0) {
                         foreach ($saldo_pindahan as $saldo):
-                            $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+                            $saldo->sifat == 'K' ? $saldo_mutasi -= $saldo->kaskeluar : $saldo_mutasi += $saldo->kasmasuk;
                         endforeach;
                     }
                     ?>
@@ -43,7 +43,7 @@
                         <td></td>
                         <td></td>
                         <td></td>                        
-                        <td>Saldo Pindahan </td>
+                        <td>Saldo Sebelumnya </td>
                         <td>Rp.<?php echo number_format($saldo_mutasi, 0, ',', '.'); ?>,-</td>
                     </tr>
                     <?php

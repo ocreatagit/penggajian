@@ -274,23 +274,25 @@ class Jurnal_model extends CI_Model {
                 break;
             }
         }
-
-        if ($this->session->userdata("Level") == 0) {
-            $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
+        if ($awal != '-' || $awal == '' || $awal == false) {
+            if ($this->session->userdata("Level") == 0) {
+                $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 " . ($awal ? "WHERE DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = $jenis)" : "WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = $jenis)") . "
                 GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
-        } else {
-            $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
-            $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
+            } else {
+                $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
+                $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
                 FROM jurnal j 
                 INNER JOIN cabang c ON c.IDCabang = j.IDCabang 
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = " . $this->session->userdata("Level") . ") " . ($awal ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
-                    " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
+                        " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
+            }
+            $query = $this->db->query($sql);
+            return $query->result();
+        } else {
+            return array();
         }
-//        echo $sql; exit;
-        $query = $this->db->query($sql);
-        return $query->result();
     }
 
 }

@@ -49,7 +49,7 @@ class Pencarian extends CI_Controller {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
             }
-            
+
             $this->session->set_flashdata("sort_status", "asc");
         }
 
@@ -60,13 +60,15 @@ class Pencarian extends CI_Controller {
             $this->form_validation->set_rules('email', 'email', 'required');
             if ($this->form_validation->run() == TRUE) {
                 $filename = $this->cetak_excel();
+                // RRyner email - 19/12/2015
                 $this->email_header("babylonindografika@gmail.com", "indografika01");
                 $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Kas Excel", "");
                 $this->attach_email_files("xls", $filename);
                 $this->email_send();
-                
+
                 $this->session->set_flashdata('status_laporan_kas', '<i class="fa fa-check-circle"> Email Sent!</i>');
             } else {
+                
             }
         }
 
@@ -169,9 +171,11 @@ class Pencarian extends CI_Controller {
             array_push($arrIDSales, $sales->id_sales);
         }
 
-        if ($this->input->post('btn_pilih')) {
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_export')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
+            
+            $this->session->set_flashdata("sort_status", "asc");
         }
         $data['selectBarang'] = $this->input->post('filterBarang');
         $data['selectSeles'] = $this->input->post('filter');
@@ -187,14 +191,30 @@ class Pencarian extends CI_Controller {
             $data['konversi_satuan'][$temp->IDBarang] = $temp;
         }
         if ($awal == "" && $akhir == "") {
-            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
+            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, FALSE, FALSE, FALSE);
         } else {
-            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir);
+            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir, TRUE);
             $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
         }
 
         if ($this->input->post("btn_export")) {
             $this->cetak_penjualan_sales();
+        }
+
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->cetak_penjualan_sales();
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Penjualan SPG Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_penjualan_spg', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+                
+            }
         }
 
         if ($this->input->post("btn_print")) {
@@ -431,12 +451,12 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
         $this->excel->getActiveSheet()->setCellValue('E' . $ke, number_format($total_penjualan, 0, ',', '.'));
-        
+
         $this->excel->getActiveSheet()
                 ->getStyle('E' . $ke)
                 ->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        
+
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setSize(14);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setBold(true);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
@@ -485,12 +505,12 @@ class Pencarian extends CI_Controller {
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 
         $this->excel->getActiveSheet()->setCellValue('E' . $ke, number_format($total_komisi, 0, ',', '.'));
-        
+
         $this->excel->getActiveSheet()
                 ->getStyle('E' . $ke)
                 ->getAlignment()
                 ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        
+
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setSize(14);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getFont()->setBold(true);
         $this->excel->getActiveSheet()->getStyle('E' . $ke)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
@@ -548,9 +568,9 @@ class Pencarian extends CI_Controller {
         $data['selectSeles'] = $this->input->post('filter');
 
         if ($awal == "" && $akhir == "") {
-            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
+            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, FALSE, FALSE, FALSE);
         } else {
-            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir);
+            $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir, TRUE);
         }
 
         $awal = $awal == '' ? '---' : $awal;
@@ -722,6 +742,12 @@ class Pencarian extends CI_Controller {
             $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
             //force user to download the Excel file without writing it to server's HD
             $objWriter->save('php://output');
+        } else if ($this->input->post("btn_email")) {
+            $filename = 'laporan_penjualan_SPG.xls'; //save our workbook as this file name
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+            $objWriter->save(str_replace(__FILE__, './xls/' . $filename, __FILE__));
+            return $filename;
         }
     }
 
@@ -765,20 +791,6 @@ class Pencarian extends CI_Controller {
             'crlf' => "\r\n",
             'newline' => "\r\n"
         ));
-//        $this->email->from('ronald.lloyd57@gmail.com', 'Lloyd');
-//        $this->email->to($emailTujuan);
-//        $this->email->set_newline("\r\n");
-//        $this->email->subject($subject);
-//        $this->email->message($message);
-//        $this->email->attach('./pdf/pdf.zip');
-//        $this->email->attach('./pdf/pdf.rar');
-//        $this->email->attach('./pdf/form_persiapan_kegiatan_56.pdf');
-//        if (!$this->email->send()) {
-//            echo show_error($this->email->print_debugger());
-//            exit;
-//        } else {
-//            return TRUE;
-//        }
     }
 
     function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
@@ -788,19 +800,19 @@ class Pencarian extends CI_Controller {
         $this->email->subject($subject);
         $this->email->message($message);
     }
-
-    function email_send() {
-        if (!$this->email->send()) {
-            echo show_error($this->email->print_debugger());
-            exit;
-        } else {
-            return TRUE;
-        }
-    }
-
+    
     function attach_email_files($jenis = 'xls', $filename) {
         $this->email->attach("./$jenis/$filename");
     }
 
+    function email_send() {
+        if (!$this->email->send()) {
+            $this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
+//            echo show_error($this->email->print_debugger());
+//            exit;
+        } else {
+            return TRUE;
+        }
+    }
     //------------ END EMAIL ------------/
 }
