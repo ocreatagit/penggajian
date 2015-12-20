@@ -153,8 +153,7 @@
                                                 $gajiperhari = intval($kehadiran->gaji);
                                                 echo number_format($hadir * $gajiperhari, 0, ",", ".");
                                                 ?>,-</td>
-                                        </tr>
-
+                                        </tr>    
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
