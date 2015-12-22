@@ -430,7 +430,7 @@ class Toko extends CI_Controller {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan($data['IDCabang']);
             $data['totals'] = $this->Toko_model->get_total_penjualan($data['IDCabang']);
         }
-        if ($this->input->post('btn_pilih') || $this->input->post('btn_print') || $this->input->post('btn_print_2')) {
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_print') || $this->input->post('btn_print_2') ||  $this->input->post('btn_email')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $IDCabang = $this->input->post('cabang');
@@ -442,7 +442,23 @@ class Toko extends CI_Controller {
             $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
         }
         if ($this->input->post('btn_print')) {
-            $this->xls_penjualan($data);
+            $this->xls_penjualan($data, $this->input->post('btn_print'));
+        }
+        
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->xls_penjualan($data, $this->input->post('btn_email'));
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Penjualan SPG MT Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_penjualan_mt', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+                
+            }
         }
 
         if ($this->input->post('btn_print_2')) {
@@ -456,7 +472,7 @@ class Toko extends CI_Controller {
         }
     }
 
-    function xls_penjualan($data) {
+    function xls_penjualan($data, $post) {
         $this->load->library('custom_excel');
         $excel = $this->custom_excel;
         $excel->declare_excel();
@@ -487,7 +503,8 @@ class Toko extends CI_Controller {
             $row++;
         endforeach;
         /* end */
-        $excel->end_excel("laporan penjualan SPG MT");
+        $excel->end_excel("laporan penjualan SPG MT", $post);
+        return $excel->get_filename();
     }
 
     function laporan_kehadiran_mt() {
@@ -543,5 +560,42 @@ class Toko extends CI_Controller {
         $this->load->view('v_kehadiran_mt', $data);
         $this->load->view('v_foot');
     }
+    
+    //------------ EMAIL ------------/
+    function email_header($email_setting, $password) {
+        $this->load->library('email');
+        $this->email->initialize(array(
+            'protocol' => 'smtp',
+            'smtp_host' => 'ssl://smtp.googlemail.com',
+            'smtp_user' => $email_setting,
+            'smtp_pass' => $password,
+            'smtp_port' => 465,
+            'crlf' => "\r\n",
+            'newline' => "\r\n"
+        ));
+    }
 
+    function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
+        $this->email->from($from_mail, $from_nick);
+        $this->email->to($to_mail);
+        $this->email->set_newline("\r\n");
+        $this->email->subject($subject);
+        $this->email->message($message);
+    }
+
+    function attach_email_files($jenis = 'xls', $filename) {
+        $this->email->attach("./$jenis/$filename");
+    }
+
+    function email_send() {
+        if (!$this->email->send()) {
+            $this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
+//            echo show_error($this->email->print_debugger());
+//            exit;
+        } else {
+            return TRUE;
+        }
+    }
+
+    //------------ END EMAIL ------------/
 }

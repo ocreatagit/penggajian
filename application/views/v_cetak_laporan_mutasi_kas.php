@@ -68,13 +68,7 @@
 
                             <?php
                         endforeach;
-                    } else {
-                        ?>
-                        <tr>
-                            <td colspan="6" align="center">Tidak Terdapat Data </td>
-                        </tr>
-                        <?php
-                    }
+                    } 
                     ?>
                 </tbody>
             </table>

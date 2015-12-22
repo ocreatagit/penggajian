@@ -35,7 +35,7 @@ class Pencarian extends CI_Controller {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
         $data['laporans'] = $this->Laporan_model->select_laporan_periode(date("Y-m-1"), date("Y-m-t"), FALSE);
-        $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
+        $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran(FALSE, FALSE, FALSE, FALSE);
         $data["periode"] = "Laporan Bulan Ini";
         if ($this->input->post("btn_pilih") || $this->input->post("btn_export")) {
             $awal = $this->input->post("tanggal_awal");
@@ -44,10 +44,10 @@ class Pencarian extends CI_Controller {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode($this->input->post("tanggal_awal"), $this->input->post("tanggal_akhir"), FALSE);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
 
-                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir, FALSE, TRUE);
             } else {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
-                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran(FALSE, FALSE, FALSE, FALSE);
             }
 
             $this->session->set_flashdata("sort_status", "asc");
@@ -84,7 +84,7 @@ class Pencarian extends CI_Controller {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode($this->input->post("tanggal_awal"), $this->input->post("tanggal_akhir"), TRUE);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
 
-                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir);
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir, FALSE, TRUE);
             } else {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();

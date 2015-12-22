@@ -295,4 +295,36 @@ class Jurnal_model extends CI_Model {
         }
     }
 
+    function select_saldo_pindahan_kas_bank($awal = FALSE, $akhir = FALSE, $IDCabang = FALSE, $jenis = 1) {
+        $this->load->model('Admin_model');
+//        echo $jenis; exit;
+        if ($IDCabang == FALSE) {
+            $cabang = $this->Admin_model->get_all_cabang();
+            $IDCabang = 0;
+            foreach ($cabang as $cab) {
+                $IDCabang = $cab->idcabang;
+                break;
+            }
+        }
+        if ($awal != '-' || $awal == '' || $awal == false) {
+            if ($this->session->userdata("Level") == 0) {
+                $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
+                FROM jurnal j 
+                WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = 0)" . ($awal && $akhir ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
+                        " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
+            } else {
+                $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
+                $sql = "SELECT j.IDJurnal, j.keterangan, SUBSTRING_INDEX(j.keterangan,'|',-1) as tanggal1, SUBSTRING_INDEX(j.keterangan,'|',1) as keterangan1, j.tanggal, j.sifat, (CASE WHEN j.sifat = 'D' THEN j.nilai_jurnal ELSE 0 END) as kasmasuk, (CASE WHEN j.sifat = 'K' THEN j.nilai_jurnal ELSE 0 END) as kaskeluar
+                FROM jurnal j 
+                INNER JOIN cabang c ON c.IDCabang = j.IDCabang 
+                WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = 0) " . ($awal && $akhir ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
+                        " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
+            }
+            $query = $this->db->query($sql);
+            return $query->result();
+        } else {
+            return array();
+        }
+    }
+
 }

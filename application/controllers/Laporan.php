@@ -1174,7 +1174,7 @@ class Laporan extends CI_Controller {
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
-        if ($this->input->post("btn_pilih") || $this->input->post("btn_print")) {
+        if ($this->input->post("btn_pilih") || $this->input->post("btn_print") || $this->input->post("btn_export") || $this->input->post("btn_email")) {
             $tgl_awal = "-";
             $tgl_akhir = "-";
             if ($this->input->post('tanggal_awal')) {
@@ -1185,6 +1185,7 @@ class Laporan extends CI_Controller {
             }
             $jenis = $this->input->post("jenis");
 
+            $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas_bank($tgl_awal == "-" ? "-" : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas_bank($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), FALSE);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
 
@@ -1194,8 +1195,26 @@ class Laporan extends CI_Controller {
             $data['saldo'] = $this->Jurnal_model->get_kas_bank();
         }
         if ($this->input->post("btn_export")) {
-            $this->excel_kas($data, "Laporan Mutasi Kas Bank");
+            $this->excel_kas($data, "Laporan Mutasi Kas Bank", $this->input->post("btn_export"));
         }
+        
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->excel_kas($data, "Laporan Mutasi Kas Bank", $this->input->post('btn_email'));
+//                $filename = $this->excel_pengeluaran($data,  $this->input->post('btn_email'));
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Mutasi Kas Bank Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_mutasi_kas_bank', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+                
+            }
+        }
+        
         $data["filter"] = "";
         if ($this->input->post("btn_submit")) {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
@@ -1494,7 +1513,7 @@ class Laporan extends CI_Controller {
         $excel->add_cell('Saldo Akhir', 'F', $row++)->alignment('center')->border()->autoWidth()->font(16);
 
         $saldo_mutasi = 0;
-        
+
         $saldo_pindahan = 0;
 
         if ($data['saldo_pindahan'] > 0) {
@@ -1502,7 +1521,7 @@ class Laporan extends CI_Controller {
                 $saldo->sifat == 'K' ? $saldo_pindahan -= $saldo->kaskeluar : $saldo_pindahan += $saldo->kasmasuk;
             endforeach;
         }
-        
+
         $excel->add_cell("", "A", $row)->border();
         $excel->add_cell("", "B", $row)->border();
         $excel->add_cell("", "C", $row)->border();
@@ -1510,7 +1529,7 @@ class Laporan extends CI_Controller {
         $excel->add_cell("Saldo Sebelumnya", "E", $row)->border();
         $excel->add_cell("Rp. " . number_format($saldo_pindahan, 0, ',', '.') . ",-", "F", $row)->border();
         $row++;
-        
+
         $saldo_mutasi = $saldo_pindahan;
 
         foreach ($data['jurnals'] as $laporan):

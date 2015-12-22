@@ -115,8 +115,7 @@
 
             <div class="panel panel-default siku">
                 <div class="panel-body siku">
-                    <h2 style="margin-left: 15px; margin-top: 0px;">Pengeluaran <small><?php echo $searchby ?> - Periode <?php echo $data ?></small></h2>
-
+                    <h2 style="margin-left: 15px; margin-top: 0px;">Pengeluaran <?php echo ": ".$searchby ?> - Periode <?php echo $data ?></h2>
                     <div class="col-lg-6" style="height: 500px; overflow-y: auto;">
                         <table class="table table-hover" id="datatable">
                             <thead style="text-align: center; background-color: #ffcc33 ">

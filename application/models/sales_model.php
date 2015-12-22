@@ -462,6 +462,7 @@ class Sales_model extends CI_Model {
         $this->db->join('lokasi', 'lokasi.IDLokasi=jual.IDLokasi', 'inner');
         $this->db->join('laporan_penjualan', 'laporan_penjualan.IDPenjualan=jual.IDPenjualan', 'inner');
         $this->db->join('Sales', 'sales.IDSales=jual.IDSales', 'inner');
+        $this->db->where_not_in('laporan_penjualan.IDPenjualan', "SELECT lp.IDPenjualan FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan");
         if ($awal && $akhir) {
             $this->db->where('laporan_penjualan.tanggal >=', strftime("%Y-%m-%d", strtotime($awal)));
             $this->db->where('laporan_penjualan.tanggal <=', strftime("%Y-%m-%d", strtotime($akhir)));
@@ -495,7 +496,9 @@ class Sales_model extends CI_Model {
 
 
         $this->db->order_by('laporan_penjualan.tanggal', 'asc');
-        return $this->db->get()->result();
+        $res = $this->db->get()->result();
+//        echo $this->db->last_query(); exit;
+        return $res;
     }
 
     function get_laporan_komisi() {

@@ -14,9 +14,12 @@
             </ol>
         </div>
     </div>
-    <!--<div--> 
-    <div style="background-color: white; height: 310px;">
-        <div class="col-md-12" style="margin-top: 17px;">
+    <!--<div-->
+    <?php if ($this->session->flashdata("status_laporan_penjualan_mt")) { ?>
+        <div class="alert alert-info siku"><?php echo $this->session->flashdata("status_laporan_penjualan_mt") ?></div>
+    <?php } ?>
+    <div style="background-color: white; padding: 15px;">
+        <!--<div class="col-md-12" style="margin-top: 17px;">-->
             <form class="form-horizontal" method="post" action="<?php
             echo current_url();
             $total = array();
@@ -85,22 +88,36 @@
                             <!-- end looping toko -->
                         </select>
                     </div>
-                </div>     
+                </div>
+                <div class="form-group" style="">
+                    <label for="exampleInputName2" class="control-label col-lg-2" style="">Kirim ke Email :</label>
+                    <div class="col-lg-2">
+                        <input class="form-control siku" type="text" id="" placeholder="Email" name="email" value="" style="background-color: whitesmoke">
+                        <?php if (form_error('email')) {
+                            ?>
+                            <span class='warna' style="color: red;" id='lokasi_error'><p style='margin: 0px; margin-top: 8px;'><?php echo form_error("email") ?></span>
+                        <?php } ?>
+                    </div>
+                    <label for="exampleInputName2" class="col-lg-4" style="color: red;">(Diisi jika ingin mengirim email)</label>
+                </div>
                 <div class="form-group" >
                     <label class="control-label col-sm-2" for="filterSPG"></label>
                     <div class="col-sm-2">
                         <button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-default siku btn-block">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                     </div>                    
                     <div class="col-sm-2">
-                        <button type="submit" name='btn_print' value='btn_print' class="btn btn-success siku btn-block">&nbsp;&nbsp; <i class="fa fa-book"></i> Export To Xls&nbsp;&nbsp;</button>
+                        <button type="submit" name='btn_print' value='btn_export' class="btn btn-success siku btn-block">&nbsp;&nbsp; <i class="fa fa-book"></i> Export To Xls&nbsp;&nbsp;</button>
                     </div>
                     <div class="col-sm-2">
                         <button type="submit" name='btn_print_2' value='btn_print' class="btn btn-primary siku btn-block">&nbsp;&nbsp;<i class="fa fa-print"></i> Print &nbsp;&nbsp;</button> 
                     </div>
+                    <div class="col-sm-2">
+                        <button type="submit" name='btn_email' value='btn_email' class="btn btn-warning siku">&nbsp;&nbsp;<i class="fa fa-envelope"></i> Kirim Email &nbsp;&nbsp;</button> 
+                    </div>
                 </div>
             </form>
 
-        </div>
+        <!--</div>-->
     </div>
     <hr>
     <div class="row" >
