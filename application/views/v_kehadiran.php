@@ -14,7 +14,10 @@
         </div>
     </div>
     <!--<div--> 
-    <div style="background-color: white; height: 170px;">
+     <?php if ($this->session->flashdata("status_laporan_kehadiran")) { ?>
+        <div class="alert alert-info siku"><?php echo $this->session->flashdata("status_laporan_kehadiran") ?></div>
+    <?php } ?>
+    <div style="background-color: white; height: 300px;">
         <div class="col-md-12" style="margin-top: 17px;">
             <form class="form-inline" method="post" action="<?php
             echo current_url();
@@ -50,10 +53,26 @@
                             <option value="<?php echo $sales->id_sales ?>" <?php if ($sales->id_sales == $selectSeles) echo 'selected'; ?>><?php echo $sales->nama ?></option>
                         <?php endforeach; ?>
                     </select>
-                </div>                            
-                &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-primary siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
-                <!--&nbsp;<button id="btn_export" type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>-->
+                </div>
+                <br>
+                <br>
+                <div class="form-group" style="margin-left: 15px;">
+                    <label for="exampleInputName2" class="control-label" style="">Email :</label>
+                        <input class="form-control siku" type="text" id="" placeholder="Email" name="email" value="" style="background-color: whitesmoke"> <label for="exampleInputName2" class="" style="color: red;">(Diisi jika ingin mengirim email)</label>
+                        <?php if (form_error('email')) {
+                            ?>
+                            <span class='warna' style="color: red; position: absolute; left: 100px; margin-top: 30px;" id='lokasi_error'><p style='margin: 0px; margin-top: 8px; '><?php echo form_error("email") ?></span>
+                            <br>
+                            <br>
+                        <?php } ?>
+                    
+                </div>
+                <br>
+                <br>
+                &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' style="margin-left: 70px;" class="btn btn-primary siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
+                &nbsp;<button id="btn_export" type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>
                 &nbsp;<button id="btn_print" type="submit" name='btn_print' value='btn_print' class="btn btn-default siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print&nbsp;&nbsp;</button>
+                <button type="submit" name='btn_email' value='btn_email' id="btn_email" class="btn btn-warning siku">&nbsp;&nbsp;<i class="fa fa-envelope"></i> Kirim Email &nbsp;&nbsp;</button> 
             </form>
 
         </div>
@@ -168,10 +187,12 @@
                             $('#ListView').hide();
                             $('#btn_export').hide();
                             $('#btn_print').hide();
+                            $('#btn_email').hide();
                             function gridview() {
                                 $('#GridView').show();
                                 $('#ListView').hide();
                                 $('#btn_export').hide();
+                                $('#btn_email').hide();
                                 $('#btn_print').hide();
                             }
                             function listview() {
@@ -179,6 +200,7 @@
                                 $('#ListView').show();
                                 $('#btn_export').show();
                                 $('#btn_print').show();
+                                $('#btn_email').show();
                             }
                             $("#datepicker1").datepicker({
                                 inline: true,

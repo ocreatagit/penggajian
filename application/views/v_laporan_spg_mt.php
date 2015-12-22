@@ -15,8 +15,11 @@
         </div>
     </div>
     <!--<div--> 
-    <div style="background-color: white; height: 170px;">
-        <div class="col-md-12" style="margin-top: 17px;">
+    <?php if ($this->session->flashdata("status_laporan_penjualan_spg")) { ?>
+        <div class="alert alert-info siku"><?php echo $this->session->flashdata("status_laporan_penjualan_spg") ?></div>
+    <?php } ?>
+    <div style="background-color: white; padding: 20px;">
+        <!--<div class="col-md-12" style="margin-top: 17px;">-->
             <form class="form-horizontal" method="post" action="<?php
             echo current_url();
             $total = array();
@@ -44,7 +47,18 @@
                             <!-- end looping toko -->
                         </select>
                     </div>
-                </div>     
+                </div>
+                <div class="form-group" style="">
+                    <label for="exampleInputName2" class="control-label col-lg-2" style="">Kirim ke Email :</label>
+                    <div class="col-lg-2">
+                        <input class="form-control siku" type="text" id="" placeholder="Email" name="email" value="" style="background-color: whitesmoke">
+                        <?php if (form_error('email')) {
+                            ?>
+                            <span class='warna' style="color: red;" id='lokasi_error'><p style='margin: 0px; margin-top: 8px;'><?php echo form_error("email") ?></span>
+                        <?php } ?>
+                    </div>
+                    <label for="exampleInputName2" class="col-lg-4" style="color: red;">(Diisi jika ingin mengirim email)</label>
+                </div>
                 <div class="form-group" >
                     <label class="control-label col-sm-2" for="filterSPG"></label>
                     <div class="col-sm-3">
@@ -53,7 +67,7 @@
                 </div>
             </form>
 
-        </div>
+        <!--</div>-->
     </div>
     <hr>
     <div class="row" >

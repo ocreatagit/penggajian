@@ -157,7 +157,7 @@ class Sales extends CI_Controller {
         $data['datasales'] = $this->Sales_model->get_sales_tiap_admin($data['username']);
         $data['kehadirans'] = $this->Sales_model->get_kehadiran();
 
-        if ($this->input->post('btn_pilih') || $this->input->post('btn_export')) {
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_export') || $this->input->post('btn_email') ) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
@@ -186,9 +186,25 @@ class Sales extends CI_Controller {
             $this->load->view('v_cetak_kehadiran', $data);
             return;
         }
+        
+        if ($this->input->post("btn_email")) {
+            $this->form_validation->set_rules('email', 'email', 'required');
+            if ($this->form_validation->run() == TRUE) {
+                $filename = $this->excel_kehadiran($data, $this->input->post("btn_email"));
+//                $filename = $this->excel_pengeluaran($data,  $this->input->post('btn_email'));
+                // RRyner email - 19/12/2015
+                $this->email_header("babylonindografika@gmail.com", "indografika01");
+                $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Kehadiran Excel", "");
+                $this->attach_email_files("xls", $filename);
+                $this->email_send();
+
+                $this->session->set_flashdata('status_laporan_kehadiran', '<i class="fa fa-check-circle"> Email Sent!</i>');
+            } else {
+            }
+        }
 
         if ($this->input->post('btn_export')) {
-            $this->excel_kehadiran($data);
+            $this->excel_kehadiran($data, $this->input->post("btn_export"));
         }
 
         $this->load->view('v_head', $data);
@@ -197,7 +213,7 @@ class Sales extends CI_Controller {
         $this->load->view('v_foot');
     }
 
-    public function excel_kehadiran($data) {
+    public function excel_kehadiran($data, $post) {
         $this->load->library('custom_excel');
         $excel = $this->custom_excel;
         $excel->declare_excel();
@@ -222,7 +238,46 @@ class Sales extends CI_Controller {
             $excel->add_cell($kehadiran->hadir, 'B', $row)->alignment('center')->border()->autoWidth();
             $excel->add_cell($kehadiran->absen, 'C', $row++)->alignment('center')->border()->autoWidth();
         }
-        $excel->end_excel("laporan_kehadiran");
+        $excel->end_excel("laporan_kehadiran", $post);
+        return $excel->get_filename();
     }
+    
+    //------------ EMAIL ------------/
+    function email_header($email_setting, $password) {
+        $this->load->library('email');
+        $this->email->initialize(array(
+            'protocol' => 'smtp',
+            'smtp_host' => 'ssl://smtp.googlemail.com',
+            'smtp_user' => $email_setting,
+            'smtp_pass' => $password,
+            'smtp_port' => 465,
+            'crlf' => "\r\n",
+            'newline' => "\r\n"
+        ));
+    }
+
+    function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
+        $this->email->from($from_mail, $from_nick);
+        $this->email->to($to_mail);
+        $this->email->set_newline("\r\n");
+        $this->email->subject($subject);
+        $this->email->message($message);
+    }
+
+    function attach_email_files($jenis = 'xls', $filename) {
+        $this->email->attach("./$jenis/$filename");
+    }
+
+    function email_send() {
+        if (!$this->email->send()) {
+            $this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
+//            echo show_error($this->email->print_debugger());
+//            exit;
+        } else {
+            return TRUE;
+        }
+    }
+
+    //------------ END EMAIL ------------/
 
 }

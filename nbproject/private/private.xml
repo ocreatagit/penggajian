@@ -4,11 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Toko.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/sales_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_cetak_kehadiran_mt.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Sales.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_kehadiran_mt.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_cetak_kehadiran.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_penjualan_spg_mt.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/admin_model.php</file>
+            <file>file:/C:/xampp/htdocs/Penggajian/application/models/toko_model.php</file>
         </group>
     </open-files>
 </project-private>

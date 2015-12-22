@@ -187,9 +187,9 @@
         $("#salesnya_admin").val('');
         $("#nama_produk").val('');
         $('#list_laporan').DataTable({
-<?php if ($this->session->flashdata("status_sort") == "asc") { ?>
+<?php if ($this->session->flashdata("sort_status") == "asc") { ?>
             "order": [[0, "asc"]],
-<?php } else if ($this->session->flashdata("status_sort") == "") { ?>
+<?php } else if ($this->session->flashdata("sort_status") == "") { ?>
             "order": [[0, "desc"]],
 <?php } ?>
         "aoColumnDefs": [

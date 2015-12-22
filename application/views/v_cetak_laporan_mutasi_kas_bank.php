@@ -32,6 +32,21 @@
                 </thead>
                 <tbody>
                     <?php
+                    if (count($saldo_pindahan) > 0) {
+                        foreach ($saldo_pindahan as $saldo):
+                            $saldo->sifat == 'K' ? $saldo_mutasi -= $saldo->kaskeluar : $saldo_mutasi += $saldo->kasmasuk;
+                        endforeach;
+                    }
+                    ?>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>                        
+                        <td>Saldo Sebelumnya </td>
+                        <td>Rp.<?php echo number_format($saldo_mutasi, 0, ',', '.'); ?>,-</td>
+                    </tr>
+                    <?php
                     if (count($jurnals) > 0) {
                         foreach ($jurnals as $laporan):
                             $ket = explode('|', $laporan->keterangan);
@@ -46,12 +61,6 @@
                             </tr>
 
                         <?php endforeach;
-                    } else {
-                        ?>
-                            <tr>
-                                <td colspan="6" align="center">Tidak Terdapat Data </td>
-                            </tr>
-                        <?php
                     }
                     ?>
                 </tbody>

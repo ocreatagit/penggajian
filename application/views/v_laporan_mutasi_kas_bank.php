@@ -7,6 +7,9 @@
             </ol>
         </div>
     </div>
+    <?php if ($this->session->flashdata("status_laporan_mutasi_kas_bank")) { ?>
+        <div class="alert alert-info siku"><?php echo $this->session->flashdata("status_laporan_mutasi_kas_bank") ?></div>
+    <?php } ?>
     <?php
     $saldo_mutasi = 0;
     ?>
@@ -41,11 +44,23 @@
                     <input class="form-control siku" type="text" id="datepicker2" placeholder="Sampai" name="tanggal_akhir" value="">
                 </div>
             </div>
+            <div class="form-group" style="">
+                <label for="exampleInputName2" class="control-label col-lg-2" style="">Kirim ke Email :</label>
+                <div class="col-lg-2">
+                    <input class="form-control siku" type="text" id="" placeholder="Email" name="email" value="" style="background-color: whitesmoke">
+                    <?php if (form_error('email')) {
+                        ?>
+                        <span class='warna' style="color: red;" id='lokasi_error'><p style='margin: 0px; margin-top: 8px;'><?php echo form_error("email") ?></span>
+                    <?php } ?>
+                </div>
+                <label for="exampleInputName2" class="col-lg-4" style="color: red;">(Diisi jika ingin mengirim email)</label>
+            </div>
             <div class="form-group">
-                <div class="col-lg-4 col-lg-offset-2">
+                <div class="col-lg-6 col-lg-offset-2">
                     <button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-default siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                     <button type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>
                     <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print &nbsp;&nbsp;</button> 
+                    <button type="submit" name='btn_email' value='btn_email' class="btn btn-warning siku">&nbsp;&nbsp;<i class="fa fa-envelope"></i> Kirim Email &nbsp;&nbsp;</button> 
                 </div>
             </div>
         </form>

@@ -339,7 +339,7 @@ class Laporan_model extends CI_Model {
 
     /* Daniel */
 
-    function select_all_pengeluaran($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+    function select_all_pengeluaran($awal = FALSE, $akhir = FALSE, $bulan = FALSE, $sort_asc) {
         $sql = "SELECT * 
                 from ((
                         SELECT laporan_pengeluaran.IDCabang as IDCabang,laporan_pengeluaran.tanggal, detail_pengeluaran.keterangan as keterangan, SUM(detail_pengeluaran.total_pengeluaran) as jumlah, detail_pengeluaran.keterangan_lanjut, admin.username
@@ -370,11 +370,17 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND table1.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
+
+        if ($sort_asc) {
+            $sql.=" ORDER BY table1.tanggal ASC";
+        } else {
+            $sql.=" ORDER BY table1.tanggal DESC";
+        }
 //        print_r($sql);exit;                
         return $this->db->query($sql)->result();
     }
 
-    function select_lain_lain($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+    function select_lain_lain($awal = FALSE, $akhir = FALSE, $bulan = FALSE, $sort_asc) {
         $sql = "SELECT laporan_pengeluaran.tanggal, detail_pengeluaran.keterangan, SUM(detail_pengeluaran.total_pengeluaran) as jumlah, detail_pengeluaran.keterangan_lanjut FROM detail_pengeluaran INNER JOIN laporan_pengeluaran on laporan_pengeluaran.IDPengeluaran = detail_pengeluaran.IDPengeluaran ";
         if ($awal && $akhir) {
             $sql.=" WHERE tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
@@ -390,13 +396,19 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND laporan_pengeluaran.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= " AND detail_pengeluaran.keterangan NOT IN ('Bensin', 'Makan', 'Parkir', 'Tol') GROUP BY keterangan, laporan_pengeluaran.tanggal, keterangan_lanjut ORDER BY tanggal DESC";
+        $sql.= " AND detail_pengeluaran.keterangan NOT IN ('Bensin', 'Makan', 'Parkir', 'Tol') GROUP BY keterangan, laporan_pengeluaran.tanggal, keterangan_lanjut ";
+        
+        if ($sort_asc) {
+            $sql.=" ORDER BY tanggal ASC";
+        } else {
+            $sql.=" ORDER BY tanggal DESC";
+        }
 //        print_r($sql);
 //        exit;
         return $this->db->query($sql)->result();
     }
 
-    function select_gaji($jenis, $awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+    function select_gaji($jenis, $awal = FALSE, $akhir = FALSE, $bulan = FALSE, $sort_asc) {
         if ($this->input->post("cabang")) {
             $sql = "SELECT '' as keterangan_lanjut, detail_penggajian.Tanggal as tanggal, CONCAT(lp.keterangan, ' ', sales.nama) as keterangan, detail_penggajian.total_gaji as jumlah FROM detail_penggajian INNER JOIN sales on sales.IDSales = detail_penggajian.IDSales INNER JOIN laporan_penggajian lp ON lp.IDPenggajian = detail_penggajian.IDPenggajian ";
         } else {
@@ -416,12 +428,18 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND lp.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= "AND lp.keterangan = '$jenis' ORDER BY tanggal DESC";
+        $sql.= "AND lp.keterangan = '$jenis' ";
+        
+        if ($sort_asc) {
+            $sql.=" ORDER BY tanggal ASC";
+        } else {
+            $sql.=" ORDER BY tanggal DESC";
+        }
 //        print_r($sql); exit;
         return $this->db->query($sql)->result();
     }
 
-    function select_per_jenis($jenis, $awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+    function select_per_jenis($jenis, $awal = FALSE, $akhir = FALSE, $bulan = FALSE, $sort_asc) {
         $sql = "SELECT laporan_pengeluaran.tanggal, SUM(detail_pengeluaran.total_pengeluaran) as jumlah FROM detail_pengeluaran INNER JOIN laporan_pengeluaran on laporan_pengeluaran.IDPengeluaran = detail_pengeluaran.IDPengeluaran ";
         if ($awal && $akhir) {
             $sql.=" WHERE tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
@@ -437,7 +455,13 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND laporan_pengeluaran.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= "AND detail_pengeluaran.keterangan = '$jenis' GROUP BY tanggal ORDER BY tanggal DESC";
+        $sql.= "AND detail_pengeluaran.keterangan = '$jenis' GROUP BY tanggal ";
+        
+        if ($sort_asc) {
+            $sql.=" ORDER BY tanggal ASC";
+        } else {
+            $sql.=" ORDER BY tanggal DESC";
+        }
 //        print_r($sql); exit;
         return $this->db->query($sql)->result();
     }

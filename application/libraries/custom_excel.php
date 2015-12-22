@@ -13,6 +13,7 @@ class Custom_Excel extends PHPExcel {
     private $cell;
     private $merge = FALSE;
     private $border = FALSE;
+    private $this_filename = 'Book1';
 
     public function __construct() {
         parent::__construct();
@@ -25,13 +26,13 @@ class Custom_Excel extends PHPExcel {
     }
 
     function add_cell($value = '', $column = 'A', $row = 1) {
-        
+
         $this->column = ord($column);
         $this->row = $row;
         $this->cell = chr($this->column) . $this->row;
         $this->merge = FALSE;
         $this->border = FALSE;
-        
+
         $this->activateWorksheet->setCellValue($this->cell, $value);
         $this->activateWorksheet->getStyle($this->cell)->getFont()->setSize(12);
         $this->activateWorksheet->getStyle($this->cell)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
@@ -98,15 +99,27 @@ class Custom_Excel extends PHPExcel {
         }
     }
 
-    function end_excel($Filename = "book1") {
-        header('Content-Type: application/vnd.ms-excel'); //mime type
-        header('Content-Disposition: attachment;filename="' . $Filename . '.xls"'); //tell browser what's the file name
-        header('Cache-Control: max-age=0'); //no cache
-        //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
-        //if you want to save it as .XLSX Excel 2007 format
-        $objWriter = PHPExcel_IOFactory::createWriter($this, 'Excel5');
-        //force user to download the Excel file without writing it to server's HD
-        $objWriter->save('php://output');
+    function end_excel($Filename = "book1", $post) {
+        if ($post == 'btn_convert' || $post == 'btn_export') {
+            header('Content-Type: application/vnd.ms-excel'); //mime type
+            header('Content-Disposition: attachment;filename="' . $Filename . '.xls"'); //tell browser what's the file name
+            header('Cache-Control: max-age=0'); //no cache
+            //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+            //if you want to save it as .XLSX Excel 2007 format
+            $objWriter = PHPExcel_IOFactory::createWriter($this, 'Excel5');
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter->save('php://output');
+        } else if ($post == 'btn_email') {
+            $Filename .= '.xls'; //save our workbook as this file name
+            //force user to download the Excel file without writing it to server's HD
+            $objWriter = PHPExcel_IOFactory::createWriter($this, 'Excel5');
+            $objWriter->save(str_replace(__FILE__, './xls/' . $Filename, __FILE__));
+        }
+        $this->this_filename = $Filename;
+    }
+
+    function get_filename() {
+        return $this->this_filename;
     }
 
     function test1() {
