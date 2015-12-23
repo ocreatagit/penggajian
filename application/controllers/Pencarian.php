@@ -87,7 +87,7 @@ class Pencarian extends CI_Controller {
                 $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran($awal, $akhir, FALSE, TRUE);
             } else {
                 $data['laporans'] = $this->Laporan_model->select_laporan_periode(FALSE, FALSE, TRUE);
-                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran();
+                $data["pengeluarans"] = $this->Laporan_model->select_all_pengeluaran(FALSE, FALSE, FALSE, FALSE);
             }
 
             $this->load->view("v_head");
@@ -221,10 +221,10 @@ class Pencarian extends CI_Controller {
             $awal = $this->input->post("tanggal_awal");
             $akhir = $this->input->post("tanggal_akhir");
             if ($awal && $akhir) {
-                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir);
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, $awal, $akhir, TRUE);
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($awal)) . " s/d " . strftime('%d-%m-%Y', strtotime($akhir));
             } else {
-                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales);
+                $data['datapenjualan'] = $this->Sales_model->get_penjualan($arrIDSales, FALSE, FALSE, TRUE);
             }
 
             $this->load->view("v_head");

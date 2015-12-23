@@ -462,7 +462,7 @@ class Sales_model extends CI_Model {
         $this->db->join('lokasi', 'lokasi.IDLokasi=jual.IDLokasi', 'inner');
         $this->db->join('laporan_penjualan', 'laporan_penjualan.IDPenjualan=jual.IDPenjualan', 'inner');
         $this->db->join('Sales', 'sales.IDSales=jual.IDSales', 'inner');
-        $this->db->where_not_in('laporan_penjualan.IDPenjualan', "SELECT lp.IDPenjualan FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan");
+        $this->db->where('laporan_penjualan.IDPenjualan NOT IN (SELECT lp.IDPenjualan FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan)');
         if ($awal && $akhir) {
             $this->db->where('laporan_penjualan.tanggal >=', strftime("%Y-%m-%d", strtotime($awal)));
             $this->db->where('laporan_penjualan.tanggal <=', strftime("%Y-%m-%d", strtotime($akhir)));
@@ -572,6 +572,7 @@ class Sales_model extends CI_Model {
         $sql .= " AND sales.aktif = 1 AND sales.pangkat != 'Team Leader' ";
         $sql .= ($this->session->userdata("Level") == 0 ? "" : " AND sales.IDCabang = " . $this->session->userdata("IDCabang")) .
                 " GROUP BY sales.IDSales";
+//        echo $sql; exit;
         return $this->db->query($sql)->result();
     }
     

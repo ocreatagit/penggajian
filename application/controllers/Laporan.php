@@ -1400,7 +1400,6 @@ class Laporan extends CI_Controller {
 
             $data["laporan_penjualan"] = $this->Admin_model->get_detail_cabang($this->input->post("cabang"));
             $data['print'] = $this->input->post('btn_print');
-
 //            print_r($data["laporan_penjualan"]); exit;
 
             $this->load->view('v_head');
@@ -1447,6 +1446,31 @@ class Laporan extends CI_Controller {
             $data['IDCabang'] = $this->session->userdata('IDCabang');
         } else {
             redirect('welcome/index');
+        }
+        
+        $data["status"] = $this->session->flashdata("status");
+        $data["laporans"] = $this->Laporan_model->select_laporan_batal();
+        $data['periode'] = "Laporan Bulan Ini";
+        $data['selectCabang'] = 0;
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+        }
+
+        $data["selectCabang"] = $this->session->userdata("selectCabang");
+        if ($this->input->post('btn_print')) {
+            $data['selectCabang'] = $this->input->post('cabang');
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
+            $data["laporans"] = $this->Laporan_model->select_laporan_batal($data['selectCabang'], $awal, $akhir);
+            if (!$akhir && !$akhir) {
+                $data['periode'] = ' - S/D - ';
+            } else {
+                $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            }
+
+            $data["laporan_penjualan"] = $this->Admin_model->get_detail_cabang($this->input->post("cabang"));
+            $data['print'] = $this->input->post('btn_print');
         }
 
         $data["status"] = $this->session->flashdata("status");

@@ -71,6 +71,7 @@
                 <tr>
                     <th>Tanggal Nota Pembatalan</th>
                     <th>Tanggal Nota Penjualan</th>
+                    <th>Keterangan</th>
                     <th>Total Nilai Pembatalan</th>
                 </tr>
             </thead>
@@ -81,6 +82,7 @@
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal_jual)); ?></td>
+                        <td><?php echo ($laporan->keterangan); ?></td>
                         <td>Rp <?php echo number_format($laporan->total, 0, ",", ".") ?>.- </td>
                     </tr>
                 <?php endforeach; ?>

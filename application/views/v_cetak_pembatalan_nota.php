@@ -14,7 +14,7 @@
                     Periode <?php echo $periode ?></h3>
             <?php } else {
                 ?>
-                <h3 style="margin-bottom: 30px;"><?php echo $periode ?></h3>
+                <h3 style="margin-bottom: 30px;">Periode : <?php echo $periode ?></h3>
                 <?php
             }
             ?>
@@ -24,6 +24,7 @@
                         <th id="tengah">No</th>
                         <th id="tengah">Tanggal Pembatalan Penjualan</th>
                         <th id="tengah">Tanggal Nota Penjualan</th>
+                        <th id="tengah">Keterangan</th>
                         <th id="tengah">Nilai Pembatalan Penjualan</th>
                     </tr>
                 </thead>
@@ -37,6 +38,7 @@
                             <td><?php echo $no ?></td>
                             <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal)) ?></td>
                             <td><?php echo strftime("%d-%m-%Y", strtotime($value->tanggal_jual)) ?></td>
+                            <td><?php echo $value->keterangan ?></td>
                             <td align="right">Rp.<?php echo number_format($value->total, 0, ",", ".") ?>,-</td>
                         </tr>
                         <?php
@@ -47,7 +49,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" align="right"><strong>Total</strong></td>
+                        <td colspan="4" align="right"><strong>Total</strong></td>
                         <td align="right">Rp.<?php echo number_format($total, 0, ",", ".") ?>,-</td>
                     </tr>
                 </tfoot>
