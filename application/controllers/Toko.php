@@ -418,11 +418,13 @@ class Toko extends CI_Controller {
             redirect('welcome/index');
         }
 
+        $data["cabangs"] = $this->Admin_model->get_all_cabang();
         $data['status'] = $this->session->flashdata('status');
         $data['tokos'] = $this->Toko_model->get_all_toko();
         $data['barangs'] = $this->Toko_model->get_all_barang();
         $data['spgs'] = $this->Toko_model->get_spg_mt($data['IDCabang']);
         $data['data'] = "SEMUA BARANG BULAN INI";
+        $data['selectCabang'] = "";
         if ($data['level'] == 0) {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan();
             $data['totals'] = $this->Toko_model->get_total_penjualan();
@@ -430,21 +432,29 @@ class Toko extends CI_Controller {
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan($data['IDCabang']);
             $data['totals'] = $this->Toko_model->get_total_penjualan($data['IDCabang']);
         }
-        if ($this->input->post('btn_pilih') || $this->input->post('btn_print') || $this->input->post('btn_print_2') ||  $this->input->post('btn_email')) {
+        if ($this->input->post('btn_pilih') || $this->input->post('btn_print') || $this->input->post('btn_print_2') || $this->input->post('btn_email')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
             $IDCabang = $this->input->post('cabang');
+            $data['selectCabang'] = $IDCabang;
             $IDToko = $this->input->post('filterToko');
             $IDBarang = $this->input->post('filterBarang');
             $IDSpg = $this->input->post('filterSPG');
             $data['laporans'] = $this->Toko_model->get_laporan_penjualan(($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
             $data['totals'] = $this->Toko_model->get_total_penjualan(($IDCabang != 0 ? $IDCabang : FALSE), $awal = FALSE, $akhir = FALSE, ($IDSpg != 0 ? $IDSpg : FALSE), ($IDBarang != 0 ? $IDBarang : FALSE), ($IDToko != 0 ? $IDToko : FALSE));
             $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
+            if ($this->input->post('btn_print')) {
+                $awal = $this->input->post('tanggal_awal');
+                $akhir = $this->input->post('tanggal_akhir');
+                $data['data_tanggal'] = ($awal && $akhir ? "$awal sampai $akhir" : date('F Y') );
+                $data['data_cabang'] = ($IDCabang ? $this->Admin_model->get_detail_cabang($IDCabang)->kabupaten : FALSE);
+                $data['data_toko'] = ($IDToko ? $this->Toko_model->get_detail_toko($IDToko)->nama : FALSE);
+                $data['data_barang'] = ($IDToko ? $this->Toko_model->get_barang($IDBarang)->nama : FALSE);
+                $data['data_spg'] = ($IDToko ? $this->Toko_model->get_sales($IDSpg)->nama : FALSE);
+                $this->xls_penjualan($data, $this->input->post('btn_print'));
+            }
         }
-        if ($this->input->post('btn_print')) {
-            $this->xls_penjualan($data, $this->input->post('btn_print'));
-        }
-        
+
         if ($this->input->post("btn_email")) {
             $this->form_validation->set_rules('email', 'email', 'required');
             if ($this->form_validation->run() == TRUE) {
@@ -479,6 +489,28 @@ class Toko extends CI_Controller {
         $row = 1;
         /* begin */
         $excel->add_cell("Laporan Penjualan SPG MT", "A", $row++)->font(20)->merge(array(0, 4))->alignment('center');
+        if ($data['level'] == 0) {
+            if ($data['data_cabang']) {
+                $excel->add_cell("Cabang", "A", $row)->alignment('right')->font(16);
+                $excel->add_cell($data['data_cabang'], "B", $row++)->alignment('Center')->font(16);
+            }
+        }
+        if ($data['data_tanggal']) {
+            $excel->add_cell("Periode", "A", $row)->alignment('right')->font(16);
+            $excel->add_cell($data['data_tanggal'], "B", $row++)->alignment('Center')->font(16)->merge(array(0, 1));
+        }
+        if ($data['data_spg']) {
+            $excel->add_cell("SPG", "A", $row)->alignment('right')->font(16);
+            $excel->add_cell($data['data_spg'], "B", $row++)->alignment('Center')->font(16);
+        }
+        if ($data['data_toko']) {
+            $excel->add_cell("Toko", "A", $row)->alignment('right')->font(16);
+            $excel->add_cell($data['data_toko'], "B", $row++)->alignment('Center')->font(16);
+        }
+        if ($data['data_barang']) {
+            $excel->add_cell("Barang", "A", $row)->alignment('right')->font(16);
+            $excel->add_cell($data['data_barang'], "B", $row++)->alignment('Center')->font(16);
+        }
         $row++;
         $excel->add_cell('Nama Barang', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
         $excel->add_cell('Jumlah', 'B', $row++)->alignment('center')->border()->autoWidth()->font(16);
@@ -522,7 +554,7 @@ class Toko extends CI_Controller {
         }
 
         $data["periode"] = "Laporan Bulan Ini";
-        $data['selectSeles'] = $this->input->post('filter');
+        $data['selectSeles'] = $this->input->post('cabang');
         $data['datasales'] = $this->Toko_model->get_all_sales($data['IDCabang']);
         $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt();
 
@@ -532,17 +564,34 @@ class Toko extends CI_Controller {
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            if ($this->input->post('btn_export')) {
+                $data['data_cabang'] = $data['data_sales'] = FALSE;
+                if (!$akhir && !$akhir) {
+                    $data['periode'] = date('F Y');
+                }
+                if ($this->session->userdata('Level') == 0) {
+                    if ($this->input->post('cabang') != 0) {
+                        $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+                    }
+                } else {
+                    $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+                }
+                if($this->input->post('filter')){
+                    $data['data_sales'] = $this->Toko_model->get_sales($this->input->post('filter'))->nama;
+                }
+                $this->excel_kehadiran($data, $this->input->post('btn_export'));
+            }
         }
-        
+
         if ($this->input->post('btn_print')) {
-            $data['selectCabang'] = $this->input->post('filter');
+            $data['selectCabang'] = $this->input->post('cabang');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
 //            echo $akhir; exit;
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             if (!$akhir && !$akhir) {
-                $data['periode'] = ' - S/D - ';
+                $data['periode'] = date('F Y');
             } else {
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
             }
@@ -560,7 +609,43 @@ class Toko extends CI_Controller {
         $this->load->view('v_kehadiran_mt', $data);
         $this->load->view('v_foot');
     }
-    
+
+    public function excel_kehadiran($data, $post) {
+        $this->load->library('custom_excel');
+        $excel = $this->custom_excel;
+        $excel->declare_excel();
+        $row = 1;
+        /* array = merge(berapa baris, berapa kolom) */
+        $excel->add_cell("Daftar Kehadiran SPG MT", 'A', $row++)->font(20)->merge(array(0, 3))->alignment('center');
+        if ($data['data_cabang']) {
+            $excel->add_cell("Cabang :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_cabang'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        }
+        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
+        $excel->add_cell($data['periode'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        if($data['data_sales']){
+            $excel->add_cell("SPG :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_sales'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        }
+        $row++;
+
+        $excel->add_cell('Nama SPG', 'A', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Hadir', 'B', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Absen', 'C', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Gaji', 'D', $row++)->alignment('center')->border()->autoWidth()->font(14);
+
+        foreach ($data['kehadirans'] as $kehadiran) {
+            $excel->add_cell($kehadiran->nama, 'A', $row)->border()->autoWidth();
+            $excel->add_cell($kehadiran->hadir, 'B', $row)->alignment('center')->border()->autoWidth();
+            $excel->add_cell($kehadiran->absen, 'C', $row)->alignment('center')->border()->autoWidth();
+            $hadir = intval($kehadiran->hadir);
+            $gajiperhari = intval($kehadiran->gaji);
+            $excel->add_cell("Rp. " . number_format($hadir * $gajiperhari, 0, ",", ".") . ",-", 'D', $row++)->alignment('right')->border()->autoWidth();
+        }
+        $excel->end_excel("laporan_kehadiran_mt", $post);
+        return $excel->get_filename();
+    }
+
     //------------ EMAIL ------------/
     function email_header($email_setting, $password) {
         $this->load->library('email');

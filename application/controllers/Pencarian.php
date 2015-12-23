@@ -582,8 +582,10 @@ class Pencarian extends CI_Controller {
         $this->insert_cell("A1", "Daftar Penjualan SPG", 20, 'A1:F1', FALSE, FALSE, FALSE);
         $this->insert_cell("A2", "Periode");
         $this->insert_cell("B2", $awal . " S/D " . $akhir, 14, "B2:D2");
-        $this->insert_cell("E2", "Filter Barang : " . $data['selectBarang'], 14);
-        $this->insert_cell("F2", "Filter SPG : " . $data['selectSeles'], 14);
+        /* Daniel */
+        $this->insert_cell("E2", "Filter Barang : " . ($data['selectBarang'] == 0 ? "Semua Barang" : $this->Barang_model->get_detail_barang($data['selectBarang'])->namaBarang), 14);
+        $this->insert_cell("F2", "Filter SPG : " . ($data['selectSeles'] == 0 ? "Semua Sales" : $this->Sales_model->get_detail_sales($data['selectSeles'])->nama), 14);
+        /* Daniel */
         $this->insert_cell("A4", "No", 14, FALSE, TRUE, TRUE, FALSE);
         $this->insert_cell("B4", "Tanggal", 14, FALSE, TRUE, TRUE, FALSE);
         $this->insert_cell("C4", "SPG", 14, FALSE, TRUE, TRUE, FALSE);

@@ -338,6 +338,9 @@ class Toko_model extends CI_Model {
         } else {
             $sql.=" WHERE month(tanggal) = month(now()) AND year(tanggal) = year(now()) ";
         }
+        if($IDSales){
+            $sql .= " AND sales_mt.IDSalesMT = ".$IDSales;
+        }
         if ($this->session->userdata('Level') == 0) {
             if ($this->input->post('cabang') != 0) {
                 $sql .= " AND sales_mt.IDCabang = " . $this->input->post('cabang');

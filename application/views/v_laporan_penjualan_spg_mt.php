@@ -32,7 +32,7 @@
                             <select class="form-control siku" style="width: 30%" name="cabang">
                                 <option value="0"> --- Semua Cabang ---</option>
                                 <?php foreach ($cabangs as $cabang): ?>
-                                    <option value="<?php echo $cabang->IDCabang ?>"><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>                                                                                                                                  <option value="////<?php echo $cabang->idcabang ?>" <?php echo $cabang->idcabang == $selectCabang ? "selected" : "" ?>><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
+                                <option value="<?php echo $cabang->idcabang ?>" <?php echo $cabang->idcabang == $selectCabang ? "selected" : "" ?>><?php echo $cabang->provinsi ?> - <?php echo $cabang->kabupaten ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>                        
