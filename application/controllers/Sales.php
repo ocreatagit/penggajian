@@ -163,6 +163,24 @@ class Sales extends CI_Controller {
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data['kehadirans'] = $this->Sales_model->get_kehadiran($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            if ($this->input->post('btn_export')) {
+                $data['data_cabang'] = $data['data_sales'] = FALSE;
+                if (!$akhir && !$akhir) {
+                    $data['periode'] = date('F Y');
+                }
+                if ($this->session->userdata('Level') == 0) {                    
+                    if ($this->input->post('cabang') != 0) {
+                        $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+                    }
+                } else {
+                    $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+                }
+                $data['data_sales'] = false;
+                if($this->input->post('filter')){
+                    $data['data_sales'] = $this->Sales_model->get_detail_sales($this->input->post('filter'))->nama;
+                }
+                $this->excel_kehadiran($data, $this->input->post('btn_export'));
+            }
         }
         
         if ($this->input->post('btn_print')) {
@@ -203,10 +221,6 @@ class Sales extends CI_Controller {
             }
         }
 
-        if ($this->input->post('btn_export')) {
-            $this->excel_kehadiran($data, $this->input->post("btn_export"));
-        }
-
         $this->load->view('v_head', $data);
         $this->load->view('v_navigation', $data);
         $this->load->view('v_kehadiran', $data);
@@ -220,12 +234,15 @@ class Sales extends CI_Controller {
         $row = 1;
         /* array = merge(berapa baris, berapa kolom) */
         $excel->add_cell("Daftar Kehadiran", 'A', $row++)->font(20)->merge(array(0, 2))->alignment('center');
-        if ($data['tanggal'] != "-- s/d --") {
-            $excel->add_cell("Tanggal :", 'A', $row)->alignment('right');
-            $excel->add_cell($data['tanggal'], 'B', $row++)->merge(array(0, 1))->alignment('center');
-        } else {
-            $excel->add_cell("Bulan :", 'A', $row)->alignment('right');
-            $excel->add_cell(date("F"), 'B', $row++)->merge(array(0, 1))->alignment('center');
+        if ($data['data_cabang']) {
+            $excel->add_cell("Cabang :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_cabang'], 'B', $row++)->merge(array(0, 1))->alignment('left');
+        }
+        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
+        $excel->add_cell($data['periode'], 'B', $row++)->merge(array(0, 1))->alignment('left');
+        if($data['data_sales']){
+            $excel->add_cell("SPG :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_sales'], 'B', $row++)->merge(array(0, 1))->alignment('left');
         }
         $row++;
 

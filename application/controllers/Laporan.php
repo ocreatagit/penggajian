@@ -1115,6 +1115,9 @@ class Laporan extends CI_Controller {
             $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas($tgl_awal == "-" ? "-" : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
+            if ($tgl_akhir == '-' || $tgl_awal == '-') {
+                $data['periode'] = date('F Y');
+            }
 
             $this->session->set_userdata("status_IDCabang", $this->input->post("cabang"));
             $this->session->set_userdata("status_jenis", $this->input->post("jenis"));
@@ -1123,6 +1126,15 @@ class Laporan extends CI_Controller {
             $data['saldo'] = $this->Jurnal_model->get_kas();
         }
         if ($this->input->post("btn_export")) {
+            $data['data_jenis'] = FALSE;
+            if ($this->session->userdata('Level') == 0) {
+                if ($this->input->post('cabang') != 0) {
+                    $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+                }
+                $data['data_jenis'] = ($this->input->post('cabang') == 1 ? "Admin Lapangan" : "Admin Kantor" );
+            } else {
+                $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+            }
             $this->excel_kas($data, "Laporan Mutasi Kas", $this->input->post("btn_export"));
         }
         $data["filter"] = "";
@@ -1188,16 +1200,26 @@ class Laporan extends CI_Controller {
             $data['saldo_pindahan'] = $this->Jurnal_model->select_saldo_pindahan_kas_bank($tgl_awal == "-" ? "-" : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), $jenis);
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas_bank($tgl_awal == "-" ? FALSE : $tgl_awal, $tgl_akhir == "-" ? FALSE : $tgl_akhir, $this->input->post("cabang"), FALSE);
             $data['periode'] = $tgl_awal . " s/d " . $tgl_akhir;
-
+            if ($tgl_akhir == '-' || $tgl_awal == '-') {
+                $data['periode'] = date('F Y');
+            }
             $this->session->set_userdata("status_IDCabang", $this->input->post("cabang"));
         } else {
             $data['jurnals'] = $this->Jurnal_model->select_laporan_mutasi_kas_bank($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'));
             $data['saldo'] = $this->Jurnal_model->get_kas_bank();
         }
         if ($this->input->post("btn_export")) {
-            $this->excel_kas($data, "Laporan Mutasi Kas Bank", $this->input->post("btn_export"));
+            $data['data_jenis'] = FALSE;
+            if ($this->session->userdata('Level') == 0) {
+                if ($this->input->post('cabang') != 0) {
+                    $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+                }                
+            } else {
+                $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+            }
+            $this->excel_kas($data, "Laporan Mutasi Kas  Bank", $this->input->post("btn_export"));
         }
-        
+
         if ($this->input->post("btn_email")) {
             $this->form_validation->set_rules('email', 'email', 'required');
             if ($this->form_validation->run() == TRUE) {
@@ -1214,7 +1236,7 @@ class Laporan extends CI_Controller {
                 
             }
         }
-        
+
         $data["filter"] = "";
         if ($this->input->post("btn_submit")) {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
@@ -1499,11 +1521,18 @@ class Laporan extends CI_Controller {
         $excel->declare_excel();
         $row = 1;
         /* begin */
-        $excel->add_cell($filename, "A", $row++)->font(20)->merge(array(0, 4))->alignment('center');
-//        $excel->add_cell("Jenis :", 'A', $row)->alignment('right');
-//        $excel->add_cell($data['searchby'], 'B', $row++)->merge(array(0, 1))->alignment('center');
-//        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
-//        $excel->add_cell($data['data'], 'B', $row++)->merge(array(0, 1))->alignment('center');
+        $excel->add_cell($filename, "A", $row++)->font(20)->merge(array(0, 5))->alignment('center');
+        if ($data['data_cabang']) {
+            $excel->add_cell("Cabang :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_cabang'], 'B', $row++)->merge(array(0, 4))->alignment('left');
+        }
+        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
+        $excel->add_cell($data['periode'], 'B', $row++)->merge(array(0, 4))->alignment('left');
+        if ($data['data_jenis']) {
+            $excel->add_cell("Jenis :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_jenis'], 'B', $row++)->merge(array(0, 4))->alignment('left');
+        }
+
         $row++;
         $excel->add_cell('Tanggal Mutasi', 'A', $row)->alignment('center')->border()->autoWidth()->font(16);
         $excel->add_cell('Tanggal Nota Dibuat', 'B', $row)->alignment('center')->border()->autoWidth()->font(16);

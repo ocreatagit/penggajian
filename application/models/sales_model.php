@@ -324,6 +324,10 @@ class Sales_model extends CI_Model {
         return $res->result();
     }
 
+    function get_detail_sales($IDSales) {
+        return $this->db->get_where('sales', array('IDSales' => $IDSales))->row();
+    }
+
     function insert_sales() {
         $str = "";
         $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
@@ -486,9 +490,9 @@ class Sales_model extends CI_Model {
             $this->db->where_in('jual.IDSales', $arrID);
 
         if ($sort_asc) {
-            $this->db->order_by("laporan_penjualan.tanggal", "asc"); 
+            $this->db->order_by("laporan_penjualan.tanggal", "asc");
         } else {
-            $this->db->order_by("laporan_penjualan.tanggal", "desc"); 
+            $this->db->order_by("laporan_penjualan.tanggal", "desc");
         }
 //        if ($this->session->userdata("Level") != 0) {
 //            $this->db->where('laporan_penjualan.IDCabang', $admin);
@@ -574,17 +578,17 @@ class Sales_model extends CI_Model {
                 " GROUP BY sales.IDSales";
         return $this->db->query($sql)->result();
     }
-    
-    function insert_kehadiran_sales(){
+
+    function insert_kehadiran_sales() {
         $tanggal_laporan = strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual")));
         //sales masuk
-        $sql = "SELECT IDSales FROM `historygaji` WHERE Tanggal = '".$tanggal_laporan."'";
+        $sql = "SELECT IDSales FROM `historygaji` WHERE Tanggal = '" . $tanggal_laporan . "'";
         $sales_masuk = $this->db->query($sql)->result();
-        
-        $sql = "SELECT IDSales FROM sales WHERE IDSales NOT IN (SELECT IDSales FROM `historygaji` WHERE Tanggal = '".$tanggal_laporan."') AND aktif = 1 AND pangkat != 'Team Leader'";
+
+        $sql = "SELECT IDSales FROM sales WHERE IDSales NOT IN (SELECT IDSales FROM `historygaji` WHERE Tanggal = '" . $tanggal_laporan . "') AND aktif = 1 AND pangkat != 'Team Leader'";
         $sales_absen = $this->db->query($sql)->result();
-        
-        foreach ($sales_masuk as $sales){
+
+        foreach ($sales_masuk as $sales) {
             $data = array(
                 "IDSales" => $sales->IDSales,
                 "tanggal" => $tanggal_laporan,
@@ -592,7 +596,7 @@ class Sales_model extends CI_Model {
             );
             $this->db->insert('kehadiran', $data);
         }
-        foreach ($sales_absen as $sales){
+        foreach ($sales_absen as $sales) {
             $data = array(
                 "IDSales" => $sales->IDSales,
                 "tanggal" => $tanggal_laporan,

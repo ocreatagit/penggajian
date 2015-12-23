@@ -2,11 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/controllers/Toko.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/views/v_laporan_penjualan_spg_mt.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/admin_model.php</file>
-            <file>file:/C:/xampp/htdocs/Penggajian/application/models/toko_model.php</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

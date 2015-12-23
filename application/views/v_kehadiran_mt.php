@@ -7,9 +7,9 @@
 <div class="container" style="margin-top: 80px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h2 class="page-header" style="margin-top: 0px;">Kehadiran SPG</h2>
+            <h2 class="page-header" style="margin-top: 0px;">Kehadiran SPG MT</h2>
             <ol class="breadcrumb" style="background-color: white; margin-top: 00px;">
-                <li class="active"><i class="fa fa-home"></i> Kehadiran SPG</li>
+                <li class="active"><i class="fa fa-home"></i> Kehadiran SPG MT</li>
             </ol>
         </div>
     </div>
@@ -52,7 +52,7 @@
                     </select>
                 </div>                            
                 &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-primary siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
-                <!--&nbsp;<button id="btn_export" type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>-->
+                &nbsp;<button id="btn_export" type="submit" name='btn_export' value='btn_export' class="btn btn-success siku">&nbsp;&nbsp;<i class="fa fa-book"></i> Export To XLS&nbsp;&nbsp;</button>
                 &nbsp;<button id="btn_print" type="submit" name='btn_print' value='btn_print' class="btn btn-default siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print&nbsp;&nbsp;</button>
             </form>
 
@@ -65,7 +65,7 @@
                 <div class="panel-heading siku">
                     <div class="panel-title row">
                         <div class="col-md-10">                            
-                            <h2 style="margin-top: 0px;">Daftar Kehadiran Sales <?php if ($periode != "Laporan Bulan Ini") {
+                            <h2 style="margin-top: 0px;">Daftar Kehadiran SPG MT <?php if ($periode != "Laporan Bulan Ini") {
                             ?>
                                     Periode <?php echo $periode ?>
                                     <?php
@@ -138,7 +138,7 @@
                                 <tbody>
                                     <?php if (count($kehadirans) == 0): ?>
                                         <tr>
-                                            <td colspan="3" style="text-align: center">Tidak Ada Data</td>
+                                            <td colspan="4" style="text-align: center">Tidak Ada Data</td>
                                         </tr>
                                         <?php
                                     endif;
@@ -180,15 +180,18 @@
 <script>
                             $('#ListView').hide();
                             $('#btn_print').hide();
+                            $('#btn_export').hide();
                             function gridview() {
                                 $('#GridView').show();
                                 $('#ListView').hide();
                                 $('#btn_print').hide();
+                                $('#btn_export').hide();
                             }
                             function listview() {
                                 $('#GridView').hide();
                                 $('#ListView').show();
                                 $('#btn_print').show();
+                                $('#btn_export').show();
                             }
                             $("#datepicker1").datepicker({
                                 inline: true,

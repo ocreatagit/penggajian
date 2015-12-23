@@ -497,7 +497,7 @@ class Toko extends CI_Controller {
         }
         if ($data['data_tanggal']) {
             $excel->add_cell("Periode", "A", $row)->alignment('right')->font(16);
-            $excel->add_cell($data['data_tanggal'], "B", $row++)->alignment('Center')->font(16)->merge(array(0,1));
+            $excel->add_cell($data['data_tanggal'], "B", $row++)->alignment('Center')->font(16)->merge(array(0, 1));
         }
         if ($data['data_spg']) {
             $excel->add_cell("SPG", "A", $row)->alignment('right')->font(16);
@@ -554,7 +554,7 @@ class Toko extends CI_Controller {
         }
 
         $data["periode"] = "Laporan Bulan Ini";
-        $data['selectSeles'] = $this->input->post('filter');
+        $data['selectSeles'] = $this->input->post('cabang');
         $data['datasales'] = $this->Toko_model->get_all_sales($data['IDCabang']);
         $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt();
 
@@ -564,17 +564,34 @@ class Toko extends CI_Controller {
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
+            if ($this->input->post('btn_export')) {
+                $data['data_cabang'] = $data['data_sales'] = FALSE;
+                if (!$akhir && !$akhir) {
+                    $data['periode'] = date('F Y');
+                }
+                if ($this->session->userdata('Level') == 0) {
+                    if ($this->input->post('cabang') != 0) {
+                        $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+                    }
+                } else {
+                    $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+                }
+                if($this->input->post('filter')){
+                    $data['data_sales'] = $this->Toko_model->get_sales($this->input->post('filter'))->nama;
+                }
+                $this->excel_kehadiran($data, $this->input->post('btn_export'));
+            }
         }
 
         if ($this->input->post('btn_print')) {
-            $data['selectCabang'] = $this->input->post('filter');
+            $data['selectCabang'] = $this->input->post('cabang');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
 //            echo $akhir; exit;
             $data['tanggal'] = ($awal ? $awal : "--") . " s/d " . ($akhir ? $akhir : "--");
             $data['kehadirans'] = $this->Toko_model->get_kehadiran_mt($this->input->post('tanggal_awal'), $this->input->post('tanggal_akhir'), $this->input->post('filter'));
             if (!$akhir && !$akhir) {
-                $data['periode'] = ' - S/D - ';
+                $data['periode'] = date('F Y');
             } else {
                 $data['periode'] = strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_awal'))) . " s/d " . strftime('%d-%m-%Y', strtotime($this->input->post('tanggal_akhir')));
             }
@@ -591,6 +608,42 @@ class Toko extends CI_Controller {
         $this->load->view('v_navigation', $data);
         $this->load->view('v_kehadiran_mt', $data);
         $this->load->view('v_foot');
+    }
+
+    public function excel_kehadiran($data, $post) {
+        $this->load->library('custom_excel');
+        $excel = $this->custom_excel;
+        $excel->declare_excel();
+        $row = 1;
+        /* array = merge(berapa baris, berapa kolom) */
+        $excel->add_cell("Daftar Kehadiran SPG MT", 'A', $row++)->font(20)->merge(array(0, 3))->alignment('center');
+        if ($data['data_cabang']) {
+            $excel->add_cell("Cabang :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_cabang'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        }
+        $excel->add_cell("Periode :", 'A', $row)->alignment('right');
+        $excel->add_cell($data['periode'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        if($data['data_sales']){
+            $excel->add_cell("SPG :", 'A', $row)->alignment('right');
+            $excel->add_cell($data['data_sales'], 'B', $row++)->merge(array(0, 2))->alignment('left');
+        }
+        $row++;
+
+        $excel->add_cell('Nama SPG', 'A', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Hadir', 'B', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Absen', 'C', $row)->alignment('center')->border()->autoWidth()->font(14);
+        $excel->add_cell('Gaji', 'D', $row++)->alignment('center')->border()->autoWidth()->font(14);
+
+        foreach ($data['kehadirans'] as $kehadiran) {
+            $excel->add_cell($kehadiran->nama, 'A', $row)->border()->autoWidth();
+            $excel->add_cell($kehadiran->hadir, 'B', $row)->alignment('center')->border()->autoWidth();
+            $excel->add_cell($kehadiran->absen, 'C', $row)->alignment('center')->border()->autoWidth();
+            $hadir = intval($kehadiran->hadir);
+            $gajiperhari = intval($kehadiran->gaji);
+            $excel->add_cell("Rp. " . number_format($hadir * $gajiperhari, 0, ",", ".") . ",-", 'D', $row++)->alignment('right')->border()->autoWidth();
+        }
+        $excel->end_excel("laporan_kehadiran_mt", $post);
+        return $excel->get_filename();
     }
 
     //------------ EMAIL ------------/
