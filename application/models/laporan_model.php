@@ -45,7 +45,8 @@ class Laporan_model extends CI_Model {
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
                 LEFT JOIN laporan_pembatalan_penjualan lb ON lb.IDPenjualan = lp.IDPenjualan WHERE lb.IDPembatalan IS NULL AND
-                a.username = '" . $this->session->userdata("Username") . "' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+                a.username = '" . $this->session->userdata("Username") . "'";
+//                a.username = '" . $this->session->userdata("Username") . "' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
         } else {
             $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi, lp.status_kas, IFNULL(lb.IDPembatalan, 0) as IDPembatalan
                 FROM cabang c
