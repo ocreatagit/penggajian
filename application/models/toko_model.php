@@ -87,6 +87,7 @@ class Toko_model extends CI_Model {
     function insert_barang() {
         if ($this->db->get_where("barang_mt", array("lower(nama)" => strtolower($this->input->post('nama_barang'))))->num_rows() == 0) {
             $data = array(
+                'IDBarangMT' => 1,
                 "nama" => $this->input->post('nama_barang')
             );
             $this->db->insert("barang_mt", $data);

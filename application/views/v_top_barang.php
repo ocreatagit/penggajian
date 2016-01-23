@@ -86,7 +86,8 @@
                 <div class="panel-body siku">
                     <h2 style="margin-left: 15px; margin-top: 0px;">TOP PRODUK <?php echo $data ?></h2>
                     <div class="col-lg-6">
-                        <table class="table table-hover">
+                        <!--<table class="table table-hover">-->
+                        <table class='table table-striped table-hover' id="informasi">
                             <thead style="text-align: center; background-color: #ffcc33 ">
                                 <tr>
                                     <td><strong>Peringkat</strong></td>
@@ -196,6 +197,10 @@
         $("#nama_produk").val('');
         $(".kas_keluar").val('');
         $("#bayar_gaji").hide();
+    });
+    $("#informasi").dataTable({
+        "bSort": false,
+        "bFilter": false
     });
 </script>
 </body>

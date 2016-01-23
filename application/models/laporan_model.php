@@ -45,7 +45,8 @@ class Laporan_model extends CI_Model {
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
                 LEFT JOIN laporan_pembatalan_penjualan lb ON lb.IDPenjualan = lp.IDPenjualan WHERE lb.IDPembatalan IS NULL AND
-                a.username = '" . $this->session->userdata("Username") . "' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+                a.username = '" . $this->session->userdata("Username") . "'";
+//                a.username = '" . $this->session->userdata("Username") . "' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
         } else {
             $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi, lp.status_kas, IFNULL(lb.IDPembatalan, 0) as IDPembatalan
                 FROM cabang c
@@ -143,8 +144,8 @@ class Laporan_model extends CI_Model {
 //        echo $sort_asc; exit;
 //        echo $this->input->post("tanggal_awal"); exit;
 //        var_dump($sort_asc);exit;
-        $awal = $this->input->post("tanggal_awal");
-        $akhir = $this->input->post("tanggal_akhir");
+//        $awal = $this->input->post("tanggal_awal");
+//        $akhir = $this->input->post("tanggal_akhir");
         if ($this->input->post("cabang")) {
             if ($this->input->post("cabang") == 0) {
                 $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi
@@ -229,7 +230,7 @@ class Laporan_model extends CI_Model {
             $sql = "SELECT lp.IDPengeluaran as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, a.username as username, lp.totalPengeluaran as totalPengeluaran
                 FROM cabang c
                 INNER JOIN laporan_pengeluaran lp ON c.IDCabang = lp.IDCabang
-                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor WHERE a.username = '" . $this->session->userdata("Username") . "' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor WHERE a.username = '" . $this->session->userdata("Username") . "'";
         }
         $query = $this->db->query($sql);
         return $query->result();
@@ -415,7 +416,7 @@ class Laporan_model extends CI_Model {
             $sql = "SELECT '' as keterangan_lanjut, detail_penggajian.Tanggal as tanggal, CONCAT(lp.keterangan, ' ', sales.nama) as keterangan, detail_penggajian.total_gaji as jumlah FROM detail_penggajian INNER JOIN sales on sales.IDSales = detail_penggajian.IDSales INNER JOIN laporan_penggajian lp ON lp.IDPenggajian = detail_penggajian.IDPenggajian ";
         }
         if ($awal && $akhir) {
-            $sql.=" WHERE tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+            $sql.=" WHERE detail_penggajian.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
         } else if ($bulan) {
             $sql.=" WHERE month(detail_penggajian.tanggal) = $bulan AND year(detail_penggajian.tanggal) = year(now()) ";
         } else {
@@ -536,11 +537,12 @@ class Laporan_model extends CI_Model {
         $return_array = array();
         $sql = "SELECT lp.IDPengeluaran, dp.keterangan_lanjut FROM laporan_pengeluaran lp INNER JOIN detail_pengeluaran dp ON dp.IDPengeluaran = lp.IDPengeluaran";
         $res = $this->db->query($sql)->result();
+//        print_r($arrJurnal); exit;
         foreach ($arrJurnal as $items) {
             $arr = explode('|', $items->keterangan);
             $bool = FALSE;
             foreach ($res as $keterangan) {
-                if ($arr[1] == $keterangan->IDPengeluaran && (strpos($arr[0], 'Biaya') !== FALSE)) {
+                if ($arr[1] == $keterangan->IDPengeluaran && (strpos($arr[0], 'Biaya lain-lain') !== FALSE)) {
                     $bool = TRUE;
                     $return_array[$items->IDJurnal] = $keterangan->keterangan_lanjut;
 //                    echo $keterangan->keterangan_lanjut."<br>";

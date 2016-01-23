@@ -214,21 +214,47 @@ class Admin_model extends CI_Model {
                 'saldo' => 0,
                 'last_updated' => date('Y-m-d')
             );
-            return (object)$array;
+            return (object) $array;
         } else {
             return $this->db->get_where("cabang", array("IDCabang" => $IDCabang))->row();
         }
     }
 
     function insert_pendapatan() {
-        date_default_timezone_set('Asia/Jakarta');
+        $this->load->model("Sales_model");
+        $this->load->model("Jurnal_model");
+
+        $this->start_trans();
+        $sql = "SELECT AUTO_INCREMENT as IDPenjualan FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penjualan';";
+        $IDPenjualan = $this->db->query($sql)->row()->IDPenjualan;
         $data = array(
             "tanggal" => strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual"))),
             "keterangan" => $this->session->userdata("keterangan"),
             "IDCabang" => $this->Admin_model->get_cabang($this->session->userdata('Username'))
         );
         $this->db->insert("laporan_penjualan", $data);
-        return $this->db->insert_id();
+
+        foreach ($this->cart->contents() as $items) {
+            if (strpos($items["id"], "Jual") !== FALSE) {
+                /* Kurangi Stoknya belum */
+                $this->insert_detail_pendapatan(
+                        $IDPenjualan, $items['options']['IDTeamLeader'], $items['options']['IDSales'], $items['options']['IDBarang'], $items['options']['IDLokasi'], $items['qty'], $items['price'], $this->session->userdata('Username')
+                );
+
+
+                $this->Sales_model->tambah_gaji_dan_komisi_sales(
+                        $IDPenjualan, $items['options']['IDSales'], $items['options']['komisi']
+                );
+
+                $data = array('rowid' => $items['rowid'], 'qty' => 0);
+                $this->cart->update($data);
+            }
+        }
+        $this->Sales_model->insert_kehadiran_sales();
+        // Jurnal
+        $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Penjualan Barang');
+
+        $this->end_trans();
     }
 
     function check_penjualan($tanggal, $IDCabang) {
@@ -656,6 +682,30 @@ class Admin_model extends CI_Model {
           $this->db->update("cabang", $data);
          */
         $this->Jurnal_model->insert_jurnal($penjualan->IDPenjualan, 'Pembatalan Penjualan');
+    }
+
+    function start_trans() {
+        $this->db->trans_begin();
+        $this->db->trans_strict(FALSE);
+    }
+
+    function end_trans($heading) {
+        // DB Transaction
+        $error = $this->db->error();
+        if ($error != "") {
+            // generate an error... or use the log_message() function to log your error
+            $this->db->trans_rollback();
+            $data = array(
+                'username' => $this->session->userdata('Username'),
+                'heading' => 'Error at '.$heading,
+                'message' => $error['message'],
+                'date' => date('Y-m-d H:i:s')
+            );
+            $this->db->insert("logs", $data);
+            $this->session->set_flashdata("status", "Error Found! segera hubungi MyOcreata");
+        } else {
+            $this->db->trans_commit();
+        }
     }
 
 }

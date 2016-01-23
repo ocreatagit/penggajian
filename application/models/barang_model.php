@@ -157,7 +157,15 @@ class Barang_model extends CI_Model {
     /* DANIEL */
 
     function select_top_barang($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
-        $sql = "SELECT barang.namaBarang, sum(jual.jumlah) as jumlah FROM `jual` INNER JOIN barang ON barang.IDBarang = jual.IDBarang INNER JOIN laporan_penjualan ON laporan_penjualan.IDPenjualan = jual.IDPenjualan INNER JOIN cabang ON cabang.IDCabang = laporan_penjualan.IDCabang INNER JOIN admin ON admin.IDAdmin = cabang.IDAdmin";
+        $sql = "SELECT barang.namaBarang, ifnull( rryner.jumlah, 0) as jumlah
+                    FROM barang
+                    LEFT JOIN (
+                    SELECT barang.IDBarang, sum(jual.jumlah) as jumlah 
+                    FROM `barang` 
+                    RIGHT JOIN jual ON barang.IDBarang = jual.IDBarang 
+                    RIGHT JOIN laporan_penjualan ON laporan_penjualan.IDPenjualan = jual.IDPenjualan 
+                    INNER JOIN cabang ON cabang.IDCabang = laporan_penjualan.IDCabang 
+                    INNER JOIN admin ON admin.IDAdmin = cabang.IDAdmin ";
         if ($awal && $akhir) {
             $sql.=" WHERE laporan_penjualan.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
         } else if ($bulan) {
@@ -172,7 +180,10 @@ class Barang_model extends CI_Model {
                 $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
             }
         }
-        $sql.=" GROUP BY jual.IDBarang ORDER BY jumlah DESC LIMIT 15 ";
+        $sql .= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+        $sql.=" GROUP BY jual.IDBarang ) as rryner on rryner.IDBarang = barang.IDBarang
+                ORDER BY jumlah DESC ";
+//        print_r($sql);exit;
         return $this->db->query($sql)->result();
     }
 
@@ -196,7 +207,7 @@ class Barang_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= " GROUP BY jual.IDLokasi ORDER BY jumlah DESC LIMIT 15";
+        $sql.= " GROUP BY jual.IDLokasi ORDER BY jumlah DESC ";
         return $this->db->query($sql)->result();
     }
 
@@ -216,6 +227,7 @@ class Barang_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
+        $sql .= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
         $sql.= " GROUP BY sales.IDSales ORDER BY jumlah DESC LIMIT 15";
         return $this->db->query($sql)->result();
     }
@@ -238,12 +250,12 @@ class Barang_model extends CI_Model {
         } else {
             return;
         }
-        if ($this->input->post("cabang")) {
-            
+        if ($this->input->post("cabang")) {            
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
         } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
+        $sql .= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
         $sql .= " GROUP BY jual.IDBarang, jual.IDLokasi ORDER BY jual.IDLokasi ASC, jual.IDBarang ASC";
 //        print_r($sql);exit;
         return $this->db->query($sql)->result();

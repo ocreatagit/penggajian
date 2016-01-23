@@ -259,7 +259,7 @@ class Pencarian extends CI_Controller {
             $data['topbarangs'] = $this->Barang_model->select_top_barang($awal, $akhir);
             $data['data'] = "Periode $awal sampai $akhir";
         }
-
+//        print_r($data['topbarangs']);exit;
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_top_barang', $data);

@@ -30,11 +30,11 @@
                             </div>
                         <?php }
                         ?>
-<!--                        <div class="form-group">
-                            <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
-                            <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
-                            <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
-                        </div>-->
+                        <!--                        <div class="form-group">
+                                                    <label class="col-lg-2 control-label" for="exampleInputName2">Jenis Pencarian</label>                    
+                                                    <label class="checkbox-inline"><input type="radio" checked name="kategori" value="Periode">Periode</label>
+                                                    <label class="checkbox-inline"><input type="radio" name="kategori" value="Bulan">Bulan</label>
+                                                </div>-->
                         <div id="periode" class="form-group">
                             <label class="col-lg-2 control-label" for="exampleInputName2">Dari</label>
                             <div class="col-lg-3">
@@ -48,29 +48,29 @@
                                 <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
                             </div>
                         </div>
-<!--                        <div id="monthly" class="form-group">
-                            <label class="col-lg-2 control-label">Bulan</label>
-                            <div class="col-lg-3">
-                                <select class="form-control siku" name="monthly">
-                                    <option selected disabled>-- Pilih Bulan --</option>
-                                    <option value="1" >Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-1">                        
-                                <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
-                            </div>
-                        </div>-->
+                        <!--                        <div id="monthly" class="form-group">
+                                                    <label class="col-lg-2 control-label">Bulan</label>
+                                                    <div class="col-lg-3">
+                                                        <select class="form-control siku" name="monthly">
+                                                            <option selected disabled>-- Pilih Bulan --</option>
+                                                            <option value="1" >Januari</option>
+                                                            <option value="2">Februari</option>
+                                                            <option value="3">Maret</option>
+                                                            <option value="4">April</option>
+                                                            <option value="5">Mei</option>
+                                                            <option value="6">Juni</option>
+                                                            <option value="7">Juli</option>
+                                                            <option value="8">Agustus</option>
+                                                            <option value="9">September</option>
+                                                            <option value="10">Oktober</option>
+                                                            <option value="11">November</option>
+                                                            <option value="12">Desember</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-1">                        
+                                                        <button class="btn btn-primary siku" type="submit" value="kategori" name="submit">Pilih</button>
+                                                    </div>
+                                                </div>-->
                     </form>
                 </div>
 
@@ -79,7 +79,7 @@
                 <div class="panel-body siku">
                     <h2 style="margin-left: 15px; margin-top: 0px;">TOP LOKASI <?php echo $data ?></h2>
                     <div class="col-lg-6">
-                        <table class="table table-hover">
+                        <table class='table table-striped table-hover' id="informasi">
                             <thead style="text-align: center; background-color: #ffcc33 ">
                                 <tr>
                                     <td><strong>Peringkat</strong></td>
@@ -242,6 +242,10 @@
         $("#nama_produk").val('');
         $(".kas_keluar").val('');
         $("#bayar_gaji").hide();
+    });
+    $("#informasi").dataTable({
+        "bSort": false,
+        "bFilter": false
     });
 </script>
 </body>

@@ -28,15 +28,11 @@ class Toko extends CI_Controller {
         }
 
         if ($this->input->post('nama_barang')) {
-            $this->db->trans_begin();
-            $this->db->trans_strict(FALSE);
+
+            $this->Admin_model->start_trans();
+            $this->Barang_model->tambah_barang_baru();
             $this->Toko_model->insert_barang();
-            $error = $this->db->error();
-            if ($error['message'] != "") {
-                $this->db->trans_rollback();
-            }else {
-                $this->db->trans_commit();
-            }
+            $this->Admin_model->end_trans();
         }
 
         $data['status'] = $this->session->flashdata('status');
@@ -64,8 +60,9 @@ class Toko extends CI_Controller {
 
         if ($this->input->post("hid")) { // button 'ok' ditekan 
             if ($this->form_validation->run() == TRUE) {
-
+                $this->Admin_model->start_trans();
                 $id = $this->Toko_model->edit_barang($IDBarang);
+                $this->Admin_model->end_trans();
                 redirect("toko/barang");
             }
         }
