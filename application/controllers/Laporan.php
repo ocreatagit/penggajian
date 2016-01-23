@@ -18,6 +18,7 @@ class Laporan extends CI_Controller {
 //        $this->load->library('ftp');
         $this->load->helper('url');
         $this->load->library('form_validation');
+        $this->load->database();
     }
 
     public function Harian() {
@@ -704,12 +705,14 @@ class Laporan extends CI_Controller {
     }
 
     function hitung_saldo_laporan($IDPenjualan) {
+        $this->Admin_model->start_trans();
         $this->Admin_model->hitung_saldo($IDPenjualan, $this->session->userdata('Username'));
 
         // Jurnal
         $this->load->model('Jurnal_model');
         $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Setor Penjualan');
         $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Terima Setoran Penjualan', FALSE);
+        $this->Admin_model->end_trans('hitung_saldo_laporan()');
 
         redirect("Laporan/kas");
     }

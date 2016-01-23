@@ -689,15 +689,15 @@ class Admin_model extends CI_Model {
         $this->db->trans_strict(FALSE);
     }
 
-    function end_trans() {
+    function end_trans($heading) {
         // DB Transaction
         $error = $this->db->error();
         if ($error != "") {
             // generate an error... or use the log_message() function to log your error
             $this->db->trans_rollback();
             $data = array(
-                'heading' => 'Error at ins penjualan!',
-                'message' => $this->db->_error_message(),
+                'heading' => $heading,
+                'message' => $error['message'],
                 'date' => date('Y-m-d H:i:s')
             );
             $this->db->insert("logs", $data);
