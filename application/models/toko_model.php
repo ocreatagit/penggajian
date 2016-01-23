@@ -62,7 +62,7 @@ class Toko_model extends CI_Model {
             return $this->db->get_where("toko", array("IDCabang" => $IDCabang))->result();
         }
     }
-    
+
     function get_all_sales($IDCabang = false) {
         if ($IDCabang == false) {
             return $this->db->get('sales_mt')->result();
@@ -308,7 +308,7 @@ class Toko_model extends CI_Model {
                 ) ";
         $spgmt_absen = $this->db->query($sql)->result();
         foreach ($spgmt_hadir as $spg) {
-            if($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows()== 0) {
+            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows() == 0) {
                 $data = array(
                     "IDSalesMT" => $spg->IDSalesMT,
                     "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
@@ -318,7 +318,7 @@ class Toko_model extends CI_Model {
             }
         }
         foreach ($spgmt_absen as $spg) {
-            if($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows()== 0) {
+            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows() == 0) {
                 $data = array(
                     "IDSalesMT" => $spg->IDSalesMT,
                     "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
@@ -328,8 +328,8 @@ class Toko_model extends CI_Model {
             }
         }
     }
-    
-    function get_kehadiran_mt($awal = FALSE, $akhir = FALSE, $IDSales = FALSE){
+
+    function get_kehadiran_mt($awal = FALSE, $akhir = FALSE, $IDSales = FALSE) {
         $sql = "SELECT sales_mt.gaji, sales_mt.IDSalesMT as IDSales, sales_mt.foto, sales_mt.nama, COUNT(IF( kehadiran_mt.status = 'H', kehadiran_mt.status, NULL )) as hadir, COUNT(IF( kehadiran_mt.status = 'A', kehadiran_mt.status, NULL )) as absen
                 FROM sales_mt
                 INNER JOIN kehadiran_mt on kehadiran_mt.IDSalesMT = sales_mt.IDSalesMT";
@@ -338,17 +338,17 @@ class Toko_model extends CI_Model {
         } else {
             $sql.=" WHERE month(tanggal) = month(now()) AND year(tanggal) = year(now()) ";
         }
-        if($IDSales){
-            $sql .= " AND sales_mt.IDSalesMT = ".$IDSales;
+        if ($IDSales) {
+            $sql .= " AND sales_mt.IDSalesMT = " . $IDSales;
         }
         if ($this->session->userdata('Level') == 0) {
             if ($this->input->post('cabang') != 0) {
                 $sql .= " AND sales_mt.IDCabang = " . $this->input->post('cabang');
             }
-        }else{
+        } else {
             $sql .= " AND sales_mt.IDCabang = " . $this->session->userdata('IDCabang');
         }
-         $sql .= " GROUP BY sales_mt.IDSalesMT";
+        $sql .= " GROUP BY sales_mt.IDSalesMT";
         return $this->db->query($sql)->result();
     }
 
