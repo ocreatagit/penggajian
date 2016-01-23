@@ -333,7 +333,7 @@ class Admin_model extends CI_Model {
 
     function insert_laporan_pengeluaran($IDPengeluaran) {
         $data = array(
-            'KodePengeluaran' => "PL/$IDPengeluaran/".  date("d")."/".  date("m")."/".  date("y"),
+            'KodePengeluaran' => "PL/$IDPengeluaran/" . date("d") . "/" . date("m") . "/" . date("y"),
             "tanggal" => strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual"))),
             "totalPengeluaran" => 0,
             "IDCabang" => $this->Admin_model->get_cabang($this->session->userdata('Username'))
@@ -349,7 +349,7 @@ class Admin_model extends CI_Model {
             $res = $this->db->get_where("laporan_penggajian", array("IDPenggajian" => $IDPengeluaran))->row();
         } else if (strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
             $res = $this->db->get_where("setoran_bank", array("IDSetoran" => $IDPengeluaran))->row();
-        } else if (strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
+        } else if (strpos($jenis, "Tarik Kas Bank") !== FALSE || strpos($jenis, "Terima Penarikan") !== FALSE) {
             $res = $this->db->get_where("tarik_kas_bank", array("IDTarikKas" => $IDPengeluaran))->row();
         }
         return $res->tanggal;

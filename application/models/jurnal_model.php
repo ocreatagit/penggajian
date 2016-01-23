@@ -177,7 +177,6 @@ class Jurnal_model extends CI_Model {
         }
         $tanggal = $this->Admin_model->get_laporan_pengeluaran($noBukti, $jenis_transaksi_1);
         $totalPenjualan = $nilai_transaksi;
-
         $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi_1';";
         $transaksi = $this->db->query($SQL)->row();
 
