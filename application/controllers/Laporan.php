@@ -647,7 +647,7 @@ class Laporan extends CI_Controller {
         if ($isEmpty != 0) {
             $this->Admin_model->start_trans();
             $IDPengeluaran = $this->Admin_model->get_autoinc_laporan_pengeluaran();
-            $this->Admin_model->insert_laporan_pengeluaran();
+            $this->Admin_model->insert_laporan_pengeluaran($IDPengeluaran);
             foreach ($this->cart->contents() as $items) {
                 if (strpos($items["id"], "KasKeluarGaji") !== FALSE) {
 //                    $this->Admin_model->insert_bayar_gaji($IDPenjualan, $items["options"]["IDSales"], $items["price"]);
@@ -658,7 +658,12 @@ class Laporan extends CI_Controller {
 
                     // Jurnal
                     $this->load->model('Jurnal_model');
-                    $this->Jurnal_model->insert_jurnal_pengeluaran($IDPengeluaran, 'Biaya ' . trim($items["name"]).isset($items["options"]['Keterangan_lainnya']) ?  "<b(>".$items["options"]['Keterangan_lainnya']. ")</b>" : '', $items["price"]);
+                    if(isset($items["options"]['Keterangan_lainnya'])) {
+                        $jenis_transaksi = 'Biaya ' . trim($items["name"])."|".$items["options"]['Keterangan_lainnya'];
+                    } else {
+                        $jenis_transaksi = 'Biaya ' . trim($items["name"]);
+                    }
+                    $this->Jurnal_model->insert_jurnal_pengeluaran($IDPengeluaran, $jenis_transaksi, $items["price"]);
 
                     $data = array('rowid' => $items['rowid'], 'qty' => 0);
                     $this->cart->update($data);
@@ -888,6 +893,7 @@ class Laporan extends CI_Controller {
     function simpan_bayar_gaji() {
         if ($this->cart->total_items() > 0) {
             $this->load->model("Sales_model");
+            $this->Admin_model->start_trans();
             $IDPenggajian = $this->Admin_model->insert_penjualan_gaji();
             foreach ($this->cart->contents() as $items) {
                 $this->Admin_model->insert_detail_penggajian($IDPenggajian, $items["options"]["IDSales"], $items["options"]["tanggal"], $items["price"]);
@@ -895,8 +901,10 @@ class Laporan extends CI_Controller {
 
                 // Jurnal
                 $this->load->model('Jurnal_model');
-                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG '.$sales->nama, $items["price"], TRUE);
+                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG|'.$sales->nama, $items["price"], TRUE);
             }
+//            echo "end"; exit;
+            $this->Admin_model->end_trans('simpan_bayar_gaji()');
             $this->session->set_flashdata("status", "Gaji telah Diambil!!");
             $this->cart->destroy();
         } else {

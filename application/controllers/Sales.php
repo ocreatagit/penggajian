@@ -58,7 +58,9 @@ class Sales extends CI_Controller {
     }
 
     public function update_sales($IDSales) {
+        $this->Admin_model->start_trans();
         $this->Sales_model->aktif_sales($IDSales);
+        $this->Admin_model->end_trans('update_sales()');
         redirect('sales/daftar_sales');
     }
 
@@ -80,11 +82,12 @@ class Sales extends CI_Controller {
         if ($IDSales == NULL) {
             if ($this->input->post("btn_submit")) {
                 $this->load->model("Sales_model");
+                $this->Admin_model->start_trans();
                 $dataController = $this->Sales_model->insert_sales();
                 if (count($data['barangs']) > 0) {
                     $this->Sales_model->insert_komisi($dataController[1], $data['barangs']);
                 }
-
+$this->Admin_model->end_trans('update_sales()');
                 $config['upload_path'] = "./uploads";
                 $config['allowed_types'] = 'jpg|png|gif';
                 $config['max_size'] = 0;
@@ -110,11 +113,12 @@ class Sales extends CI_Controller {
             if ($this->input->post("btn_submit")) {
 
                 $this->load->model("Sales_model");
+                $this->Admin_model->start_trans();
                 $namafile = $this->Sales_model->update_sales($IDSales);
                 if (count($data['barangs']) > 0) {
                     $this->Sales_model->ganti_komisi($IDSales, $data['barangs']);
                 }
-
+$this->Admin_model->end_trans('update_sales()');
                 if (!empty($_FILES['foto_sales']['name'])) {
                     $config['upload_path'] = "./uploads";
                     $config['allowed_types'] = 'jpg|png|gif';

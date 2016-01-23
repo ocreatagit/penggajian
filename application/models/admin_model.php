@@ -532,8 +532,10 @@ class Admin_model extends CI_Model {
             "totalPenggajian" => 0,
             "keterangan" => "gaji"
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
+        $id = $this->db->query($sql)->row()->ID;
         $this->db->insert("laporan_penggajian", $data);
-        return $this->db->insert_id();
+        return $id;
     }
 
     function insert_detail_penggajian($IDPenggajian, $IDSales, $tanggal, $gaji_diambil) {
@@ -703,6 +705,7 @@ class Admin_model extends CI_Model {
             );
             $this->db->insert("logs", $data);
             $this->session->set_flashdata("status", "Error Found! segera hubungi MyOcreata");
+            $this->session->set_flashdata("status_mt", "Error Found! segera hubungi MyOcreata");
         } else {
             $this->db->trans_commit();
         }

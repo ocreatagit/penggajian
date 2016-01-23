@@ -27,7 +27,9 @@ class Barang extends CI_Controller {
         $namafile = '';
         if ($this->input->post("hid")) { // button 'ok' ditekan 
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $id = $this->barang_model->tambah_barang_baru();
+                $this->Admin_model->end_trans('tambah_barang()');
                 if ($id != 0) {
                     $config['upload_path'] = "./barangs";
                     $config['allowed_types'] = 'jpg|png|gif';
@@ -155,7 +157,9 @@ class Barang extends CI_Controller {
                     break;
                 }
             }
+            $this->Admin_model->start_trans();
             $this->barang_model->delete_barang($IDBarang);
+            $this->Admin_model->end_trans('barang_delete()');
         } else {
             $this->session->set_flashdata("status", "<b>Barang Tidak Dapat DiHapus! </b> Barang ini sudah digunakan Laporan Harian");
         }
@@ -176,7 +180,9 @@ class Barang extends CI_Controller {
             $kode_lokasi = $this->input->post('kode_lokasi');
             $kode_barang = $this->input->post('kode_barang');
             $jumlah = $this->input->post('jumlah_barang');
+            $this->Admin_model->start_trans();
             $this->barang_model->tambah_barang_lokasi($kode_lokasi, $kode_barang, $jumlah);
+            $this->Admin_model->end_trans('tambah_barang_lokasi()');
             redirect('barang/tambah_barang_lokasi/' . $kode_lokasi);
         }
         $data['username'] = $this->session->userdata("Username");
@@ -196,7 +202,9 @@ class Barang extends CI_Controller {
         $kode_barang = $this->input->post('IDBarang');
         $jumlah = $this->input->post('jumlah_barang');
         $lokasi = $this->input->post('lokasi');
+        $this->Admin_model->start_trans();
         $this->barang_model->update_barang_lokasi($kode_lokasi, $kode_barang, $jumlah);
+        $this->Admin_model->end_trans('ubah_stok()');
         redirect('barang/tambah_barang_lokasi/' . $kode_lokasi . '/' . $lokasi);
     }
 
@@ -221,7 +229,9 @@ class Barang extends CI_Controller {
     public function harga_satuan($IDBarang = FALSE) {
         if ($IDBarang) {
             if ($this->input->post('btn')) {
+                $this->Admin_model->start_trans();
                 $this->barang_model->insert_harga_satuan($IDBarang);
+                $this->Admin_model->end_trans('harga_satuan()');
                 redirect('Barang/tambah_barang');
             }
         }
@@ -230,7 +240,9 @@ class Barang extends CI_Controller {
     public function konversi_satuan($IDBarang = FALSE) {
         if ($IDBarang) {
             if ($this->input->post('btnSimpan')) {
+                $this->Admin_model->start_trans();
                 $this->barang_model->insert_satuan($IDBarang);
+                $this->Admin_model->end_trans('konversi_satuan()');
                 redirect('Barang/tambah_barang');
             }
         }

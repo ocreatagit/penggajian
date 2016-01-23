@@ -40,7 +40,9 @@ class Lokasi extends CI_Controller {
 //                $this->load->view('v_tambah_lokasi', $data);
                 } else {
                     if ($this->input->post("IDAdmin") && $this->input->post("IDAdmin_kantor")) {
+                        $this->Admin_model->start_trans();
                         $this->Lokasi_model->tambah_cabang_baru();
+                        $this->Admin_model->end_trans('tambah_cabang_baru()');
                         redirect("lokasi/tambah_lokasi");
                     } else {
                         $this->session->set_flashdata("status", "<i class='fa fa-info-circle'></i> Tidak Terdapat Admin Lapangan / Admin Kantor yang dapat ditugaskan dalam Cabang baru tersebut!");
@@ -61,7 +63,9 @@ class Lokasi extends CI_Controller {
                 if ($this->form_validation->run() == FALSE) {
                     
                 } else {
+                    $this->Admin_model->start_trans();
                     $this->Lokasi_model->tambah_lokasi_baru();
+                    $this->Admin_model->end_trans('tambah_lokasi_baru()');
                     redirect("lokasi/tambah_lokasi");
                 }
             }
@@ -86,12 +90,17 @@ class Lokasi extends CI_Controller {
 
     function tambah_cabang() {
         $this->load->model("Lokasi_model");
+        $this->Admin_model->start_trans();
         $this->Lokasi_model->tambah_cabang();
+        $this->Admin_model->end_trans('tambah_cabang()');
     }
 
     function edit_cabang() {
         $this->load->model("Lokasi_model");
-        echo json_encode($this->Lokasi_model->edit_cabang());
+        $this->Admin_model->start_trans();
+        $taktahu = $this->Lokasi_model->edit_cabang();
+        $this->Admin_model->end_trans('edit_cabang()');
+        echo json_encode($taktahu);
     }
 
     function delete_lokasi($IDLokasi = FALSE) {

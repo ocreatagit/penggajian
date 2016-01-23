@@ -127,6 +127,8 @@ class Jurnal_model extends CI_Model {
 
         $date = date("Y-m-d H:i:s");
 
+        $sql = "SELECT AUTO_INCREMENT as IDJurnal FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
+        $IDJurnal = $this->db->query($sql)->row()->IDJurnal;
         $data = array(
             'IDCabang' => $IDCabang,
             'tanggal' => $date,
@@ -138,8 +140,6 @@ class Jurnal_model extends CI_Model {
             'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
-
-        $IDJurnal = $this->db->insert_id();
 
         foreach ($result as $trans) {
             $data = array(
@@ -167,27 +167,35 @@ class Jurnal_model extends CI_Model {
     function insert_jurnal_pengeluaran($noBukti, $jenis_transaksi, $nilai_transaksi, $saldo = true) {
         $this->load->model('Admin_model');
         $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
-
-        $tanggal = $this->Admin_model->get_laporan_pengeluaran($noBukti, $jenis_transaksi);
+        if (strpos($jenis_transaksi, "|") !== FALSE) {
+            $arr = explode("|", $jenis_transaksi);
+            $jenis_transaksi_1 = $arr[0];
+            $jenis_transaksi_2 = $arr[1];
+            $jenis_transaksi = $jenis_transaksi_1. " - ".$jenis_transaksi_2;
+        } else {
+            $jenis_transaksi_1 = $jenis_transaksi;          
+        }
+        $tanggal = $this->Admin_model->get_laporan_pengeluaran($noBukti, $jenis_transaksi_1);
         $totalPenjualan = $nilai_transaksi;
 
-        $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi';";
+        $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi_1';";
         $transaksi = $this->db->query($SQL)->row();
 
         $date = date("Y-m-d H:i:s");
 
+        $sql = "SELECT AUTO_INCREMENT as IDJurnal FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
+        $IDJurnal = $this->db->query($sql)->row()->IDJurnal;
         $data = array(
             'IDCabang' => $IDCabang,
             'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $totalPenjualan,
-            'jenref' => $jenis_transaksi,
+            'jenref' => $jenis_transaksi_1,
             'noref' => $noBukti,
             'tglref' => $tanggal,
             'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
-        $IDJurnal = $this->db->insert_id();
 
         $sql = "SELECT t.IDTransaksi, t.keterangan, a.IDAkun, a.namaAkun, ta.sifat
                 FROM transaksi t
@@ -228,6 +236,8 @@ class Jurnal_model extends CI_Model {
 
         $date = date("Y-m-d H:i:s");
 
+        $sql = "SELECT AUTO_INCREMENT as IDJurnal FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
+        $IDJurnal = $this->db->query($sql)->row()->IDJurnal;
         $data = array(
             'IDCabang' => $IDCabang,
             'tanggal' => $date,
@@ -239,7 +249,6 @@ class Jurnal_model extends CI_Model {
             'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
-        $IDJurnal = $this->db->insert_id();
 
         $sql = "SELECT t.IDTransaksi, t.keterangan, a.IDAkun, a.namaAkun, ta.sifat
                 FROM transaksi t
@@ -296,7 +305,8 @@ class Jurnal_model extends CI_Model {
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = " . $this->session->userdata("Level") . ") " . ($awal ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
                         " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
             }
-            echo $sql; exit;
+            echo $sql;
+            exit;
             $query = $this->db->query($sql);
             return $query->result();
         } else {
