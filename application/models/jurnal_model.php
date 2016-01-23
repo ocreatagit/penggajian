@@ -288,6 +288,7 @@ class Jurnal_model extends CI_Model {
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = " . $this->session->userdata("Level") . ") " . ($awal ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
                         " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
             }
+            echo $sql; exit;
             $query = $this->db->query($sql);
             return $query->result();
         } else {

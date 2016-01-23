@@ -225,6 +225,16 @@ class Laporan extends CI_Controller {
         $IDBarang = $this->input->post("IDBarang");
         echo $this->Sales_model->get_komisi_sales_barang($IDSales, $IDBarang);
     }
+    
+    function test_error() {
+        $this->load->model('admin_model');
+        try {
+            $this->admin_model->test_error();
+        } catch (Exception $ex) {
+            var_dump($ex->getMessage());
+        }
+        
+    }
 
     // --------------------- SORT ---------------------------- //
     function msort($array, $key, $sort_flags = SORT_REGULAR, $id) {
@@ -497,7 +507,7 @@ class Laporan extends CI_Controller {
             $levelLogin = $this->Admin_model->cek_level_login($data['username']);
 //            if ($levelLogin->level != 0) { /* Admin Login */
 
-            $data['laporan_penjualan'] = $this->Sales_model->get_laporan_penjualan($kodepenjualan);
+            $data['laporan_penjualan'] = $this->Sales_model->get_pengeluaran($kodepenjualan);
             $data['info_pengeluarans'] = $this->Sales_model->get_laporan_pengeluaran($kodepenjualan);
             $data['IDPenjualan'] = $kodepenjualan;
         } else {
@@ -605,17 +615,6 @@ class Laporan extends CI_Controller {
             $this->session->set_flashdata("status_tanggal", "Penjualan Pada Tanggal '" . strftime("%d-%m-%Y", strtotime($this->session->userdata("tanggal_jual"))) . "' Telah Dimasukkan! Mohon Pilih Tanggal Lainnya!");
             redirect("laporan/HarianPenjualan");
         } else {
-//        if ($this->input->post("tanggal")) {
-//            $this->session->set_userdata("tanggal_jual", $this->input->post("tanggal"));
-//        }
-//        if ($this->input->post("keterangan")) {
-//            $this->session->set_userdata("keterangan", $this->input->post("keterangan"));
-//        } else {
-//            $this->session->set_userdata("keterangan", "");
-//        }
-
-            $IDPenjualan = $this->Admin_model->insert_pendapatan();
-
             $isEmpty = 0;
             foreach ($this->cart->contents() as $items) {
                 if (strpos($items["id"], "Jual") !== FALSE) {
@@ -623,57 +622,8 @@ class Laporan extends CI_Controller {
                 }
             }
 
-//            $sales_hadir = array();
-
             if ($isEmpty != 0) { /* Jual Ada Isi */
-                foreach ($this->cart->contents() as $items) {
-                    if (strpos($items["id"], "Jual") !== FALSE) {
-                        /* Kurangi Stoknya belum */
-                        $this->Admin_model->insert_detail_pendapatan(
-                                $IDPenjualan, $items['options']['IDTeamLeader'], $items['options']['IDSales'], $items['options']['IDBarang'], $items['options']['IDLokasi'], $items['qty'], $items['price'], $this->session->userdata('Username')
-                        );
-
-//                        if (!array_search($items['options']['IDSales'], $sales_hadir)) {
-//                            array_push($sales_hadir, $items['options']['IDSales']);
-//                        }
-
-                        $this->Sales_model->tambah_gaji_dan_komisi_sales(
-                                $IDPenjualan, $items['options']['IDSales'], $items['options']['komisi']
-                        );
-
-                        $data = array('rowid' => $items['rowid'], 'qty' => 0);
-                        $this->cart->update($data);
-                    }
-                }
-                $this->Sales_model->insert_kehadiran_sales();
-//                sort($sales_hadir);
-//                $temp = array();
-//                $tanggal_laporan = strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual")));
-//                $all_sales = $this->Sales_model->get_sales_tiap_admin($this->session->userdata('Username'));
-//                $ii = 0;
-//                for ($i = 0; $i < count($all_sales); $i++) {
-//                    if (count($sales_hadir) > $ii) {
-//                        if ($all_sales[$i]->id_sales == $sales_hadir[$ii]) {
-//                            $ii++;
-//                            array_push($temp, array(
-//                                'IDSales' => $all_sales[$i]->id_sales,
-//                                'tanggal' => $tanggal_laporan,
-//                                'status' => 'H')
-//                            );
-//                            continue;
-//                        }
-//                    }
-//                    array_push($temp, array(
-//                        'IDSales' => $all_sales[$i]->id_sales,
-//                        'tanggal' => $tanggal_laporan,
-//                        'status' => 'A')
-//                    );
-//                }
-//                $this->Sales_model->insert_kehadiran($temp);
-//                print_r($temp);exit;
-                // Jurnal
-                $this->load->model('Jurnal_model');
-                $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Penjualan Barang');
+                $this->Admin_model->insert_pendapatan();
             }
 
             $this->session->unset_userdata('keterangan');
@@ -1213,7 +1163,7 @@ class Laporan extends CI_Controller {
             if ($this->session->userdata('Level') == 0) {
                 if ($this->input->post('cabang') != 0) {
                     $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
-                }                
+                }
             } else {
                 $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
             }
@@ -1469,7 +1419,7 @@ class Laporan extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        
+
         $data["status"] = $this->session->flashdata("status");
         $data["laporans"] = $this->Laporan_model->select_laporan_batal();
         $data['periode'] = "Laporan Bulan Ini";

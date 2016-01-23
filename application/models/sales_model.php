@@ -263,6 +263,11 @@ class Sales_model extends CI_Model {
 //        return $this->db->get_where("laporan_penjualan", array("IDPenjualan" => $kodejual))->row();
     }
 
+    function get_pengeluaran($kodejual) {
+        $sql = "SELECT * FROM laporan_pengeluaran lp INNER JOIN cabang c ON c.IDCabang = lp.IDCabang WHERE lp.IDPengeluaran = $kodejual;";
+        return $this->db->query($sql)->row();
+    }
+
     function get_laporan_pengeluaran($kodejual) {
         $sql = "Select p.IDPengeluaran as IDPengeluaran, total_pengeluaran, keterangan, keterangan_lanjut
                                     FROM detail_pengeluaran p
