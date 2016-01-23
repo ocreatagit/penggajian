@@ -645,7 +645,9 @@ class Laporan extends CI_Controller {
             }
         }
         if ($isEmpty != 0) {
-            $IDPengeluaran = $this->Admin_model->insert_laporan_pengeluaran();
+            $this->Admin_model->start_trans();
+            $IDPengeluaran = $this->Admin_model->get_autoinc_laporan_pengeluaran();
+            $this->Admin_model->insert_laporan_pengeluaran();
             foreach ($this->cart->contents() as $items) {
                 if (strpos($items["id"], "KasKeluarGaji") !== FALSE) {
 //                    $this->Admin_model->insert_bayar_gaji($IDPenjualan, $items["options"]["IDSales"], $items["price"]);
@@ -656,7 +658,7 @@ class Laporan extends CI_Controller {
 
                     // Jurnal
                     $this->load->model('Jurnal_model');
-                    $this->Jurnal_model->insert_jurnal_pengeluaran($IDPengeluaran, 'Biaya ' . trim($items["name"]), $items["price"]);
+                    $this->Jurnal_model->insert_jurnal_pengeluaran($IDPengeluaran, 'Biaya ' . trim($items["name"]).isset($items["options"]['Keterangan_lainnya']) ?  "<b(>".$items["options"]['Keterangan_lainnya']. ")</b>" : '', $items["price"]);
 
                     $data = array('rowid' => $items['rowid'], 'qty' => 0);
                     $this->cart->update($data);
@@ -664,6 +666,7 @@ class Laporan extends CI_Controller {
             }
 //            $this->Admin_model->hitung_saldo($IDPenjualan, $id_cabang);
             $this->session->set_flashdata("status", "Data Telah Di Tambahkan!");
+            $this->Admin_model->end_trans("insert_pengeluaran()");
             redirect("Laporan/laporan_pengeluaran");
         }
     }
@@ -884,13 +887,15 @@ class Laporan extends CI_Controller {
 
     function simpan_bayar_gaji() {
         if ($this->cart->total_items() > 0) {
+            $this->load->model("Sales_model");
             $IDPenggajian = $this->Admin_model->insert_penjualan_gaji();
             foreach ($this->cart->contents() as $items) {
                 $this->Admin_model->insert_detail_penggajian($IDPenggajian, $items["options"]["IDSales"], $items["options"]["tanggal"], $items["price"]);
+                $sales = $this->Sales_model->get_detail_sales($items["options"]["IDSales"]);
 
                 // Jurnal
                 $this->load->model('Jurnal_model');
-                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG', $items["price"], TRUE);
+                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG '.$sales->nama, $items["price"], TRUE);
             }
             $this->session->set_flashdata("status", "Gaji telah Diambil!!");
             $this->cart->destroy();

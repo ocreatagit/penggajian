@@ -6,6 +6,7 @@ class Toko extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->load->database();
         $this->load->model('Admin_model');
         $this->load->model('Sales_model');
         $this->load->model('Barang_model');
@@ -27,7 +28,11 @@ class Toko extends CI_Controller {
         }
 
         if ($this->input->post('nama_barang')) {
+
+            $this->Admin_model->start_trans();
+            $this->Barang_model->tambah_barang_baru();
             $this->Toko_model->insert_barang();
+            $this->Admin_model->end_trans();
         }
 
         $data['status'] = $this->session->flashdata('status');
@@ -55,8 +60,9 @@ class Toko extends CI_Controller {
 
         if ($this->input->post("hid")) { // button 'ok' ditekan 
             if ($this->form_validation->run() == TRUE) {
-
+                $this->Admin_model->start_trans();
                 $id = $this->Toko_model->edit_barang($IDBarang);
+                $this->Admin_model->end_trans();
                 redirect("toko/barang");
             }
         }
@@ -576,7 +582,7 @@ class Toko extends CI_Controller {
                 } else {
                     $data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
                 }
-                if($this->input->post('filter')){
+                if ($this->input->post('filter')) {
                     $data['data_sales'] = $this->Toko_model->get_sales($this->input->post('filter'))->nama;
                 }
                 $this->excel_kehadiran($data, $this->input->post('btn_export'));
@@ -623,7 +629,7 @@ class Toko extends CI_Controller {
         }
         $excel->add_cell("Periode :", 'A', $row)->alignment('right');
         $excel->add_cell($data['periode'], 'B', $row++)->merge(array(0, 2))->alignment('left');
-        if($data['data_sales']){
+        if ($data['data_sales']) {
             $excel->add_cell("SPG :", 'A', $row)->alignment('right');
             $excel->add_cell($data['data_sales'], 'B', $row++)->merge(array(0, 2))->alignment('left');
         }

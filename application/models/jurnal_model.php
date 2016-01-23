@@ -132,7 +132,10 @@ class Jurnal_model extends CI_Model {
             'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $totalPenjualan,
-            'keterangan' => $jenis_transaksi . "|" . $penjualan->IDPenjualan . "|" . $penjualan->tanggal
+            'jenref' => $jenis_transaksi,
+            'noref' => $penjualan->IDPenjualan,
+            'tglref' => $penjualan->tanggal,
+            'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
 
@@ -166,7 +169,6 @@ class Jurnal_model extends CI_Model {
         $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
 
         $tanggal = $this->Admin_model->get_laporan_pengeluaran($noBukti, $jenis_transaksi);
-        $penjualan = array();
         $totalPenjualan = $nilai_transaksi;
 
         $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi';";
@@ -179,7 +181,10 @@ class Jurnal_model extends CI_Model {
             'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $totalPenjualan,
-            'keterangan' => $jenis_transaksi . "|" . $noBukti . "|" . $tanggal
+            'jenref' => $jenis_transaksi,
+            'noref' => $noBukti,
+            'tglref' => $tanggal,
+            'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
         $IDJurnal = $this->db->insert_id();
@@ -215,7 +220,7 @@ class Jurnal_model extends CI_Model {
     }
 
     function insert_jurnal_balancing($noBukti, $jenis_transaksi, $nilai_transaksi, $saldo = true) {
-        $noBukti = 1;
+        $noBukti = 0;
         $IDCabang = $this->Admin_model->get_cabang($this->session->userdata("Username"));
 
         $SQL = "SELECT * FROM transaksi WHERE keterangan = '$jenis_transaksi';";
@@ -228,7 +233,10 @@ class Jurnal_model extends CI_Model {
             'tanggal' => $date,
             'sifat' => $transaksi->sifat,
             'nilai_jurnal' => $nilai_transaksi,
-            'keterangan' => $jenis_transaksi . "|" . $noBukti . "|" . date("Y-m-d")
+            'jenref' => $jenis_transaksi,
+            'noref' => $noBukti,
+            'tglref' => date("Y-m-d"),
+            'keterangan' => $jenis_transaksi
         );
         $this->db->insert('jurnal', $data);
         $IDJurnal = $this->db->insert_id();

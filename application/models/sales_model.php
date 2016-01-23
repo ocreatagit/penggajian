@@ -153,8 +153,6 @@ class Sales_model extends CI_Model {
         $this->db->insert("historykomisi", $data);
         /* Catat Total Pengeluaran Komisi */
 
-
-
         /* Cek Sudah Pernah Memperoleh Gajian */
         $query = $this->db->query("Select * 
             From historygaji    

@@ -254,7 +254,7 @@ class Admin_model extends CI_Model {
         // Jurnal
         $this->Jurnal_model->insert_jurnal($IDPenjualan, 'Penjualan Barang');
 
-        $this->end_trans();
+        $this->end_trans("insert_laporan_penjualan()");
     }
 
     function check_penjualan($tanggal, $IDCabang) {
@@ -325,14 +325,20 @@ class Admin_model extends CI_Model {
         return "0";
     }
 
-    function insert_laporan_pengeluaran() {
+    function get_autoinc_laporan_pengeluaran() {
+        $sql = "SELECT AUTO_INCREMENT as IDPengeluaran FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pengeluaran';";
+        $IDPengeluaran = $this->db->query($sql)->row()->IDPengeluaran;
+        return $IDPengeluaran;
+    }
+
+    function insert_laporan_pengeluaran($IDPengeluaran) {
         $data = array(
+            'KodePengeluaran' => "PL/$IDPengeluaran/".  date("d")."/".  date("m")."/".  date("y"),
             "tanggal" => strftime("%Y-%m-%d", strtotime($this->session->userdata("tanggal_jual"))),
             "totalPengeluaran" => 0,
             "IDCabang" => $this->Admin_model->get_cabang($this->session->userdata('Username'))
         );
         $this->db->insert("laporan_pengeluaran", $data);
-        return $this->db->insert_id();
     }
 
     function get_laporan_pengeluaran($IDPengeluaran, $jenis) {
@@ -346,13 +352,7 @@ class Admin_model extends CI_Model {
         } else if (strpos($jenis, "Setor Kas") !== FALSE || strpos($jenis, "Terima Setoran") !== FALSE) {
             $res = $this->db->get_where("tarik_kas_bank", array("IDTarikKas" => $IDPengeluaran))->row();
         }
-//        adassadasd
         return $res->tanggal;
-    }
-
-    function get_keterangan_lanjut($IDPengeluaran) {
-//        $sql = "SELECT * FROM laporan_pengeluaran lp INNER JOIN detail_pengeluaran dp ON lp.IDPengeluaran = dp.IDPengeluaran";
-//        $res = 
     }
 
     function insert_pengeluaran($IDPengeluaran, $keterangan, $nominal, $keterangan_lainnya) {
@@ -692,16 +692,17 @@ class Admin_model extends CI_Model {
     function end_trans($heading) {
         // DB Transaction
         $error = $this->db->error();
-        if ($error != "") {
+        if ($error['message'] != "") {
             // generate an error... or use the log_message() function to log your error
             $this->db->trans_rollback();
             $data = array(
-                'heading' => $heading,
+                'username' => $this->session->userdata('Username'),
+                'heading' => 'Error at ' . $heading,
                 'message' => $error['message'],
                 'date' => date('Y-m-d H:i:s')
             );
             $this->db->insert("logs", $data);
-            $this->session->set_flashdata("status", "Error Found!");
+            $this->session->set_flashdata("status", "Error Found! segera hubungi MyOcreata");
         } else {
             $this->db->trans_commit();
         }
