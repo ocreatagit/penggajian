@@ -881,6 +881,7 @@ class Laporan extends CI_Controller {
 
     function simpan_bayar_gaji() {
         if ($this->cart->total_items() > 0) {
+            $this->Admin_model->start_trans();
             $IDPenggajian = $this->Admin_model->insert_penjualan_gaji();
             foreach ($this->cart->contents() as $items) {
                 $this->Admin_model->insert_detail_penggajian($IDPenggajian, $items["options"]["IDSales"], $items["options"]["tanggal"], $items["price"]);
@@ -889,6 +890,7 @@ class Laporan extends CI_Controller {
                 $this->load->model('Jurnal_model');
                 $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG', $items["price"], TRUE);
             }
+            $this->Admin_model->end_trans('simpan_bayar_gaji()');
             $this->session->set_flashdata("status", "Gaji telah Diambil!!");
             $this->cart->destroy();
         } else {

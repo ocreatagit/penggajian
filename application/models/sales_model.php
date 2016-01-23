@@ -197,8 +197,10 @@ class Sales_model extends CI_Model {
             "totalPenggajian" => 0,
             "keterangan" => "komisi"
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
+        $id = $this->db->query($sql)->row()->ID;
         $this->db->insert("laporan_penggajian", $data);
-        return $this->db->insert_id();
+        return $id;
     }
 
     function update_komisi($IDSales, $komisi_diambil, $IDPenggajian) {
@@ -353,10 +355,12 @@ class Sales_model extends CI_Model {
             "IDCabang" => $this->session->userdata('IDCabang')
         );
 
+        $sql = "SELECT AUTO_INCREMENT as IDSales FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'sales';";
+        $idsales = $this->db->query($sql)->row()->IDSales;
+        
         $this->db->insert("sales", $data);
         $this->session->set_flashdata("status", "Sales Telah Ditambahkan!");
-
-        return array($temp, $this->db->insert_id());
+        return array($temp, $idsales);
     }
 
     function insert_komisi($IDSales, $arrBarang) {

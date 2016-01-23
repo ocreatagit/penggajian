@@ -87,7 +87,7 @@ class Toko_model extends CI_Model {
     function insert_barang() {
         if ($this->db->get_where("barang_mt", array("lower(nama)" => strtolower($this->input->post('nama_barang'))))->num_rows() == 0) {
             $data = array(
-                'IDBarangMT' => 1,
+//                'IDBarangMT' => 1,
                 "nama" => $this->input->post('nama_barang')
             );
             $this->db->insert("barang_mt", $data);
@@ -218,9 +218,9 @@ class Toko_model extends CI_Model {
             'keterangan' => "Laporan Penjualan MT",
             'IDTokoMT' => 0
         );
+        $sql = "SELECT AUTO_INCREMENT as IDPenjualan FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penjualan_mt';";
+        $IDLaporan = $this->db->query($sql)->row()->IDPenjualan;
         $this->db->insert('laporan_penjualan_mt', $data);
-
-        $IDLaporan = $this->db->insert_id();
 
         foreach ($this->cart->contents() as $items) {
             if (strpos($items["id"], 'barangmt') !== FALSE) {

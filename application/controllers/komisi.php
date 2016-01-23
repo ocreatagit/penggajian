@@ -151,6 +151,7 @@ class Komisi extends CI_Controller {
 
     function simpan_komisi() {
         if ($this->cart->total_items() > 0) {
+            $this->Admin_model->start_trans();
             $id_laporan = $this->Sales_model->insert_laporan_komisi();
             foreach ($this->cart->contents() as $items) {
                 $this->Sales_model->update_komisi($items["options"]["IDSales"], $items["price"], $id_laporan);
@@ -159,6 +160,7 @@ class Komisi extends CI_Controller {
                 $this->load->model('Jurnal_model');
                 $this->Jurnal_model->insert_jurnal_pengeluaran($id_laporan, 'Bayar Komisi SPG', $items["price"]);
             }
+            $this->Admin_model->end_trans('simpan_komisi()');
             $this->session->set_flashdata("status", "Komisi telah Diambil!!");
             $this->cart->destroy();
         } else {

@@ -30,9 +30,8 @@ class Toko extends CI_Controller {
         if ($this->input->post('nama_barang')) {
 
             $this->Admin_model->start_trans();
-            $this->Barang_model->tambah_barang_baru();
             $this->Toko_model->insert_barang();
-            $this->Admin_model->end_trans();
+            $this->Admin_model->end_trans('barang()');
         }
 
         $data['status'] = $this->session->flashdata('status');
@@ -62,7 +61,7 @@ class Toko extends CI_Controller {
             if ($this->form_validation->run() == TRUE) {
                 $this->Admin_model->start_trans();
                 $id = $this->Toko_model->edit_barang($IDBarang);
-                $this->Admin_model->end_trans();
+                $this->Admin_model->end_trans('edit_barang()');
                 redirect("toko/barang");
             }
         }
@@ -88,9 +87,9 @@ class Toko extends CI_Controller {
         if (!$IDBarang) {
             redirect('toko/barang');
         }
-
+        $this->Admin_model->start_trans();
         $this->Toko_model->delete_barang($IDBarang);
-
+        $this->Admin_model->end_trans('delete_barang()');
         redirect('toko/barang');
     }
 
@@ -104,7 +103,9 @@ class Toko extends CI_Controller {
         }
 
         if ($this->input->post('nama_toko')) {
+            $this->Admin_model->start_trans();
             $this->Toko_model->insert_toko();
+            $this->Admin_model->end_trans('toko()');
         }
 
         $data['status'] = $this->session->flashdata('status');
@@ -127,8 +128,9 @@ class Toko extends CI_Controller {
         if (!$IDToko) {
             redirect('toko/toko');
         }
-
+        $this->Admin_model->start_trans();
         $this->Toko_model->delete_toko($IDToko);
+        $this->Admin_model->end_trans('delete_toko()');
 
         redirect('toko/toko');
     }
@@ -152,8 +154,9 @@ class Toko extends CI_Controller {
 
         if ($this->input->post("hid")) { // button 'ok' ditekan 
             if ($this->form_validation->run() == TRUE) {
-
+                $this->Admin_model->start_trans();
                 $id = $this->Toko_model->edit_toko($IDToko);
+                $this->Admin_model->end_trans('edit_toko()');
                 redirect("toko/toko");
             }
         }
@@ -191,6 +194,7 @@ class Toko extends CI_Controller {
             $data['laporan_alls'] = $this->Toko_model->laporan_spg($awal, $akhir, ($IDToko == 0 ? FALSE : $IDToko));
             $data['laporans'] = $this->Toko_model->get_sales_laporan_spg();
             $data['data'] = ($IDToko == 0 ? "SEMUA BARANG" : $this->Toko_model->get_detail_toko($IDToko)->nama ) . " Periode " . ($awal && $akhir ? "$awal sampai $akhir" : "Bulan ini" );
+            $this->Admin_model->end_trans('edit_barang()');
         }
 //        print_r($data['laporan_alls']);exit;
         $this->load->view('v_head', $data);
@@ -244,8 +248,10 @@ class Toko extends CI_Controller {
                     echo $response = $this->upload->display_errors();
                     exit;
                 } else {
+                    $this->Admin_model->start_trans();
                     $response = $this->upload->data();
                     $this->Toko_model->insert_spg_mt($response['file_name']);
+                    $this->Admin_model->end_trans('tambah_spg_mt()');
                     redirect("Toko/spg_mt");
                 }
             }
@@ -406,8 +412,12 @@ class Toko extends CI_Controller {
 
     function insert_penjualan_mt() {
         if ($this->cart->total_items() > 0) {
+            $this->Admin_model->start_trans();
             $this->Toko_model->insert_penjualan_mt();
+            $this->Admin_model->end_trans('insert_penjualan_mt()-pejualan');
+            $this->Admin_model->start_trans();
             $this->Toko_model->insert_kehadiran_mt();
+            $this->Admin_model->end_trans('insert_penjualan_mt()-kehadiran');
             $this->session->set_flashdata("status_mt", "Data Telah Disimpan!");
         } else {
             $this->session->set_flashdata("status_mt", "Tidak Terdapat Data yang Diinputkan!");

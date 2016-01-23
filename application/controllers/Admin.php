@@ -76,7 +76,9 @@ class Admin extends CI_Controller {
         if ($this->input->post("btn_submit")) {
             if ($this->form_validation->run() == TRUE) {
                 $this->load->model("Admin_model");
+                $this->Admin_model->start_trans();
                 $id = $this->Admin_model->insert_admin();
+                $this->Admin_model->end_trans('tambah_admin()');
 
                 $config['upload_path'] = "./uploads";
                 $config['allowed_types'] = 'jpg|png|gif';
@@ -119,7 +121,9 @@ class Admin extends CI_Controller {
 
         if ($this->input->post("btn_submit")) {
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $this->Admin_model->change_data();
+                $this->Admin_model->end_trans('GVlg7Mq9vc6y0LyijfKx()');
 //                redirect('admin/GVlg7Mq9vc6y0LyijfKx');
             }
         }
@@ -174,7 +178,9 @@ class Admin extends CI_Controller {
                 $this->load->view('v_edit_admin', $data);
             } else {
                 $this->load->model("Admin_model");
+                $this->Admin_model->start_trans();
                 $this->Admin_model->update_admin();
+                $this->Admin_model->end_trans('edit_admin()');
 
                 $name = $_FILES['foto_admin']['name'];
                 if ($name != "") {
