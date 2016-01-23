@@ -639,10 +639,12 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'tarik_kas_bank';";
             "keterangan" => $this->input->post("keterangan"),
             "IDPenjualan" => $penjualan->IDPenjualan
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables 
+WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan';";
+        $IDJurnal = $this->db->query($sql)->row()->ID;
 
         $this->db->insert("laporan_pembatalan_penjualan", $data);
 
-        $IDJurnal = $this->db->insert_id();
 
         $juals = $this->db->get_where("jual", array("IDPenjualan" => $penjualan->IDPenjualan))->result();
 //        print_r($juals); exit;

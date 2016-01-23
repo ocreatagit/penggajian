@@ -1403,7 +1403,10 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post("base_url")) {
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $this->Admin_model->buat_pembatalan_nota();
+
+                $this->Admin_model->end_trans('buat_pembatalan_nota()');
                 $this->session->set_flashdata('status', 'Pembatalan Nota Telah Dibuat!');
                 redirect("laporan/buat_pembatalan_nota");
             }
