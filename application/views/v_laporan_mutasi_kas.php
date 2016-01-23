@@ -115,18 +115,13 @@
                 </tr>
                 <?php
                 foreach ($jurnals as $laporan):
-                    $ket = explode('|', $laporan->keterangan);
                     ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                         <td><?php
-                            if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
-                                echo strftime("%d-%m-%Y", strtotime($ket[2]));
-                            } else {
-                                echo '';
-                            }
+                            echo strftime("%d-%m-%Y", strtotime($laporan->tglref));
                             ?></td>
-                        <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>(' . $keterangan_lanjut[$laporan->IDJurnal] . ')</b>' : '' : '' ?></td>
+                        <td><?php echo $laporan->keterangan; ?></td>
                         <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                         <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                         <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>

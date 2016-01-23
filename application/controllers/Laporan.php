@@ -1124,7 +1124,6 @@ class Laporan extends CI_Controller {
             }
         }
 
-        $data['keterangan_lanjut'] = $this->Laporan_model->get_keterangan_lanjut($data['jurnals']);
         $data["status_IDCabang"] = $this->session->userdata("status_IDCabang");
         $data["status_jenis"] = $this->session->userdata("status_jenis");
 
