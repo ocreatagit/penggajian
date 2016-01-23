@@ -248,6 +248,10 @@ class Jurnal_model extends CI_Model {
             'tglref' => date("Y-m-d"),
             'keterangan' => $jenis_transaksi
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables 
+WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
+//        $IDJurnal = $this->db->insert_id();
+        $IDJurnal = $this->db->query($sql)->row()->ID;
         $this->db->insert('jurnal', $data);
 
         $sql = "SELECT t.IDTransaksi, t.keterangan, a.IDAkun, a.namaAkun, ta.sifat

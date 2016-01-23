@@ -581,9 +581,9 @@ class Admin_model extends CI_Model {
             "keterangan" => $keterangan,
             "IDCabang" => $IDCabang
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'setoran_bank';";
+        $IDJurnal = $this->db->query($sql)->row()->ID;
         $this->db->insert("setoran_bank", $data);
-
-        $IDJurnal = $this->db->insert_id();
 
         $this->load->model('Jurnal_model');
         $array = array(
@@ -612,9 +612,11 @@ class Admin_model extends CI_Model {
             "keterangan" => $keterangan,
             "IDCabang" => $IDCabang
         );
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables 
+WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'tarik_kas_bank';";
+        $IDJurnal = $this->db->query($sql)->row()->ID;
         $this->db->insert("tarik_kas_bank", $data);
 
-        $IDJurnal = $this->db->insert_id();
 
         $this->load->model('Jurnal_model');
         $array = array(

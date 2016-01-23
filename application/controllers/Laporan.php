@@ -226,7 +226,7 @@ class Laporan extends CI_Controller {
         $IDBarang = $this->input->post("IDBarang");
         echo $this->Sales_model->get_komisi_sales_barang($IDSales, $IDBarang);
     }
-    
+
     function test_error() {
         $this->load->model('admin_model');
         try {
@@ -234,7 +234,6 @@ class Laporan extends CI_Controller {
         } catch (Exception $ex) {
             var_dump($ex->getMessage());
         }
-        
     }
 
     // --------------------- SORT ---------------------------- //
@@ -1301,7 +1300,9 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post('IDCabang')) {
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $this->Admin_model->tarik_kas_bank();
+                $this->Admin_model->end_trans('tarik_kas_bank()');
                 $this->session->set_flashdata('status', 'Kas Bank Telah Diambil!');
                 redirect("laporan/daftar_tarik_kas_bank");
             }
@@ -1330,7 +1331,9 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post('IDCabang')) {
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $this->Admin_model->setor_bank();
+                $this->Admin_model->end_trans('setoran_bank()');
                 $this->session->set_flashdata('status', 'Setoran Telah Dimasukan!');
                 redirect("laporan/daftar_setoran_bank");
             }
@@ -1484,7 +1487,9 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post("base_url")) {
             if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
                 $this->Laporan_model->insert_balancing_saldo();
+                $this->Admin_model->end_trans('balancing_saldo()');
                 $this->session->set_flashdata('status', 'Balancing Saldo Telah Dibuat!');
                 redirect("laporan/balancing_saldo");
             }
