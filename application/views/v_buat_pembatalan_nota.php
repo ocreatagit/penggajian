@@ -1,7 +1,7 @@
 <div class="container" style="margin-top: 80px; height: 100%; padding: 0px; margin-bottom: 50px;">    
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px;">Daftar Pembatalan Nota</h1>
+            <h1 class="page-header" style="margin-top: 0px;">Buat Pembatalan Nota</h1>
             <ol class="breadcrumb" style="background-color: white; margin-top: 00px;">
                 <li><a href="<?php echo base_url(); ?>index.php/Laporan/pembatalan_nota"><i class="fa fa-home"></i> Daftar Pembatalan Nota </a></li>
                 <li><a href="">Buat Pembatalan Nota</a></li>
@@ -12,7 +12,7 @@
         <div class="col-lg-12">
             <div class="panel panel-success siku">
                 <div class="panel-heading siku">
-                    <h3 class="panel-title">Tambah Data Setoran</h3>
+                    <h3 class="panel-title">Tambah Data Pembatalan</h3>
                 </div>
                 <div class="panel-body siku">
                     <div class="row">

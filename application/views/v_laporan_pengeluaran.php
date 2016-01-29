@@ -61,6 +61,7 @@
             <thead>
                 <tr>
                     <th>Tanggal</th>
+                    <th>Kode Pengeluaran</th>
                     <th>Admin <?php
                         if ($this->session->userdata("Level") == 0) {
                             echo "Cabang";
@@ -76,6 +77,7 @@
                     ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                        <td><?php echo $laporan->KodePengeluaran ?></td>
                         <td><?php echo $laporan->username; ?></td>
                         <td>Rp <?php echo number_format($laporan->totalPengeluaran, 0, ",", ".") ?>.- </td>
                         <td style="width: 50px; text-align: center;">

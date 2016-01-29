@@ -189,14 +189,15 @@ class Sales_model extends CI_Model {
     }
 
     function insert_laporan_komisi() {
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
+        $id = $this->db->query($sql)->row()->ID;
         $data = array(
+            "KodePenggajian" => "KM/$id/" . date("d") . "/" . date("m") . "/" . date("y"),
             "IDCabang" => $this->Admin_model->get_cabang($this->session->userdata('Username')),
             "tanggal" => date("Y-m-d"),
             "totalPenggajian" => 0,
             "keterangan" => "komisi"
-        );
-        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
-        $id = $this->db->query($sql)->row()->ID;
+        );        
         $this->db->insert("laporan_penggajian", $data);
         return $id;
     }
@@ -521,7 +522,7 @@ class Sales_model extends CI_Model {
                 WHERE lp.keterangan = 'komisi' ";
             if ($this->input->post("btn_submit")) {
                 if ($this->input->post("cabang")) {
-                    $sql.= "AND c.IDCabang = " . $this->input->post('cabang') . ";";
+                    $sql.= "AND c.IDCabang = " . $this->input->post('cabang') . "";
                 }
             }
         } else {
@@ -531,6 +532,7 @@ class Sales_model extends CI_Model {
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
                 WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'komisi' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
         }
+        $sql .= " ORDER BY lp.tanggal DESC, lp.IDPenggajian DESC, lp.KodePenggajian DESC";
         $query = $this->db->query($sql);
         return $query->result();
     }

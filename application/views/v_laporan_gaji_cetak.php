@@ -8,6 +8,7 @@
     <div class="row" style="">
         <div class="col-lg-12">
             <h2 style="">Tanggal : <?php echo strftime("%d-%m-%Y", strtotime($laporan_bayar_gaji->tanggal)) ?></h2>
+            <h2 style="">No. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <?php echo $laporan_bayar_gaji->KodePenggajian ?></h2>
             <h2 style="border-bottom: #000 solid 1px; padding-bottom: 10px;">Detail Pembayaran</h2>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>

@@ -10,7 +10,8 @@
             <h2 style="margin-top: 0px; border-bottom: #000 solid 1px; padding-bottom: 5px;">Informasi Pengeluaran</h2>
             <h3 style="">Lokasi &nbsp;&nbsp;: <b> <?php echo $laporan_penjualan->provinsi . " - " . $laporan_penjualan->kabupaten; ?> </b>
             </h3>
-            <h3 style="padding-bottom: 10px;">Tanggal : <b><?php echo strftime("%d-%B-%Y", strtotime($laporan_penjualan->tanggal)) ?> </b> </h3>
+            <h3 style="">Tanggal : <b><?php echo strftime("%d-%B-%Y", strtotime($laporan_penjualan->tanggal)) ?> </b> </h3>
+            <h3 style="padding-bottom: 10px;">Nomor &nbsp; : <b><?php echo $laporan_penjualan->KodePengeluaran ?> </b> </h3>
 
             <h2 style="border-bottom: #000 solid 1px; padding-bottom: 10px;">Informasi Pengeluaran</h2>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%; margin-top: 20px;">

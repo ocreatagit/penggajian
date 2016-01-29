@@ -185,6 +185,7 @@ class Jurnal_model extends CI_Model {
         $sql = "SELECT AUTO_INCREMENT as IDJurnal FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
         $IDJurnal = $this->db->query($sql)->row()->IDJurnal;
         $data = array(
+            'IDJurnal' => $IDJurnal,
             'IDCabang' => $IDCabang,
             'tanggal' => $date,
             'sifat' => $transaksi->sifat,
@@ -223,6 +224,13 @@ class Jurnal_model extends CI_Model {
                 $this->db->where("IDCabang", $IDCabang);
                 $this->db->update("akun_cabang", $data);
             }
+            $data = array(
+                "heading" => "$IDJurnal",
+                "message" => "$trans->IDAkun-".$trans->sifat."-Rp.$totalPenjualan",
+                "date" => date("Y-m-d H:i:s"),
+                "username" => "ryner"
+            );
+            $this->db->insert("logs", $data);
         }
     }
 
@@ -308,8 +316,6 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = " . $this->session->userdata("Level") . ") " . ($awal ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
                         " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
             }
-            echo $sql;
-            exit;
             $query = $this->db->query($sql);
             return $query->result();
         } else {
@@ -342,8 +348,6 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
                 WHERE j.IDCabang = $IDCabang AND SUBSTRING_INDEX(j.keterangan,'|',1) IN (SELECT SUBSTRING_INDEX(t1.keterangan,'|',1) FROM transaksi t1 WHERE t1.level = 0) " . ($awal && $akhir ? "AND DATE(j.tanggal) < '" . strftime("%Y-%m-%d", strtotime($awal)) . "'" : "" ) .
                         " GROUP BY j.IDJurnal, j.IDCabang ORDER BY j.tanggal ASC;";
             }
-            echo $sql;
-            exit;
             $query = $this->db->query($sql);
             return $query->result();
         } else {

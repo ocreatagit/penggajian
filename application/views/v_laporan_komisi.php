@@ -63,6 +63,7 @@
                 <tr>
                     <!--<th>#</th>-->
                     <th>Tanggal</th>
+                    <th>Nomor Laporan Komisi</th>
                     <th>Admin</th>
                     <th>Total Pengeluaran</th>
                     <th style="text-align: center;">Aksi</th>
@@ -76,6 +77,7 @@
                     <tr>
                         <!--<td><?php echo $nomor++; ?></td>-->
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                        <td><?php echo $laporan->KodePenggajian; ?></td>
                         <td><?php echo $laporan->username; ?></td>
                         <td>Rp <?php echo number_format($laporan->totalPenggajian, 0, ",", ".") ?>.- </td>
                         <td style="text-align: center;">

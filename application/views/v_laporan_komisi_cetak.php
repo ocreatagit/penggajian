@@ -2,12 +2,13 @@
 <div class="container" style="margin-top: 80px; height: 100%; padding: 0px; margin-bottom: 50px;">
     <div class="row" style="">
         <div class="col-lg-12">
-            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px; padding-bottom: 10px;">Laporan Pembayaran Gaji</h1>
+            <h1 class="page-header" style="margin-top: 0px; border-bottom: #000 solid 1px; padding-bottom: 10px;">Laporan Pembayaran Komisi</h1>
         </div>
     </div>
     <div class="row" style="">
         <div class="col-lg-12">
             <h2 style="">Tanggal : <?php echo strftime("%d-%m-%Y", strtotime($laporan_bayar_komisi->tanggal)) ?></h2>
+            <h2 style="">No. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <?php echo $laporan_bayar_komisi->KodePenggajian ?></h2>
             <h2 style="border-bottom: #000 solid 1px; padding-bottom: 10px;">Detail Pembayaran</h2>
             <table id="data-table" class="tablesorter tablesorter-blue" border="1" cellpadding="8" cellspacing="0" style="width: 100%;">
                 <thead>

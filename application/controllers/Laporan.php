@@ -503,9 +503,8 @@ class Laporan extends CI_Controller {
             $data['level'] = $this->session->userdata('Level');
             $data['IDCabang'] = $this->session->userdata('IDCabang');
 
-//            $data['info_cabang'] = $this->Admin_model->get_provinsi_kabupaten($data['username']);
             $levelLogin = $this->Admin_model->cek_level_login($data['username']);
-//            if ($levelLogin->level != 0) { /* Admin Login */
+            //if ($levelLogin->level != 0) { /* Admin Login */
 
             $data['laporan_penjualan'] = $this->Sales_model->get_pengeluaran($kodepenjualan);
             $data['info_pengeluarans'] = $this->Sales_model->get_laporan_pengeluaran($kodepenjualan);
@@ -520,7 +519,6 @@ class Laporan extends CI_Controller {
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_harian_pengeluaran_cetak', $data);
-//        $this->load->view('v_foot');
     }
 
     function select_barang() {
@@ -657,8 +655,8 @@ class Laporan extends CI_Controller {
 
                     // Jurnal
                     $this->load->model('Jurnal_model');
-                    if(isset($items["options"]['Keterangan_lainnya'])) {
-                        $jenis_transaksi = 'Biaya ' . trim($items["name"])."|".$items["options"]['Keterangan_lainnya'];
+                    if (isset($items["options"]['Keterangan_lainnya'])) {
+                        $jenis_transaksi = 'Biaya ' . trim($items["name"]) . "|" . $items["options"]['Keterangan_lainnya'];
                     } else {
                         $jenis_transaksi = 'Biaya ' . trim($items["name"]);
                     }
@@ -900,7 +898,7 @@ class Laporan extends CI_Controller {
 
                 // Jurnal
                 $this->load->model('Jurnal_model');
-                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG|'.$sales->nama, $items["price"], TRUE);
+                $this->Jurnal_model->insert_jurnal_pengeluaran($IDPenggajian, 'Bayar Gaji SPG|' . $sales->nama, $items["price"], TRUE);
             }
 //            echo "end"; exit;
             $this->Admin_model->end_trans('simpan_bayar_gaji()');
@@ -981,7 +979,7 @@ class Laporan extends CI_Controller {
             $data['searchby'] = $this->input->post('jenis_pengeluaran');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
-            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
+            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'Lain-Lain') {
                 if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
                     $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = true;
@@ -1022,7 +1020,7 @@ class Laporan extends CI_Controller {
             $data['searchby'] = $this->input->post('jenis_pengeluaran');
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');
-            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != 'lain-lain') {
+            if ($this->input->post('jenis_pengeluaran') != 'Semua Jenis' && $this->input->post('jenis_pengeluaran') != "Lain-Lain") {
                 if ($this->input->post('jenis_pengeluaran') == 'Gaji' || $this->input->post('jenis_pengeluaran') == 'Komisi') {
                     $data['isi_tabel'] = $this->Laporan_model->select_gaji($this->input->post('jenis_pengeluaran'), $awal, $akhir, FALSE, TRUE);
                     $data['kolom'] = true;
@@ -1038,7 +1036,6 @@ class Laporan extends CI_Controller {
                 $data['kolom'] = true;
             }
             $data['data'] = ($awal ? $awal : '-- ') . " s/d " . ($akhir ? $akhir : " --");
-
             $this->load->view('v_head');
             $this->load->view('v_navigation', $data);
             $this->load->view('v_pengeluaran_cetak', $data);
@@ -1111,7 +1108,6 @@ class Laporan extends CI_Controller {
             $this->form_validation->set_rules('email', 'email', 'required');
             if ($this->form_validation->run() == TRUE) {
                 $filename = $this->excel_kas($data, "Laporan Mutasi Kas", $this->input->post('btn_email'));
-//                $filename = $this->excel_pengeluaran($data,  $this->input->post('btn_email'));
                 // RRyner email - 19/12/2015
                 $this->email_header("babylonindografika@gmail.com", "indografika01");
                 $this->email_detail("babylonindografika@gmail.com", "Admin Indografika Notification", $this->input->post("email"), "Laporan Mutasi Kas Excel", "");
@@ -1511,6 +1507,69 @@ class Laporan extends CI_Controller {
     function get_saldo_kas_bank() {
         echo 'Rp. ' . number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
     }
+    
+    // Pembatalan Pengeluaran
+    
+    function laporan_pembatalan_pengeluaran(){
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+
+            $data['laporans'] = $this->Laporan_model->select_laporan_pengeluaran();
+            $data['saldo'] = $this->Admin_model->get_saldo_cabang($data['IDCabang']);
+        } else {
+            redirect('welcome/index');
+        }
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+        }
+        $data["filter"] = "";
+        if ($this->input->post("btn_submit")) {
+            $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
+        }
+
+        if ($this->input->post('logout')) {
+            $this->session->unset_userdata('Username');
+            redirect('welcome/index');
+        }
+        $data["laporans"] = $this->Admin_model->get_pembatalan_pengeluaran();
+
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_laporan_pembatalan_pengeluaran', $data);
+    }
+    
+    function pembatalan_pengeluaran(){
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+
+        $this->form_validation->set_rules('tanggal', 'Tanggal', 'required');
+        $this->form_validation->set_rules('IDPengeluaran', 'No Laporan Pengeluaran / Gaji', 'required');
+
+        if ($this->input->post("base_url")) {
+            if ($this->form_validation->run() == TRUE) {
+                $this->Admin_model->start_trans();
+                $this->Admin_model->buat_pembatalan_pengeluaran();
+                $this->Admin_model->end_trans('pembatalan_pengeluaran()');
+                $this->session->set_flashdata('status', 'Pembatalan Pengeluaran Telah Dibuat!');
+                redirect("laporan/laporan_pembatalan_pengeluaran");
+            }
+        }
+        $data['laporan_penggajians'] = $this->Laporan_model->select_laporan_pembatalan_gaji();
+        $data['laporans'] = $this->Laporan_model->select_laporan_pembatalan_pengeluaran();
+        $data["status"] = $this->session->flashdata("status");
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_buat_pembatalan_pengeluaran', $data);
+    }
+
+    // Excel Kas
 
     function excel_kas($data, $filename, $post) {
         $this->load->library('custom_excel');
@@ -1580,30 +1639,32 @@ class Laporan extends CI_Controller {
         $row = 1;
         $total = 0;
         /* array = merge(berapa baris, berapa kolom) */
-        $excel->add_cell("Daftar Pengeluaran", 'A', $row++)->font(20)->merge(array(0, 2))->alignment('center');
+        $excel->add_cell("Daftar Pengeluaran", 'A', $row++)->font(20)->merge(array(0, 3))->alignment('center');
         $excel->add_cell("Jenis :", 'A', $row)->alignment('right');
         $excel->add_cell($data['searchby'], 'B', $row++)->merge(array(0, 1))->alignment('center');
         $excel->add_cell("Periode :", 'A', $row)->alignment('right');
         $excel->add_cell($data['data'], 'B', $row++)->merge(array(0, 1))->alignment('center');
         $row++;
         $excel->add_cell('Tanggal', 'A', $row)->alignment('center')->border()->autoWidth();
+        $excel->add_cell('No. Laporan', 'B', $row)->alignment('center')->border()->autoWidth();
         if ($data['kolom']) {
-            $excel->add_cell("Keterangan", 'B', $row)->border()->autoWidth()->alignment('center');
+            $excel->add_cell("Keterangan", 'C', $row)->border()->autoWidth()->alignment('center');
         }
-        $excel->add_cell("Jumlah", !$data['kolom'] ? 'B' : 'C', $row++)->border()->alignment('center');
+        $excel->add_cell("Jumlah", !$data['kolom'] ? 'C' : 'D', $row++)->border()->alignment('center');
 
         // saldo pindahan ronald - 19/12/2015
 
         foreach ($data['isi_tabel'] as $isi):
             $excel->add_cell(date('d-m-Y', strtotime($isi->tanggal)), "A", $row)->border()->autoWidth();
+            $excel->add_cell($isi->no_laporan, "B", $row)->border()->autoWidth();
             if ($data['kolom']) {
-                $excel->add_cell($isi->keterangan, "B", $row)->border()->autoWidth();
+                $excel->add_cell($isi->keterangan . ($isi->keterangan_lanjut != "" ? " - " . $isi->keterangan_lanjut : "" ), "C", $row)->border()->autoWidth();
             }
-            $excel->add_cell("Rp. " . number_format($isi->jumlah, 0, ',', '.') . ",-", !$data['kolom'] ? 'B' : 'C', $row++)->border();
+            $excel->add_cell("Rp. " . number_format($isi->jumlah, 0, ',', '.') . ",-", !$data['kolom'] ? 'C' : 'D', $row++)->border();
             $total += intval($isi->jumlah);
         endforeach;
-        $excel->add_cell('Total :', !$data['kolom'] ? 'A' : 'B', $row)->alignment('right')->autoWidth();
-        $excel->add_cell("Rp. " . number_format($total, 0, ',', '.') . ",-", !$data['kolom'] ? 'B' : 'C', $row++)->border()->autoWidth();
+        $excel->add_cell('Total :', !$data['kolom'] ? 'B' : 'C', $row)->alignment('right')->autoWidth();
+        $excel->add_cell("Rp. " . number_format($total, 0, ',', '.') . ",-", !$data['kolom'] ? 'C' : 'D', $row++)->border()->autoWidth();
 
         $excel->end_excel("laporan_pengeluaran", $post);
         return $excel->get_filename();

@@ -351,6 +351,10 @@ class Admin_model extends CI_Model {
             $res = $this->db->get_where("setoran_bank", array("IDSetoran" => $IDPengeluaran))->row();
         } else if (strpos($jenis, "Tarik Kas Bank") !== FALSE || strpos($jenis, "Terima Penarikan") !== FALSE) {
             $res = $this->db->get_where("tarik_kas_bank", array("IDTarikKas" => $IDPengeluaran))->row();
+        } else if (strpos($jenis, "Batal Pengeluaran gaji") !== FALSE || strpos($jenis, "Batal Pengeluaran komisi") !== FALSE) {
+            $res = $this->db->get_where("laporan_penggajian", array("IDPenggajian" => $IDPengeluaran))->row();
+        } else if (strpos($jenis, "Batal Pengeluaran Bensin") !== FALSE || strpos($jenis, "Batal Pengeluaran Makan") !== FALSE || strpos($jenis, "Batal Pengeluaran Parkir") !== FALSE || strpos($jenis, "Batal Pengeluaran Tol") !== FALSE || strpos($jenis, "Batal Pengeluaran lain-lain") !== FALSE) {
+            $res = $this->db->get_where("laporan_pengeluaran", array("IDPengeluaran" => $IDPengeluaran))->row();
         }
         return $res->tanggal;
     }
@@ -526,14 +530,15 @@ class Admin_model extends CI_Model {
     /* DANIEL */
 
     function insert_penjualan_gaji() {
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
+        $id = $this->db->query($sql)->row()->ID;
         $data = array(
+            "KodePenggajian" => "GJ/$id/" . date("d") . "/" . date("m") . "/" . date("y"),
             "IDCabang" => $this->Admin_model->get_cabang($this->session->userdata('Username')),
             "tanggal" => date("Y-m-d"),
             "totalPenggajian" => 0,
             "keterangan" => "gaji"
         );
-        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_penggajian';";
-        $id = $this->db->query($sql)->row()->ID;
         $this->db->insert("laporan_penggajian", $data);
         return $id;
     }
@@ -688,6 +693,59 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan
           $this->db->update("cabang", $data);
          */
         $this->Jurnal_model->insert_jurnal($penjualan->IDPenjualan, 'Pembatalan Penjualan');
+    }
+
+    function buat_pembatalan_pengeluaran() {
+        // Masih ERROR
+        $IDCabang = $this->session->userdata("IDCabang");
+        if ($this->input->post("tipe") == 1) {
+            $pengeluaran = $this->db->get_where("laporan_pengeluaran", array("IDPengeluaran" => $this->input->post("IDPengeluaran")))->row();
+        } else {
+            $penggajian = $this->db->get_where("laporan_penggajian", array("IDPenggajian" => $this->input->post("IDPengeluaran")))->row();
+        }
+
+        $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_pengeluaran';";
+        $IDJurnal = $this->db->query($sql)->row()->ID;
+        $data = array(
+            "tanggal" => strftime("%Y-%m-%d", strtotime($this->input->post("tanggal"))),
+            "tipe" => $this->input->post("tipe"),
+            "total" => $this->input->post("tipe") == 1 ? $pengeluaran->totalPengeluaran : $penggajian->totalPenggajian,
+            "keterangan" => $this->input->post("keterangan"),
+            "IDPengeluaran" => $this->input->post("tipe") == 1 ? $pengeluaran->IDPengeluaran : $penggajian->IDPenggajian
+        );
+
+        $this->db->insert("laporan_pembatalan_pengeluaran", $data);
+
+        if ($this->input->post("tipe") == 1) {
+            $detail_pengeluaran = $this->db->get_where("detail_pengeluaran", array("IDPengeluaran" => $this->input->post("IDPengeluaran")))->result();
+            foreach ($detail_pengeluaran as $row) {
+                $sql = "UPDATE cabang SET saldo = saldo + " . $row->total_pengeluaran;
+                $this->db->query($sql);
+
+                $this->Jurnal_model->insert_jurnal_pengeluaran($this->input->post("IDPengeluaran"), "Batal Pengeluaran " . $row->keterangan, $row->total_pengeluaran, true);
+            }
+        } else {
+            $penggajian = $this->db->get_where("laporan_penggajian", array("IDPenggajian" => $this->input->post("IDPengeluaran")))->row();
+            $detail_penggajian = $this->db->get_where("detail_penggajian", array("IDPenggajian" => $this->input->post("IDPengeluaran")))->result();
+//            print_r($detail_penggajian); exit;
+            foreach ($detail_penggajian as $row) {
+                $sql = "UPDATE cabang SET saldo = saldo + " . $row->total_gaji . " WHERE IDCabang = " . $IDCabang . ";";
+                $this->db->query($sql);
+
+                if ($penggajian->keterangan = "gaji") {
+                    $sql = "UPDATE sales SET totalGaji = totalGaji + " . $row->total_gaji . " WHERE IDSales = " . $row->IDSales . ";";
+                } else {
+                    $sql = "UPDATE sales SET totalKomisi = totalKomisi + " . $row->total_gaji . " WHERE IDSales = " . $row->IDSales . ";";
+                }
+                $this->db->query($sql);
+
+                $this->Jurnal_model->insert_jurnal_pengeluaran($this->input->post("IDPengeluaran"), "Batal Pengeluaran " . $penggajian->keterangan, $row->total_gaji, true);
+            }
+        }
+    }
+
+    function get_pembatalan_pengeluaran() {
+        return $this->db->get("laporan_pembatalan_pengeluaran")->result();
     }
 
     function start_trans() {

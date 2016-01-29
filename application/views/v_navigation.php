@@ -31,6 +31,9 @@
                                 <?php if ($level != 1): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/Laporan/laporan_pengeluaran' ?>" style=''>Pengeluaran</a></li>
                                 <?php endif; ?>
+                                    <?php if ($level != 1): ?>
+                                    <li><a href="<?php echo base_url() . 'index.php/Laporan/laporan_pembatalan_pengeluaran'?>" style=''>Pembatalan Pengeluaran</a></li>
+                                <?php endif; ?>
                                 <?php if ($level != 2): ?>
                                     <li><a href="<?php echo base_url() . 'index.php/laporan/stok_cabang' ?>" style=''>Stok</a></li>
                                 <?php endif; ?>

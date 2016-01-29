@@ -80,7 +80,7 @@
                             <label class="col-lg-2 control-label" for="exampleInputName2"></label>
                             <div class="col-lg-6">                        
                                 <button class="btn btn-default siku" type="submit" value="kategori" name="submit">Pilih</button>
-                                <button class="btn btn-success siku" type="submit" value="excel" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
+                                <button class="btn btn-success siku" type="submit" value="btn_convert" name="btn_convert"><i class="fa fa-book"></i> Export To XLS</button>
                                 <button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku"><i class="fa fa-print"></i> Print</button>
                                 <button type="submit" name='btn_email' value='btn_email' class="btn btn-warning siku">&nbsp;&nbsp;<i class="fa fa-envelope"></i> Kirim Email &nbsp;&nbsp;</button> 
                             </div>
@@ -121,6 +121,7 @@
                             <thead style="text-align: center; background-color: #ffcc33 ">
                                 <tr>
                                     <td><strong>Tanggal</strong></td>
+                                    <td><strong>No. Laporan</strong></td>
                                     <?php if ($kolom): ?>
                                         <td><strong>Keterangan</strong></td>
                                     <?php endif; ?>
@@ -135,6 +136,7 @@
                                         ?>
                                         <tr>
                                             <td><?php echo date('d-m-Y', strtotime($isi->tanggal)) ?></td>
+                                            <td><?php echo $isi->no_laporan ?></td>
                                             <?php if ($kolom): ?>
                                                 <td><?php echo $isi->keterangan . ($isi->keterangan_lanjut != "" ? " - " . $isi->keterangan_lanjut : "" ) ?></td>
                                             <?php endif; ?>
@@ -152,7 +154,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td <?php echo $kolom ? 'colspan="2"' : '' ?> align="right"> Total Pengeluaran </td>
+                                    <td <?php echo $kolom ? 'colspan="3"' : '' ?> align="right"> Total Pengeluaran </td>
                                     <td  align="left">Rp. <?php echo number_format($total, 0, ',', '.') ?>,-</td>
                                 </tr>
                             </tfoot>
