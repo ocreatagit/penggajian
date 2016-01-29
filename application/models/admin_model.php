@@ -732,7 +732,7 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan
                 $sql = "UPDATE cabang SET saldo = saldo + " . $row->total_gaji . " WHERE IDCabang = " . $IDCabang . ";";
                 $this->db->query($sql);
 
-                if ($penggajian->keterangan = "gaji") {
+                if ($penggajian->keterangan == "gaji") {
                     $sql = "UPDATE sales SET totalGaji = totalGaji + " . $row->total_gaji . " WHERE IDSales = " . $row->IDSales . ";";
                 } else {
                     $sql = "UPDATE sales SET totalKomisi = totalKomisi + " . $row->total_gaji . " WHERE IDSales = " . $row->IDSales . ";";
@@ -745,7 +745,8 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan
     }
 
     function get_pembatalan_pengeluaran() {
-        return $this->db->get("laporan_pembatalan_pengeluaran")->result();
+        $SQL = "SELECT tanggal, tipe, total, CASE WHEN tipe = '1' THEN (SELECT KodePengeluaran FROM laporan_pengeluaran WHERE laporan_pengeluaran.IDPengeluaran = laporan_pembatalan_pengeluaran.IDPengeluaran) ELSE (SELECT KodePenggajian FROM laporan_penggajian WHERE laporan_penggajian.IDPenggajian = laporan_pembatalan_pengeluaran.IDPengeluaran) END as KodePengeluaran FROM laporan_pembatalan_pengeluaran";
+        return $this->db->query($SQL)->result();
     }
 
     function start_trans() {

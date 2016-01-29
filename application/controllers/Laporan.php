@@ -1516,7 +1516,6 @@ class Laporan extends CI_Controller {
             $data['level'] = $this->session->userdata('Level');
             $data['IDCabang'] = $this->session->userdata('IDCabang');
 
-            $data['laporans'] = $this->Laporan_model->select_laporan_pengeluaran();
             $data['saldo'] = $this->Admin_model->get_saldo_cabang($data['IDCabang']);
         } else {
             redirect('welcome/index');

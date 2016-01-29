@@ -57,6 +57,7 @@
             <thead>
                 <tr>
                     <th>Tanggal</th>
+                    <th>Kode Pengeluaran</th>
                     <th>Tipe</th>
                     <th>Total Pembatalan</th>
                 </tr>
@@ -67,6 +68,7 @@
                     ?>
                     <tr>
                         <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tanggal)); ?></td>
+                        <td><?php echo $laporan->KodePengeluaran; ?></td>
                         <td><?php echo $laporan->tipe == 1 ? "Gaji / Komisi" : "Pengeluaran" ?></td>
                         <td>Rp <?php echo number_format($laporan->total, 0, ",", ".") ?>.- </td>
                     </tr>

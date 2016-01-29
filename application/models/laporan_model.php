@@ -55,7 +55,6 @@ class Laporan_model extends CI_Model {
                 LEFT JOIN laporan_pembatalan_penjualan lb ON lb.IDPenjualan = lp.IDPenjualan WHERE lb.IDPembatalan IS NULL AND
                 (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
         }
-//        echo $sql; exit;
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -186,7 +185,7 @@ class Laporan_model extends CI_Model {
         $sql = "SELECT s.*, c.provinsi, c.kabupaten
                 FROM setoran_bank s
                 INNER JOIN cabang c ON c.IDCabang = s.IDCabang
-                WHERE " . ( $IDCabang ? " c.IDCabang = " . $IDCabang . " AND " : "" ) . " (s.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                " . ( $IDCabang ? "WHERE c.IDCabang = " . $IDCabang . "" : "" ) . ";";
         return $this->db->query($sql)->result();
     }
 
@@ -198,7 +197,7 @@ class Laporan_model extends CI_Model {
         $sql = "SELECT t.*, c.provinsi, c.kabupaten
                 FROM tarik_kas_bank t
                 INNER JOIN cabang c ON c.IDCabang = t.IDCabang
-                WHERE " . ($IDCabang ? "c.IDCabang = " . $IDCabang . " AND " : "" ) . " (t.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                " . ($IDCabang ? "WHERE c.IDCabang = " . $IDCabang . "" : "" ) . ";";
         return $this->db->query($sql)->result();
     }
 
@@ -300,7 +299,9 @@ class Laporan_model extends CI_Model {
                 INNER JOIN laporan_pengeluaran lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.IDPengeluaran NOT IN (SELECT IDPengeluaran FROM laporan_pembatalan_pengeluaran WHERE tipe = 1)";
         }
+        $sql .= " AND lp.IDPengeluaran NOT IN (SELECT IDPengeluaran FROM laporan_pembatalan_pengeluaran WHERE tipe = 1)";
         $sql.= " ORDER BY lp.tanggal DESC, lp.IDPengeluaran DESC, lp.KodePengeluaran DESC";
+        
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -324,6 +325,7 @@ class Laporan_model extends CI_Model {
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
                 WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'gaji' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
         }
+        $sql .= " AND lp.IDPenggajian NOT IN (SELECT IDPengeluaran FROM laporan_pembatalan_pengeluaran WHERE tipe = 2)";
         $sql .= " ORDER BY lp.tanggal DESC, lp.IDPenggajian DESC, lp.KodePenggajian DESC;";
         $query = $this->db->query($sql);
         return $query->result();
@@ -487,7 +489,7 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND laporan_pengeluaran.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= " AND detail_pengeluaran.keterangan NOT IN ('Bensin', 'Makan', 'Parkir', 'Tol') GROUP BY keterangan, laporan_pengeluaran.tanggal, keterangan_lanjut ";
+        $sql.= " AND detail_pengeluaran.keterangan NOT IN ('Bensin', 'Makan', 'Parkir', 'Tol') AND laporan_pengeluaran.IDPengeluaran NOT IN (SELECT lb.IDPengeluaran FROM laporan_pembatalan_pengeluaran lb WHERE lb.tipe = 1) GROUP BY keterangan, laporan_pengeluaran.tanggal, keterangan_lanjut ";
 
         if ($sort_asc) {
             $sql.=" ORDER BY tanggal ASC";
@@ -525,7 +527,7 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND lp.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= "AND lp.keterangan = '$jenis' ";
+        $sql.= "AND lp.keterangan = '$jenis' AND lp.IDPenggajian NOT IN (SELECT lb.IDPengeluaran FROM laporan_pembatalan_pengeluaran lb WHERE lb.tipe = 2) ";
 
         if ($sort_asc) {
             $sql.=" ORDER BY tanggal ASC";
@@ -553,7 +555,7 @@ class Laporan_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0) {
             $sql.=" AND laporan_pengeluaran.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql.= "AND detail_pengeluaran.keterangan = '$jenis' GROUP BY tanggal ";
+        $sql.= "AND detail_pengeluaran.keterangan = '$jenis' AND laporan_pengeluaran.IDPengeluaran NOT IN (SELECT lb.IDPengeluaran FROM laporan_pembatalan_pengeluaran lb WHERE lb.tipe = 1) GROUP BY tanggal ";
 
         if ($sort_asc) {
             $sql.=" ORDER BY tanggal ASC";

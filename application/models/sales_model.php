@@ -530,8 +530,9 @@ class Sales_model extends CI_Model {
                 FROM cabang c
                 INNER JOIN laporan_penggajian lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
-                WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'komisi' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+                WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'komisi'";
         }
+        $sql .= " AND lp.IDPenggajian NOT IN (SELECT IDPengeluaran FROM laporan_pembatalan_pengeluaran WHERE tipe = 2)";
         $sql .= " ORDER BY lp.tanggal DESC, lp.IDPenggajian DESC, lp.KodePenggajian DESC";
         $query = $this->db->query($sql);
         return $query->result();

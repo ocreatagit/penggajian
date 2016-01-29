@@ -148,7 +148,7 @@
                                 } else {
                                     ?>
                                     <tr>
-                                        <td colspan="3" style="text-align: center">Tidak ada data penjualan pada periode ini</td>
+                                        <td colspan="4" style="text-align: center">Tidak ada data penjualan pada periode ini</td>
                                     </tr>
                                 <?php } ?>
                             </tbody>
