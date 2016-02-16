@@ -1507,10 +1507,10 @@ class Laporan extends CI_Controller {
     function get_saldo_kas_bank() {
         echo 'Rp. ' . number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
     }
-    
+
     // Pembatalan Pengeluaran
-    
-    function laporan_pembatalan_pengeluaran(){
+
+    function laporan_pembatalan_pengeluaran() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');
             $data['level'] = $this->session->userdata('Level');
@@ -1538,8 +1538,8 @@ class Laporan extends CI_Controller {
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_pembatalan_pengeluaran', $data);
     }
-    
-    function pembatalan_pengeluaran(){
+
+    function pembatalan_pengeluaran() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');
             $data['level'] = $this->session->userdata('Level');
@@ -1618,8 +1618,8 @@ class Laporan extends CI_Controller {
 
         foreach ($data['jurnals'] as $laporan):
             $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
-            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal1)), "B", $row)->border();
-            $excel->add_cell($laporan->keterangan1, "C", $row)->border();
+            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tglref)), "B", $row)->border();
+            $excel->add_cell($laporan->keterangan, "C", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->kasmasuk, 0, ",", ".") . ",-", "D", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->kaskeluar, 0, ",", ".") . ",-", "E", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.') . ",-", "F", $row)->border();
@@ -1706,4 +1706,10 @@ class Laporan extends CI_Controller {
     }
 
     //------------ END EMAIL ------------/
+
+    function migrasi_referensi() {
+        //$this->Jurnal_model->migrasi_referensi();
+        //$this->Jurnal_model->update_referensi();
+        redirect("");
+    }
 }

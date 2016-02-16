@@ -142,9 +142,16 @@ class Admin_model extends CI_Model {
 
     function get_saldo_bank($IDCabang) {
         if ($this->session->userdata("Level") != 0) {
-            $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = " . $IDCabang . ";";
-            $res = $this->db->query($SQL)->row();
-            return $res->nilai_akun;
+//            $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = " . $IDCabang . ";";
+//            $res = $this->db->query($SQL)->row();
+//            return $res->nilai_akun;
+            $this->load->model("Jurnal_model");
+            $data = $this->Jurnal_model->select_laporan_mutasi_kas_bank(FALSE, FALSE, $IDCabang, FALSE);
+            $saldo_mutasi = 0;
+            foreach ($data as $laporan):
+                $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+            endforeach;
+            return $saldo_mutasi;
         } else {
             return 0;
         }
@@ -152,9 +159,16 @@ class Admin_model extends CI_Model {
 
     function get_saldo_cabang($IDCabang) {
         if ($this->session->userdata("Level") != 0) {
-            $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
-            $query = $this->db->query($sql);
-            return $query->row()->saldo;
+//            $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
+//            $query = $this->db->query($sql);
+//            return $query->row()->saldo;
+            $this->load->model("Jurnal_model");
+            $data = $this->Jurnal_model->select_laporan_mutasi_kas(FALSE, FALSE, $IDCabang, $this->session->userdata("Level"));
+            $saldo_mutasi = 0;
+            foreach ($data as $laporan):
+                $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+            endforeach;
+            return $saldo_mutasi;
         } else {
             return 0;
         }
