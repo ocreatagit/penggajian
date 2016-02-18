@@ -1710,6 +1710,11 @@ class Laporan extends CI_Controller {
     function migrasi_referensi() {
         //$this->Jurnal_model->migrasi_referensi();
         //$this->Jurnal_model->update_referensi();
-        redirect("");
+//        redirect("");
+        $start_date = new DateTime('2016-02-01 08:50:11');
+        $end_date = new DateTime('2016-02-01 17:11:20');
+        $since_start = $end_date->diff($start_date);
+        print_r(date_diff($start_date, $end_date)); exit;
+        echo $since_start->h.":".$since_start->i.":".$since_start->s;
     }
 }

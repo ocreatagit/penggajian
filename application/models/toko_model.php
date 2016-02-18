@@ -214,7 +214,7 @@ class Toko_model extends CI_Model {
 
     function insert_penjualan_mt() {
         $data = array(
-            'tanggal' => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+            'tanggal' => strftime('%Y-%m-%d', strtotime($this->session->userdata('tgl_mt'))),
             'keterangan' => "Laporan Penjualan MT",
             'IDTokoMT' => 0
         );
@@ -240,9 +240,12 @@ class Toko_model extends CI_Model {
                 $this->cart->update($dataX);
             }
         }
+        $this->session->unset_userdata("tgl_mt");
     }
 
     function get_laporan_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
+        $awal = $this->input->post('tanggal_awal');
+        $akhir = $this->input->post('tanggal_akhir');
         $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko, barang_mt.nilai_karton as nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
@@ -267,6 +270,7 @@ class Toko_model extends CI_Model {
             $sql .= " AND toko.IDCabang = " . $IDCabang;
         }
         $sql .= " ORDER BY tanggal, toko, barang ";
+//        echo $sql; exit;
         return $this->db->query($sql)->result();
     }
 
