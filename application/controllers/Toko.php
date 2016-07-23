@@ -234,7 +234,7 @@ class Toko extends CI_Controller {
         }
 
         $data['status'] = $this->session->flashdata('status');
-        $data['data_sales'] = NULL;
+        $data['data_sales'] = $this->Toko_model->get_sales($IDSpg);
 
         if (!$IDSpg) {
             if ($this->input->post("btn_submit")) {
@@ -316,6 +316,8 @@ class Toko extends CI_Controller {
                         )
                     );
                     $this->cart->insert($data);
+					
+					$this->session->set_userdata("tgl_mt", $this->input->post("tanggal"));
                 } else {
                     $this->session->set_flashdata("status_mt", "Data sudah pernah diinputkan!");
                 }
@@ -699,4 +701,11 @@ class Toko extends CI_Controller {
     }
 
     //------------ END EMAIL ------------/
+	function delete_spg($idspg) {
+        $data = array(
+            "aktif" => 0
+        );
+        $this->db->where("IDSalesMT", $idspg);
+        $this->db->update("sales_mt", $data);        
+    }
 }

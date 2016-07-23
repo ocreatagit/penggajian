@@ -142,9 +142,16 @@ class Admin_model extends CI_Model {
 
     function get_saldo_bank($IDCabang) {
         if ($this->session->userdata("Level") != 0) {
-            $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = " . $IDCabang . ";";
-            $res = $this->db->query($SQL)->row();
-            return $res->nilai_akun;
+//            $SQL = "SELECT nilai_akun FROM akun_cabang WHERE IDAkun = 3 AND IDCabang = " . $IDCabang . ";";
+//            $res = $this->db->query($SQL)->row();
+//            return $res->nilai_akun;
+            $this->load->model("Jurnal_model");
+            $data = $this->Jurnal_model->select_laporan_mutasi_kas_bank(FALSE, FALSE, $IDCabang, FALSE);
+            $saldo_mutasi = 0;
+            foreach ($data as $laporan):
+                $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+            endforeach;
+            return $saldo_mutasi;
         } else {
             return 0;
         }
@@ -152,9 +159,16 @@ class Admin_model extends CI_Model {
 
     function get_saldo_cabang($IDCabang) {
         if ($this->session->userdata("Level") != 0) {
-            $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
-            $query = $this->db->query($sql);
-            return $query->row()->saldo;
+//            $sql = "Select c.saldo as saldo From cabang c WHERE c.IDCabang = " . $IDCabang . ";";
+//            $query = $this->db->query($sql);
+//            return $query->row()->saldo;
+            $this->load->model("Jurnal_model");
+            $data = $this->Jurnal_model->select_laporan_mutasi_kas(FALSE, FALSE, $IDCabang, $this->session->userdata("Level"));
+            $saldo_mutasi = 0;
+            foreach ($data as $laporan):
+                $laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk;
+            endforeach;
+            return $saldo_mutasi;
         } else {
             return 0;
         }
@@ -645,7 +659,7 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'tarik_kas_bank';";
             "IDPenjualan" => $penjualan->IDPenjualan
         );
         $sql = "SELECT AUTO_INCREMENT as ID FROM information_schema.tables 
-WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan';";
+                WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan';";
         $IDJurnal = $this->db->query($sql)->row()->ID;
 
         $this->db->insert("laporan_pembatalan_penjualan", $data);
@@ -670,7 +684,6 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan
             $komisi = $this->db->query($sql)->row();
 
             $data = array(
-                "totalGaji" => ($sales->totalGaji - $sales->gaji),
                 "totalKomisi" => ($sales->totalKomisi - ($jual->jumlah * $komisi->komisi))
             );
 //            print_r($data); exit;
@@ -682,6 +695,31 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'laporan_pembatalan_penjualan
             $this->db->where("tanggal", $penjualan->tanggal);
             $this->db->where("IDSales", $jual->IDSales);
             $this->db->delete("kehadiran");
+        }
+
+        $SQL = "SELECT DISTINCT IDSales FROM jual WHERE IDPenjualan = " . $penjualan->IDPenjualan . ";";
+        $juals = $this->db->query($SQL)->result();
+        foreach ($juals as $jual) {
+            $sql = "SELECT * FROM sales WHERE IDSales = " . $jual->IDSales . ";";
+            $sales = $this->db->query($sql)->row();
+            
+            $data = array(
+                "totalGaji" => ($sales->totalGaji - $sales->gaji)
+            );
+
+            $this->db->where("IDSales", $jual->IDSales);
+            $this->db->update("sales", $data);
+            
+            // Hapus Gaji
+            $this->db->where("IDSales", $jual->IDSales);
+            $this->db->where("Tanggal", $penjualan->tanggal);
+            $this->db->delete("historygaji");
+            
+            // Hapus Komisi
+            $this->db->where("IDSales", $jual->IDSales);
+            $this->db->where("DATE(Tanggal)", date("Y-m-d", strtotime($penjualan->tanggal)));
+            $this->db->delete("historykomisi");
+            
         }
 
         /*

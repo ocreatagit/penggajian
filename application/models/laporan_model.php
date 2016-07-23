@@ -79,7 +79,7 @@ class Laporan_model extends CI_Model {
             $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi, lp.status_kas
                 FROM cabang c
                 INNER JOIN laporan_penjualan lp ON c.IDCabang = lp.IDCabang
-                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.status_kas = 0 AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb) AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "');";
+                INNER JOIN admin a ON a.IDAdmin = c.IDAdmin WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.status_kas = 0 AND lp.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb);";
         } else if ($this->session->userdata("Level") == 2) {
             $sql = "SELECT lp.IDPenjualan as idlaporan, lp.IDCabang as idcabang, lp.tanggal as tanggal, lp.keterangan as keterangan, a.username as username, lp.totalPenjualan as totalPenjualan, lp.totalKomisi as totalKomisi, lp.status_kas
                 FROM cabang c
@@ -161,7 +161,6 @@ class Laporan_model extends CI_Model {
             if ($awal && $akhir) {
                 $sql .=" AND (lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "')";
             } else {
-                $sql .=" AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
             }
         } else {
             $sql = "SELECT lb.*,lp.tanggal as tanggal_jual,lp.IDPenjualan, lp.totalPenjualan, lp.IDCabang FROM laporan_pembatalan_penjualan lb INNER JOIN laporan_penjualan lp ON lp.IDPenjualan = lb.IDPenjualan 
@@ -169,7 +168,6 @@ class Laporan_model extends CI_Model {
             if ($awal && $akhir) {
                 $sql .=" WHERE (lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "')";
             } else {
-                $sql .=" WHERE (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
             }
         }
 
@@ -323,7 +321,7 @@ class Laporan_model extends CI_Model {
                 FROM cabang c
                 INNER JOIN laporan_penggajian lp ON c.IDCabang = lp.IDCabang
                 INNER JOIN admin a ON a.IDAdmin = c.IDAdmin_kantor 
-                WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'gaji' AND (lp.tanggal BETWEEN '" . date("Y-m-1") . "' AND '" . date("Y-m-t") . "')";
+                WHERE a.username = '" . $this->session->userdata("Username") . "' AND lp.keterangan = 'gaji' ";
         }
         $sql .= " AND lp.IDPenggajian NOT IN (SELECT IDPengeluaran FROM laporan_pembatalan_pengeluaran WHERE tipe = 2)";
         $sql .= " ORDER BY lp.tanggal DESC, lp.IDPenggajian DESC, lp.KodePenggajian DESC;";

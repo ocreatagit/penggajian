@@ -19,7 +19,7 @@
                                 </div>                                
                                 <div class="form-group">
                                     <label>Nomor Telepon</label>
-                                    <input type="text" class="form-control siku" name="noHP" placeholder="Masukkan Nomor Telepon" value="<?php echo $data_sales == NULL ? set_value('notelp') : set_value('notelp', $data_sales[0]->noTelp) ?>">
+                                    <input type="text" class="form-control siku" name="noHP" placeholder="Masukkan Nomor Telepon" value="<?php echo $data_sales == NULL ? set_value('notelp') : set_value('notelp', $data_sales[0]->noHP) ?>">
                                 </div>                                
                                 <div class="form-group">
                                     <label>Tempat Lahir</label>

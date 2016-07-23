@@ -205,7 +205,8 @@ class Toko_model extends CI_Model {
     }
 
     function get_sales($IDSales) {
-        return $this->db->get_where("sales_mt", array("IDSalesMT" => $IDSales))->row();
+        //return $this->db->get_where("sales_mt", array("IDSalesMT" => $IDSales))->row();
+		return $this->db->get_where("sales_mt", array("IDSalesMT" => $IDSales))->result();
     }
 
     function get_barang($IDBarang) {
@@ -214,7 +215,7 @@ class Toko_model extends CI_Model {
 
     function insert_penjualan_mt() {
         $data = array(
-            'tanggal' => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+            'tanggal' => strftime('%Y-%m-%d', strtotime($this->session->userdata('tgl_mt'))),
             'keterangan' => "Laporan Penjualan MT",
             'IDTokoMT' => 0
         );
@@ -240,9 +241,12 @@ class Toko_model extends CI_Model {
                 $this->cart->update($dataX);
             }
         }
+        $this->session->unset_userdata("tgl_mt");
     }
 
     function get_laporan_penjualan($IDCabang = FALSE, $awal = FALSE, $akhir = FALSE, $SPG = FALSE, $barang = FALSE, $toko = FALSE) {
+        $awal = $this->input->post('tanggal_awal');
+        $akhir = $this->input->post('tanggal_akhir');
         $sql = "SELECT laporan_penjualan_mt.tanggal, sales_mt.nama as sales, barang_mt.nama as barang, laporan_barang_mt.jumlah, toko.nama as toko, barang_mt.nilai_karton as nilai_karton
                 FROM laporan_barang_mt
                 INNER JOIN laporan_penjualan_mt on laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
@@ -267,6 +271,7 @@ class Toko_model extends CI_Model {
             $sql .= " AND toko.IDCabang = " . $IDCabang;
         }
         $sql .= " ORDER BY tanggal, toko, barang ";
+//        echo $sql; exit;
         return $this->db->query($sql)->result();
     }
 
@@ -297,32 +302,34 @@ class Toko_model extends CI_Model {
     }
 
     function insert_kehadiran_mt() {
+        $tanggal = $this->session->userdata('tanggal_jual_mt');
+//        print_r($tanggal);exit;
         $sql = "SELECT laporan_barang_mt.IDSalesMT FROM laporan_barang_mt
                 INNER JOIN laporan_penjualan_mt ON laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT
-                WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))) . "'";
+                WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($tanggal)) . "'";
         $spgmt_hadir = $this->db->query($sql)->result();
         $sql = "SELECT IDSalesMT FROM sales_mt
                 WHERE IDSalesMT NOT IN ( 
                     SELECT laporan_barang_mt.IDSalesMT FROM laporan_barang_mt 
                     INNER JOIN laporan_penjualan_mt ON laporan_penjualan_mt.IDLaporan = laporan_barang_mt.IDLaporanMT 
-                    WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))) . "' 
+                    WHERE laporan_penjualan_mt.tanggal = '" . strftime('%Y-%m-%d', strtotime($tanggal)) . "' 
                 ) ";
         $spgmt_absen = $this->db->query($sql)->result();
         foreach ($spgmt_hadir as $spg) {
-            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows() == 0) {
+            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($tanggal))))->num_rows() == 0) {
                 $data = array(
                     "IDSalesMT" => $spg->IDSalesMT,
-                    "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+                    "tanggal" => strftime('%Y-%m-%d', strtotime($tanggal)),
                     "status" => "H"
                 );
                 $this->db->insert('kehadiran_mt', $data);
             }
         }
         foreach ($spgmt_absen as $spg) {
-            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal')))))->num_rows() == 0) {
+            if ($this->db->get_where('kehadiran_mt', array("IDSalesMT" => $spg->IDSalesMT, "tanggal" => strftime('%Y-%m-%d', strtotime($tanggal))))->num_rows() == 0) {
                 $data = array(
                     "IDSalesMT" => $spg->IDSalesMT,
-                    "tanggal" => strftime('%Y-%m-%d', strtotime($this->input->post('tanggal'))),
+                    "tanggal" => strftime('%Y-%m-%d', strtotime($tanggal)),
                     "status" => "A"
                 );
                 $this->db->insert('kehadiran_mt', $data);
@@ -352,5 +359,8 @@ class Toko_model extends CI_Model {
         $sql .= " GROUP BY sales_mt.IDSalesMT";
         return $this->db->query($sql)->result();
     }
-
+	function delete_spg($idspg){
+        $this->Toko_model->delete_spg($idspg);
+        redirect("toko/spg_mt");
+    }
 }
