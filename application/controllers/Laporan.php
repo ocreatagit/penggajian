@@ -1731,6 +1731,5 @@ class Laporan extends CI_Controller {
     function migrasi_referensi() {
         //$this->Jurnal_model->migrasi_referensi();
         //$this->Jurnal_model->update_referensi();
-        redirect("");
     }
 }

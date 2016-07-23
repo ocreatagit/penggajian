@@ -53,7 +53,11 @@
                             <tr>
                                 <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                                 <td><?php echo strftime("%d-%m-%Y", strtotime($laporan->tglref)); ?></td>
+<<<<<<< HEAD
 								<td><?php echo $laporan->keterangan; ?></td>
+=======
+                                <td><?php echo $laporan->keterangan; ?></td>
+>>>>>>> 96899a48796595ccc280fd46cd1e677b9def875b
                                 <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                                 <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                                 <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>
