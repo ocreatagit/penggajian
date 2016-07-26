@@ -709,6 +709,17 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'tarik_kas_bank';";
 
             $this->db->where("IDSales", $jual->IDSales);
             $this->db->update("sales", $data);
+            
+            // Hapus Gaji
+            $this->db->where("IDSales", $jual->IDSales);
+            $this->db->where("Tanggal", $penjualan->tanggal);
+            $this->db->delete("historygaji");
+            
+            // Hapus Komisi
+            $this->db->where("IDSales", $jual->IDSales);
+            $this->db->where("DATE(Tanggal)", date("Y-m-d", strtotime($penjualan->tanggal)));
+            $this->db->delete("historykomisi");
+            
         }
 
         /*

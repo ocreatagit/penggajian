@@ -159,7 +159,7 @@ class Sales_model extends CI_Model {
             Where Tanggal = '$tanggal_laporan' AND IDSales = '$IDSales'");
 
         if ($query->num_rows() > 0) {
-            /* Sales Ini sudah pernah digaji per tanggal pembuatan laporan */
+            
         } else {
             $data = array("totalGaji" => ($totalgaji + $gaji));
             $this->db->where("IDSales", $IDSales);

@@ -360,14 +360,16 @@ class Pencarian extends CI_Controller {
         $data['barangs'] = $this->Barang_model->get_barang();
         $data['topbarangs'] = $this->Barang_model->select_top_seles();
 
-//        $this->Barang_model->select_top_sales_detail();
 
+//        $this->Barang_model->select_top_sales_detail();
+        
         $IDSales = array();
         foreach ($data['topbarangs'] as $lokasi) {
             array_push($IDSales, $lokasi->IDSales);
         }
         $data['data'] = "BULAN INI";
         $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales);
+
         if ($this->input->post('submit') || $this->input->post('btn_export')) {
             $awal = $this->input->post('tanggal_awal');
             $akhir = $this->input->post('tanggal_akhir');

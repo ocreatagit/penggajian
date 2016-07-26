@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <div style="background-color: white; height: 120px;">
+    <div style="background-color: white; height: 70px;">
         <div class="col-md-12" style="margin-top: 17px;">
             <form class="form-inline" method="post" action="<?php
             echo current_url();
@@ -36,7 +36,6 @@
                 &nbsp;<button type="submit" name='btn_pilih' value='btn_pilih' class="btn btn-default siku">&nbsp;&nbsp;Pilih&nbsp;&nbsp;</button>
                 &nbsp;<button type="submit" name='btn_print' value='btn_print' class="btn btn-primary siku">&nbsp;&nbsp;<i class="fa fa-print"></i> Print &nbsp;&nbsp;</button> 
             </form>
-
         </div>
     </div>
     <hr>
@@ -50,7 +49,7 @@
                     <a href="<?php echo base_url() ?>index.php/laporan/cetak_laporan_pembatalan" class="btn btn-info siku" style="border-radius: 0px; margin-top: 10px;" style="border-radius: 0px;"><i class="fa fa-print"></i> Print</a>
                 </div>
             </div>
-        <?php
+            <?php
         }
     }
     ?>

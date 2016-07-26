@@ -316,8 +316,8 @@ class Toko extends CI_Controller {
                         )
                     );
                     $this->cart->insert($data);
-					
-					$this->session->set_userdata("tgl_mt", $this->input->post("tanggal"));
+                    
+                    $this->session->set_userdata("tgl_mt", $this->input->post("tanggal"));
                 } else {
                     $this->session->set_flashdata("status_mt", "Data sudah pernah diinputkan!");
                 }

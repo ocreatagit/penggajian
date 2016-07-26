@@ -126,12 +126,12 @@
                 $total_biaya_keluar = 0;
                 foreach ($pengeluarans as $pengeluaran) {
                     ?>
-                                                <!--                <tr>
-                                                            <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
-                                                            <td><?php echo $pengeluaran->username; ?></td>
-                                                            <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
-                                                            <td><?php echo $pengeluaran->keterangan; ?></td>
-                                                        </tr>-->
+                                                    <!--                <tr>
+                                                                <td><?php echo strftime("%d-%m-%Y", strtotime($pengeluaran->tanggal)); ?></td>
+                                                                <td><?php echo $pengeluaran->username; ?></td>
+                                                                <td>Rp <?php echo number_format($pengeluaran->jumlah, 0, ",", ".") ?>.- </td>
+                                                                <td><?php echo $pengeluaran->keterangan; ?></td>
+                                                            </tr>-->
                     <?php
                     $total_biaya_keluar += $pengeluaran->jumlah;
                 }

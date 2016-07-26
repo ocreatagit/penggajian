@@ -44,7 +44,6 @@
                             <div class="col-lg-3">
                                 <input class="form-control siku" type="text" id="datepicker2" placeholder="Sampai" name="tanggal_akhir" value="">
                             </div>                    
-
                         </div>
                         <div class="form-group" >
                             <div class="col-lg-12 col-lg-offset-2">                        
@@ -210,7 +209,12 @@
                 if (this.value == 'Periode') {
                     $('#periode').show();
                     $('#monthly').hide();
+<<<<<<< HEAD
                 } else if (this.value == 'Bulan') {
+=======
+                }
+                else if (this.value == 'Bulan') {
+>>>>>>> 5efc2b365b404c9b771c8ee2287ef21733adbcbc
                     $('#periode').hide();
                     $('#monthly').show();
                 }

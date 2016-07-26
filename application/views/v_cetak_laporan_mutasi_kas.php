@@ -49,7 +49,6 @@
                     <?php
                     if (count($jurnals) > 0) {
                         foreach ($jurnals as $laporan):
-                            $ket = explode('|', $laporan->keterangan);
                             ?>
                             <tr>
                                 <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
