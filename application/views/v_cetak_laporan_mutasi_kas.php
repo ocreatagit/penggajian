@@ -54,13 +54,13 @@
                             <tr>
                                 <td><?php echo strftime("%d-%m-%Y %H:%M:%S", strtotime($laporan->tanggal)); ?></td>
                                 <td><?php
-                    if (is_null(strftime("%d-%m-%Y", strtotime($ket[2]))) == FALSE) {
-                        echo strftime("%d-%m-%Y", strtotime($ket[2]));
+                    if (is_null(strftime("%d-%m-%Y", strtotime($laporan->tglref))) == FALSE) {
+                        echo strftime("%d-%m-%Y", strtotime($laporan->tglref));
                     } else {
                         echo '';
                     }
                             ?></td>
-                                <td><?php echo $ket[0]; ?><?php echo count($keterangan_lanjut) > 0 ? $keterangan_lanjut[$laporan->IDJurnal] != '' ? ' <b>(' . $keterangan_lanjut[$laporan->IDJurnal] . ')</b>' : '' : '' ?></td>
+                                <td><?php echo $laporan->keterangan; ?></td>
                                 <td>Rp <?php echo number_format($laporan->kasmasuk, 0, ",", ".") ?>.- </td>
                                 <td>Rp <?php echo number_format($laporan->kaskeluar, 0, ",", ".") ?>.- </td>
                                 <td>Rp.<?php echo number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.'); ?>,-</td>

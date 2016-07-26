@@ -49,6 +49,7 @@ class Custom_Excel extends PHPExcel {
 
     function alignment($align = 'left') {
         $this->activateWorksheet->getStyle($this->cell)->getAlignment()->setHorizontal($align);
+        $this->activateWorksheet->getStyle($this->cell)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER );
         return $this;
     }
 
@@ -125,10 +126,4 @@ class Custom_Excel extends PHPExcel {
     function test1() {
         return $this;
     }
-
-    function test2() {
-        print_r("COBA BERHASIL");
-        exit;
-    }
-
 }

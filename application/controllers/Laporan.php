@@ -688,7 +688,8 @@ class Laporan extends CI_Controller {
         } else {
             redirect('welcome/index');
         }
-        $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+        //$data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+        $data['saldo'] = $this->Admin_model->get_saldo_cabang($data["IDCabang"]);
         if ($this->session->userdata("Level") == 0) {
             $data["cabangs"] = $this->Admin_model->get_all_cabang();
         }
@@ -749,7 +750,7 @@ class Laporan extends CI_Controller {
             $data['IDCabang'] = $this->session->userdata('IDCabang');
 
             $data['laporans'] = $this->Laporan_model->get_laporan_gaji();
-            $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+            $data['saldo'] = $this->Admin_model->get_saldo_cabang($data["IDCabang"]);
         } else {
             redirect('welcome/index');
         }
@@ -761,6 +762,7 @@ class Laporan extends CI_Controller {
         $data["filter"] = "";
         if ($this->input->post("btn_submit")) {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
+			$data['saldo'] = $this->Admin_model->get_saldo_cabang($this->input->post("cabang"));
         }
 
         if ($this->input->post('logout')) {
@@ -1107,6 +1109,16 @@ class Laporan extends CI_Controller {
         if ($this->input->post("btn_email")) {
             $this->form_validation->set_rules('email', 'email', 'required');
             if ($this->form_validation->run() == TRUE) {
+				
+				$data['data_jenis'] = FALSE;
+				if ($this->session->userdata('Level') == 0) {
+					if ($this->input->post('cabang') != 0) {
+						$data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+					}
+				} else {
+					$data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+				}
+				
                 $filename = $this->excel_kas($data, "Laporan Mutasi Kas", $this->input->post('btn_email'));
                 // RRyner email - 19/12/2015
                 $this->email_header("babylonindografika@gmail.com", "indografika01");
@@ -1182,7 +1194,16 @@ class Laporan extends CI_Controller {
 
         if ($this->input->post("btn_email")) {
             $this->form_validation->set_rules('email', 'email', 'required');
-            if ($this->form_validation->run() == TRUE) {
+            if ($this->form_validation->run() == TRUE) {				
+				$data['data_jenis'] = FALSE;
+				if ($this->session->userdata('Level') == 0) {
+					if ($this->input->post('cabang') != 0) {
+						$data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->input->post('cabang'))->kabupaten;
+					}
+				} else {
+					$data['data_cabang'] = $this->Admin_model->get_detail_cabang($this->session->userdata('IDCabang'))->kabupaten;
+				}
+				
                 $filename = $this->excel_kas($data, "Laporan Mutasi Kas Bank", $this->input->post('btn_email'));
 //                $filename = $this->excel_pengeluaran($data,  $this->input->post('btn_email'));
                 // RRyner email - 19/12/2015
@@ -1480,7 +1501,7 @@ class Laporan extends CI_Controller {
             redirect('welcome/index');
         }
 
-        $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+        $data['saldo'] = $this->Admin_model->get_saldo_cabang($data["IDCabang"]);
         $this->form_validation->set_rules('nominal', 'Nominal', 'required');
 
         if ($this->input->post("base_url")) {
@@ -1507,10 +1528,10 @@ class Laporan extends CI_Controller {
     function get_saldo_kas_bank() {
         echo 'Rp. ' . number_format($this->Admin_model->get_saldo_bank($this->session->userdata("IDCabang")), 0, ',', '.') . " ,-";
     }
-    
+
     // Pembatalan Pengeluaran
-    
-    function laporan_pembatalan_pengeluaran(){
+
+    function laporan_pembatalan_pengeluaran() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');
             $data['level'] = $this->session->userdata('Level');
@@ -1538,8 +1559,8 @@ class Laporan extends CI_Controller {
         $this->load->view('v_navigation', $data);
         $this->load->view('v_laporan_pembatalan_pengeluaran', $data);
     }
-    
-    function pembatalan_pengeluaran(){
+
+    function pembatalan_pengeluaran() {
         if ($this->session->userdata('Username')) {
             $data['username'] = $this->session->userdata('Username');
             $data['level'] = $this->session->userdata('Level');
@@ -1618,8 +1639,8 @@ class Laporan extends CI_Controller {
 
         foreach ($data['jurnals'] as $laporan):
             $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal)), "A", $row)->border();
-            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tanggal1)), "B", $row)->border();
-            $excel->add_cell($laporan->keterangan1, "C", $row)->border();
+            $excel->add_cell(strftime("%d-%m-%Y", strtotime($laporan->tglref)), "B", $row)->border();
+            $excel->add_cell($laporan->keterangan, "C", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->kasmasuk, 0, ",", ".") . ",-", "D", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->kaskeluar, 0, ",", ".") . ",-", "E", $row)->border();
             $excel->add_cell("Rp. " . number_format($laporan->sifat == 'K' ? $saldo_mutasi -= $laporan->kaskeluar : $saldo_mutasi += $laporan->kasmasuk, 0, ',', '.') . ",-", "F", $row)->border();
@@ -1706,4 +1727,10 @@ class Laporan extends CI_Controller {
     }
 
     //------------ END EMAIL ------------/
+
+    function migrasi_referensi() {
+        //$this->Jurnal_model->migrasi_referensi();
+        //$this->Jurnal_model->update_referensi();
+        redirect("");
+    }
 }

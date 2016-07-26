@@ -171,9 +171,9 @@ class Jurnal_model extends CI_Model {
             $arr = explode("|", $jenis_transaksi);
             $jenis_transaksi_1 = $arr[0];
             $jenis_transaksi_2 = $arr[1];
-            $jenis_transaksi = $jenis_transaksi_1. " - ".$jenis_transaksi_2;
+            $jenis_transaksi = $jenis_transaksi_1 . " - " . $jenis_transaksi_2;
         } else {
-            $jenis_transaksi_1 = $jenis_transaksi;          
+            $jenis_transaksi_1 = $jenis_transaksi;
         }
         $tanggal = $this->Admin_model->get_laporan_pengeluaran($noBukti, $jenis_transaksi_1);
         $totalPenjualan = $nilai_transaksi;
@@ -226,7 +226,7 @@ class Jurnal_model extends CI_Model {
             }
             $data = array(
                 "heading" => "$IDJurnal",
-                "message" => "$trans->IDAkun-".$trans->sifat."-Rp.$totalPenjualan",
+                "message" => "$trans->IDAkun-" . $trans->sifat . "-Rp.$totalPenjualan",
                 "date" => date("Y-m-d H:i:s"),
                 "username" => "ryner"
             );
@@ -352,6 +352,35 @@ WHERE TABLE_SCHEMA = 'penggajian' AND TABLE_NAME = 'jurnal';";
             return $query->result();
         } else {
             return array();
+        }
+    }
+
+    //----------- Migrasi Referensi -----------//
+    function migrasi_referensi() {
+        $SQL = "SELECT * FROM jurnal WHERE jenref = '';";
+        $result = $this->db->query($SQL)->result();
+        foreach ($result as $res) {
+            $arr = explode("|", $res->keterangan);
+            $data = array(
+                "jenref" => $arr[0],
+                "noref" => $arr[1],
+                "tglref" => $arr[2]
+            );
+            $this->db->where("IDJurnal", $res->IDJurnal);
+            $this->db->update("jurnal", $data);
+        }
+    }
+
+    function update_referensi() {
+        $SQL = "SELECT * FROM jurnal;";
+        $result = $this->db->query($SQL)->result();
+        foreach ($result as $res) {
+            $arr = explode("|", $res->keterangan);
+            $data = array(
+                "keterangan" => $arr[0]
+            );
+            $this->db->where("IDJurnal", $res->IDJurnal);
+            $this->db->update("jurnal", $data);
         }
     }
 

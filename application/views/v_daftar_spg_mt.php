@@ -69,7 +69,7 @@
                                     </table>
                                     <br>
                                     <div style="text-align: center">
-                                        <a href='<?php echo base_url() ?>index.php/toko/tambah_spg/<?php echo $sales->IDSalesMT ?>' class='btn btn-primary btn-sm siku'><i class='fa fa-pencil'></i></a>
+                                        <a href='<?php echo base_url() ?>index.php/toko/tambah_spg_mt/<?php echo $sales->IDSalesMT ?>' class='btn btn-primary btn-sm siku'><i class='fa fa-pencil'></i></a>
                                         <a href='<?php echo base_url() ?>index.php/toko/delete_spg/<?php echo $sales->IDSalesMT ?>' class='btn btn-danger btn-sm siku' onclick="return confirm('Are you sure you want to delete this item?');"><i class='fa fa-trash'></i></a>
                                     </div>
                                 </div>

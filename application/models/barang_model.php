@@ -227,7 +227,7 @@ class Barang_model extends CI_Model {
         } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
         }
-        $sql .= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
+        $sql.= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb)";
         $sql.= " GROUP BY sales.IDSales ORDER BY jumlah DESC LIMIT 15";
         return $this->db->query($sql)->result();
     }
@@ -250,7 +250,7 @@ class Barang_model extends CI_Model {
         } else {
             return;
         }
-        if ($this->input->post("cabang")) {            
+        if ($this->input->post("cabang")) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
         } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
             $sql.=" AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
@@ -285,6 +285,45 @@ class Barang_model extends CI_Model {
         }
 //        print_r($data);exit;
         return $data;
+    }
+
+    function select_top_sales_detail($awal = FALSE, $akhir = FALSE, $bulan = FALSE) {
+        
+        $SQL_HASIL = "SELECT *
+                      FROM ( SELECT sales.IDSales, sales.nama, sales.foto, SUM(jual.hargaJual) as jumlah FROM jual INNER JOIN sales on sales.IDSales = jual.IDSales INNER JOIN laporan_penjualan on laporan_penjualan.IDPenjualan = jual.IDPenjualan ";
+        if ($awal && $akhir) {  
+            $SQL_HASIL .= " WHERE laporan_penjualan.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else if ($bulan) {
+            $SQL_HASIL .= " WHERE month(laporan_penjualan.tanggal) = $bulan AND year(laporan_penjualan.tanggal) = year(now()) ";
+        } else {
+            $SQL_HASIL .= " WHERE month(laporan_penjualan.tanggal) = month(now()) AND year(laporan_penjualan.tanggal) = year(now()) ";
+        }
+        
+        if ($this->input->post("cabang")) {
+            if ($this->input->post("cabang") != 0) {
+                $SQL_HASIL .= " AND laporan_penjualan.IDCabang = " . $this->input->post("cabang") . " ";
+            }
+        } else if ($this->session->userdata('Level') != 0 && $this->session->userdata('Level') != 3) {
+            $SQL_HASIL .= " AND laporan_penjualan.IDCabang = " . $this->session->userdata('IDCabang') . " ";
+        }
+        $SQL_HASIL .= " AND laporan_penjualan.IDPenjualan NOT IN (SELECT lb.IDPenjualan FROM laporan_pembatalan_penjualan lb) 
+                        GROUP BY sales.IDSales LIMIT 15) AS temp_1 ";
+        $SQL_HASIL .= "INNER JOIN (
+                        select sales.nama, jual.IDSales, barang.namaBarang, sum(jual.jumlah) as jumlah from jual
+                        inner join barang on barang.IDBarang = jual. IDBarang
+                        inner join laporan_penjualan lp on lp.IDPenjualan = jual.IDPenjualan 
+                        inner join sales on sales.IDSales = jual.IDSales";
+        
+        if ($awal && $akhir) {
+            $SQL_HASIL .= " WHERE lp.tanggal BETWEEN '" . strftime("%Y-%m-%d", strtotime($awal)) . "' AND '" . strftime("%Y-%m-%d", strtotime($akhir)) . "'  ";
+        } else if ($bulan) {
+            $SQL_HASIL .= " WHERE month(lp.tanggal) = $bulan AND year(lp.tanggal) = year(now()) ";
+        } else {
+            $SQL_HASIL .= " WHERE month(lp.tanggal) = month(now()) AND year(lp.tanggal) = year(now()) ";
+        }
+        $SQL_HASIL .= " and jual.IDSales = temp_1.IDSales group by jual.IDBarang) AS temp_2";
+
+        echo $SQL_HASIL; exit;
     }
 
     function insert_harga_satuan($IDBarang = FALSE) {

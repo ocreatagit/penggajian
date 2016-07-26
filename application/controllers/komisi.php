@@ -23,7 +23,7 @@ class Komisi extends CI_Controller {
             $data['IDCabang'] = $this->session->userdata('IDCabang');
 
             $data['laporans'] = $this->Sales_model->get_laporan_komisi();
-            $data['saldo'] = $this->Admin_model->get_saldo($data['username']);
+            $data['saldo'] = $this->Admin_model->get_saldo_cabang($data["IDCabang"]);
         } else {
             redirect('welcome/index');
         }
@@ -34,6 +34,7 @@ class Komisi extends CI_Controller {
         $data["filter"] = "";
         if ($this->input->post("btn_submit")) {
             $data["filter"] = $this->Laporan_model->get_cabang_id($this->input->post("cabang"));
+			$data['saldo'] = $this->Admin_model->get_saldo_cabang($this->input->post("cabang"));
         }
 
         if ($this->input->post('logout')) {

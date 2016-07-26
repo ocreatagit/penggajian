@@ -103,6 +103,7 @@
                                 <li><a href="<?php echo base_url() . 'index.php/pencarian/harian' ?>" style=''><span id='submenu'>Laporan Kas</span></a></li>
                             <?php endif; ?>
                             <li><a href="<?php echo base_url() . 'index.php/pencarian/penjualan' ?>" style=''><span id='submenu'>Penjualan SPG</span></a></li>
+                            <li><a href="<?php echo base_url() . 'index.php/pencarian/TopSalesList' ?>" style=''><span id='submenu'>Penjualan SPG List</span></a></li>
                             <?php if ($level != 3): ?>
                                 <li><a href="<?php echo base_url() . 'index.php/laporan/pengeluaran' ?>" style=''>Laporan Pengeluaran</a></li>
                             <?php endif; ?>

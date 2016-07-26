@@ -321,6 +321,9 @@ class Pencarian extends CI_Controller {
 
         $data['barangs'] = $this->Barang_model->get_barang();
         $data['topbarangs'] = $this->Barang_model->select_top_seles();
+        
+//        $this->Barang_model->select_top_sales_detail();
+        
         $IDSales = array();
         foreach ($data['topbarangs'] as $lokasi) {
             array_push($IDSales, $lokasi->IDSales);
@@ -340,6 +343,87 @@ class Pencarian extends CI_Controller {
         $this->load->view('v_head');
         $this->load->view('v_navigation', $data);
         $this->load->view('v_top_sales', $data);
+    }
+    
+    public function TopSalesList() {
+        if ($this->session->userdata('Username')) {
+            $data['username'] = $this->session->userdata('Username');
+            $data['level'] = $this->session->userdata('Level');
+            $data['IDCabang'] = $this->session->userdata('IDCabang');
+        } else {
+            redirect('welcome/index');
+        }
+        if ($this->session->userdata("Level") == 0) {
+            $data["cabangs"] = $this->Admin_model->get_all_cabang();
+        }
+
+        $data['barangs'] = $this->Barang_model->get_barang();
+        $data['topbarangs'] = $this->Barang_model->select_top_seles();
+
+//        $this->Barang_model->select_top_sales_detail();
+
+        $IDSales = array();
+        foreach ($data['topbarangs'] as $lokasi) {
+            array_push($IDSales, $lokasi->IDSales);
+        }
+        $data['data'] = "BULAN INI";
+        $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales);
+        if ($this->input->post('submit') || $this->input->post('btn_export')) {
+            $awal = $this->input->post('tanggal_awal');
+            $akhir = $this->input->post('tanggal_akhir');
+            $data['topbarangs'] = $this->Barang_model->select_top_seles($awal, $akhir);
+            $data['data'] = "Periode $awal sampai $akhir";
+            if (count($IDSales) > 0) {
+                $data['modalsales'] = $this->Barang_model->select_top_sales_barang($IDSales, $awal, $akhir);
+            }
+        }
+        if ($this->input->post('btn_export')) {
+            $this->excel_sales_list($data, $this->input->post('btn_export'));
+        }
+
+        $this->load->view('v_head');
+        $this->load->view('v_navigation', $data);
+        $this->load->view('v_top_sales_list', $data);
+    }
+
+    function excel_sales_list($data, $post) {
+        $this->load->library('custom_excel');
+        $excel = $this->custom_excel;
+        $excel->declare_excel();
+        $row = 1;
+        $total = 0;
+
+        /* array = merge(berapa baris, berapa kolom) */
+        $excel->add_cell("Daftar Pengeluaran", 'A', $row++)->font(20)->merge(array(0, 4))->alignment('center');
+        $row++;
+        $excel->add_cell("No", "A", $row)->font(16)->alignment("center")->border()->autoWidth();
+        $excel->add_cell("Nama", "B", $row)->font(16)->alignment("center")->border()->autoWidth();
+        $excel->add_cell("Pendapatan", "C", $row)->font(16)->alignment("center")->border()->autoWidth();
+        $excel->add_cell("Nama Barang", "D", $row)->font(16)->alignment("center")->border()->autoWidth();
+        $excel->add_cell("Jumlah Barang", "E", $row++)->font(16)->alignment("center")->border()->autoWidth();
+
+        $counter = 1;
+        $jumlah_barang = count($data['barangs']) - 1;
+        foreach ($data['topbarangs'] as $sales) {
+            $excel->add_cell($counter++, 'A', $row)->font(12)->alignment('center')->autoWidth()->merge(array($jumlah_barang, 0));
+            $excel->add_cell($sales->nama, 'B', $row)->font(12)->alignment('center')->autoWidth()->merge(array($jumlah_barang, 0));
+            $excel->add_cell("Rp. " . number_format($sales->jumlah, 0, ',', '.') . ",-", 'C', $row)->font(12)->alignment('right')->autoWidth()->merge(array($jumlah_barang, 0));
+            $modal = $data['modalsales'][$counter - 2];
+            foreach ($data['barangs'] as $semuabarang) {
+                $tulis = true;
+                $excel->add_cell($semuabarang->namaBarang, 'D', $row)->font(12)->alignment('left')->autoWidth();
+                foreach ($modal as $mbarang) {
+                    if ($semuabarang->namaBarang == $mbarang->namaBarang) {
+                        $excel->add_cell(number_format($mbarang->jumlah, 0, ',', '.'), 'E', $row++)->font(12)->alignment('right')->autoWidth();
+                        $tulis = false;
+                    }
+                }
+                if ($tulis) {
+                    $excel->add_cell("0", 'E', $row++)->font(12)->alignment('right')->autoWidth();
+                }
+            }
+        }
+        $excel->end_excel("laporan_top_sales", $post);
     }
 
     /* Daniel End */
@@ -784,6 +868,7 @@ class Pencarian extends CI_Controller {
     //------------ EMAIL ------------/
     function email_header($email_setting, $password) {
         $this->load->library('email');
+		/*
         $this->email->initialize(array(
             'protocol' => 'smtp',
             'smtp_host' => 'ssl://smtp.googlemail.com',
@@ -793,6 +878,19 @@ class Pencarian extends CI_Controller {
             'crlf' => "\r\n",
             'newline' => "\r\n"
         ));
+		*/
+		
+		$this->email->initialize(array(
+			'protocol'  => 'smtp',
+			'smtp_host' => 'smtp.googlemail.com',
+			'smtp_port' => 465,
+			'smtp_user' => $email_setting,
+            'smtp_pass' => $password,
+			'mailtype'  => 'html',
+			'charset'   => 'utf-8',
+			'crlf' => "\r\n",
+            'newline' => "\r\n"
+		));
     }
 
     function email_detail($from_mail, $from_nick, $to_mail, $subject, $message) {
@@ -809,9 +907,9 @@ class Pencarian extends CI_Controller {
 
     function email_send() {
         if (!$this->email->send()) {
-            $this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
-//            echo show_error($this->email->print_debugger());
-//            exit;
+            //$this->session->set_flashdata("status_laporan_penjualan_spg", "Email Error! Please Check Internet Connection!");
+            echo show_error($this->email->print_debugger());
+            exit;
         } else {
             return TRUE;
         }

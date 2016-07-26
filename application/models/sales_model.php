@@ -323,6 +323,7 @@ class Sales_model extends CI_Model {
                 $this->db->where('sales.IDCabang', $this->input->post('cabang'));
             }
         }
+        $this->db->order_by('aktif', 'DESC');
         $this->db->order_by('IDSales', 'DESC');
         $res = $this->db->get();
 //        echo $this->db->last_query();
